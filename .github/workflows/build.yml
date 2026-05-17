@@ -28,14 +28,20 @@ jobs:
           flutter create --org com.tetocollctionway --project-name mirror_scorpion_translate clean_project
           rm -rf clean_project/lib clean_project/assets clean_project/pubspec.yaml
           
+          # النسخ من المجلد الصحيح 100%
           cp -r mirror_scorpion_translate1/lib clean_project/
           cp -r mirror_scorpion_translate1/assets clean_project/
           cp mirror_scorpion_translate1/pubspec.yaml clean_project/
 
-          # تعديل وإصلاح ملف build.gradle الرئيسي للمشروع النظيف لحل تعارض المكتبات
-          sed -i 's/minSdkVersion .*/minSdkVersion 21/' clean_project/android/app/build.gradle
+          # حقن إعدادات الأندرويد الصريحة في build.gradle لحل مشكلة speech_to_text نهائياً
           sed -i 's/compileSdkVersion .*/compileSdkVersion 34/' clean_project/android/app/build.gradle
           sed -i 's/targetSdkVersion .*/targetSdkVersion 34/' clean_project/android/app/build.gradle
+          sed -i 's/minSdkVersion .*/minSdkVersion 21/' clean_project/android/app/build.gradle
+          
+          # حل بديل وقاتل لو الـ sed ما لقتش الأسطر التلقائية: إجبار الجرادل على إصدار 34
+          echo "android.compileSdkVersion = 34" >> clean_project/android/local.properties
+          echo "android.targetSdkVersion = 34" >> clean_project/android/local.properties
+          echo "android.minSdkVersion = 21" >> clean_project/android/local.properties
 
           cd clean_project
           flutter pub get
