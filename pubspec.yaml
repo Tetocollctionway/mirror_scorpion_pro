@@ -1,0 +1,23 @@
+name: mirror_scorpion_translate
+description: "Mirror Scorpion Project - Tamer's Edition"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  provider: ^6.1.1
+  http: ^1.2.1
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  google_mlkit_text_recognition: ^0.13.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/hadiths.json
+    - assets/data/stories.json

@@ -1,0 +1,24 @@
+# Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/
+.vscode/
+*.lock
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+local.properties
+
+# Misc
+*.swp
+*.swo
+*~
