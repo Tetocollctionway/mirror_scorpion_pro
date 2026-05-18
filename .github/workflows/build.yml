@@ -16,13 +16,15 @@ jobs:
           channel: 'stable'
       - name: Create and build
         run: |
-          flutter create --org com.tetocollctionway --project-name mirror_scorpion_translate /tmp/clean
-          rm -rf /tmp/clean/lib /tmp/clean/assets
-          cp -r lib /tmp/clean/
-          cp -r assets /tmp/clean/
-          cp pubspec.yaml /tmp/clean/
-          sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' /tmp/clean/android/app/build.gradle
+          cd /tmp
+          mkdir -p clean
           cd /tmp/clean
+          flutter create --org com.tetocollctionway --project-name mirror_scorpion_translate .
+          rm -rf lib assets
+          cp -r $GITHUB_WORKSPACE/lib .
+          cp -r $GITHUB_WORKSPACE/assets .
+          cp $GITHUB_WORKSPACE/pubspec.yaml .
+          sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' android/app/build.gradle
           flutter pub get
           flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
@@ -31,4 +33,4 @@ jobs:
         with:
           name: mirror-scorpion-release
           path: output_apk/app-release.apk
-          if-no-files-found: ignore
+          if-no-files-found: error
