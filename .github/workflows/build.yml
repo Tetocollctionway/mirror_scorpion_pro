@@ -1,4 +1,5 @@
 name: Mirror Scorpion Build
+
 on:
   push:
     branches: [ main, master ]
@@ -22,47 +23,41 @@ jobs:
           channel: 'stable'
           flutter-version: '3.22.0'
 
-      - name: Build Project
+      - name: Build APK
         run: |
+          # 1. إنشاء مشروع Flutter نظيف
           cd ..
-          # 1. إنشاء المشروع النظيف بأحدث المعايير
           flutter create --org com.tetocollctionway --project-name mirror_scorpion_translate clean_project
-          rm -rf clean_project/lib clean_project/assets clean_project/pubspec.yaml clean_project/android/app/build.gradle
-          
-          # 2. نقل ملفاتك النظيفة بالكامل
-          cp -r mirror_scorpion_translate1/lib clean_project/
-          cp -r mirror_scorpion_translate1/assets clean_project/
-          cp mirror_scorpion_translate1/pubspec.yaml clean_project/
 
-          # 3. استبدال الجرادل بالملف الموحد الحديث والمكتوب صح
-          cp mirror_scorpion_translate1/android_config/app/build.gradle clean_project/android/app/build.gradle
+          # 2. مسح lib و assets الافتراضية
+          rm -rf clean_project/lib clean_project/assets
 
-          # 4. الرؤية الشاملة المحدثة: فرض الـ SDK بشكل مباشر وصريح على كل المشروع والمكتبات بدون تعارض الوقت
-          cat >> clean_project/android/build.gradle << 'SUB_EOF'
+          # 3. نسخ الكود الخاص بنا
+          cp -r mirror_scorpion_translate/lib clean_project/
+          cp -r mirror_scorpion_translate/assets clean_project/
 
-subprojects {
-    project.plugins.withType(com.android.build.gradle.BasePlugin) {
-        project.android {
-            compileSdkVersion 34
-            buildToolsVersion "34.0.0"
-            defaultConfig {
-                targetSdkVersion 34
-            }
-        }
-    }
-}
-SUB_EOF
+          # 4. كتابة pubspec.yaml الخاص بنا
+          cp mirror_scorpion_translate/pubspec.yaml clean_project/
 
-          # 5. البناء النهائي
+          # 5. تعديل minSdkVersion إلى 21
+          sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' clean_project/android/app/build.gradle
+
+          # 6. إضافة flutterEmbedding meta-data للتأكد من v2
+          sed -i 's|<application|<application android:name="io.flutter.embedding.android.FlutterActivity"|' clean_project/android/app/src/main/AndroidManifest.xml
+          sed -i '/<\/application>/i\        <meta-data android:name="flutterEmbedding" android:value="2" />' clean_project/android/app/src/main/AndroidManifest.xml
+
+          # 7. بناء APK
           cd clean_project
           flutter pub get
           flutter build apk --release
 
-          mkdir -p ../mirror_scorpion_translate1/output_apk
-          cp build/app/outputs/flutter-apk/app-release.apk ../mirror_scorpion_translate1/output_apk/
+          # 8. نسخ الـ APK الناتج
+          mkdir -p ../mirror_scorpion_translate/output_apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../mirror_scorpion_translate/output_apk/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: mirror-scorpion-release
           path: output_apk/app-release.apk
+          if-no-files-found: ignore
