@@ -22,8 +22,6 @@ jobs:
           cp -r assets /tmp/clean/
           cp pubspec.yaml /tmp/clean/
           sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' /tmp/clean/android/app/build.gradle
-          sed -i 's/targetSdkVersion [0-9]*/targetSdkVersion 34/' /tmp/clean/android/app/build.gradle
-          sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 34/' /tmp/clean/android/app/build.gradle
           cd /tmp/clean
           flutter pub get
           flutter build apk --release
