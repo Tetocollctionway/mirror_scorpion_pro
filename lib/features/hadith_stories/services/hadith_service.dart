@@ -68,7 +68,6 @@ class HadithService {
   static List<HadithCollection> getAvailableCollections() {
     return HadithCollection.collections;
   }
-}
 
   // Alias for compatibility
   static Future<Hadith> fetchRandomHadith(String? collectionName) async {
@@ -79,3 +78,4 @@ class HadithService {
         : collections.first;
     return getRandomHadith(collection);
   }
+}

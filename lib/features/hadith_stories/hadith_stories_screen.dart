@@ -896,7 +896,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                   Icon(Icons.person, size: 14, color: Colors.green.shade300),
                   const SizedBox(width: 6),
                   Text(
-                    quote.attribution,
+                    quote.attribution ?? '',
                     style: TextStyle(color: Colors.green.shade300, fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -1075,7 +1075,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              saved.attribution,
+                              saved.attribution ?? '',
                               style: TextStyle(
                                 fontSize: 9,
                                 color: Colors.green.shade300.withOpacity(0.7),
