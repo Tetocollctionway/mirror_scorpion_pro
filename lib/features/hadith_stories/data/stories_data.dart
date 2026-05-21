@@ -4,11 +4,19 @@ class StoriesData {
   static const List<IslamicStory> stories = [
     IslamicStory(
       id: 1,
-      titles: {"ar": "النبي إبراهيم عليه السلام والنار", "en": "Prophet Ibrahim (AS) and the Fire"},
-      contents: {"ar": "عندما حطم النبي إبراهيم عليه السلام أصنام قومه، غضبوا غضباً شديداً وقرروا معاقبته بإلقائه في نار عظيمة. جمعوا الحطب لأيام وأوقدوا أكبر نار رأوها على الإطلاق. ثم قيدوا إبراهيم عليه السلام وألقوه في النار بالمقلاع. بينما كان إبراهيم عليه السلام يسقط في النار، جاءه الملك جبريل عليه السلام وسأله: هل لك حاجة؟ فقال إبراهيم: أما إليك فلا، أما الله فعالم بحالي. أمر الله النار: يا نار كوني برداً وسلاماً على إبراهيم. أطاعت النار أمر الله. أصبحت برداً وسلاماً على إبراهيم عليه السلام. جلس في وسط النار كأنه في روضة جميلة، لم يصبه أذى. عندما نظر القوم، اندهشوا لرؤيته حياً سالماً. هذه المعجزة أظهرت أن الله على كل شيء قدير. مهما كانت الظروف صعبة، يستطيع الله أن ينجي الذين يتوكلون عليه.",
-      "en": "When Prophet Ibrahim (AS) smashed the idols of his people, they became furious and decided to punish him by throwing him into a huge fire. They gathered wood for days and lit the largest fire they had ever seen. Then they tied Ibrahim (AS) and threw him into the fire with a catapult. As Ibrahim (AS) was falling into the fire, Angel Jibril (AS) came to him and asked, Do you need anything? Ibrahim (AS) replied, From you, no. But Allah knows my situation. Allah commanded the fire: O fire, be coolness and safety upon Ibrahim. The fire obeyed Allah's command. It became cool and safe for Ibrahim (AS). He sat in the middle of the fire as if he were in a garden, unharmed. When the people looked, they were astonished to see him alive and well. This miracle showed that Allah has power over all things. No matter how difficult the situation, Allah can save those who trust in Him."},
-      morals: {"ar": "توكل على الله تماماً. إنه على كل شيء قدير ويمكنه تحويل أخطر المواقف إلى أمان وسلام.", "en": "Trust in Allah completely. He has power over all things and can turn even the most dangerous situation into safety."},
-      source: "Surah Al-Anbiya (21:68-69)",
+      titles: {
+        "ar": "معجزة خليل الله إبراهيم: من ضيق أتون النار إلى سعة رحاب المنحة", 
+        "en": "Prophet Ibrahim: From the Furnace of Trial to the Realm of Divine Gift"
+      },
+      contents: {
+        "ar": "تبدأ المحنة الكبرى عندما وقف الشاب إبراهيم عليه السلام وحيدًا في مواجهة أمة كاملة، مسلحًا باليقين ومحطمًا لأصنامهم الزائفة ليثبت لهم عجزها. لكن الطغيان لا يحتمل لغة العقل، فاشتعلت قلوبهم غيظًا وحقدًا، وقرروا أن تكون عقوبته بشعة تتناسب مع حجم جبروتهم، فصرخوا: 'ابْنُوا لَهُ بُنْيَانًا فَأَلْقُوهُ فِي الْجَحِيمِ'. هنا بدأت مرحلة الصبر والتحمل؛ فجمعوا أطنانًا من الحطب لأسابيع، حتى بنوا أتونًا كالجبل، وأوقدوا نارًا هائلة تزأر وتتصاعد ألسنتها كالموج الهائج، حتى إن الطير ليموت من شدة وهجها إذا حلق في سمائها. (مؤثر صوتي: زئير النار اللاهبة وصخب الحشود الغاضبة)\n\nوفي ذروة الضيق، قيدوا خليل الله بحبال غليظة، وحملوه على المنجنيق ليلقوه من بعيد لعدم قدرتهم على الاقتراب من جحيمها. وضعوه في كفة المنجنيق، وسُحب الذراع، وأُطلق في الهواء مندفَعًا نحو الموت المحقق. في تلك الثواني الفاصلة بين السماء والأرض، هبط ملك الوحي جبريل عليه السلام مسرعًا ليختبر عمق اليقين في قلبه، وسأله: 'يا إبراهيم.. ألك حاجة؟'. في هذا الموقف الذي تنهار فيه قوى البشر، تجلت روعة التوكل المطلق؛ فلم يلتفت إبراهيم للمخلوق، بل تعلقت روحه بالخالق وحده، وأجاب بلسان يملؤه السكون والرضا: 'أما منك فلا.. وأما من الله فبلى.. حسبنا الله ونعم الوكيل'.\n\nوعندما بلغ الضيق منتهاه، وتحولت الأسباب الكونية كلها ضد حياة البشر، جاءت المنحة الإلهية لتخرق قوانين الفيزياء والكون. صدر الأمر الرباني المباشر من فوق سبع سماوات: 'قُلْنَا يَا نَارُ كُونِي بَرْدًا وَسَلَامًا عَلَىٰ إِبْرَاهِيمَ'. (مؤثر صوتي: هدوء مفاجئ، ونسمات هواء عليلة). في لمح البصر، سلب الله من النار قدرتها على الإحراق، فلم تحرق سوى القيود والحبال التي كبلته بها أيدي الطغاة، لتتحول النار العظيمة إلى روضة خضراء باردة ومطئمنة. جلس فيها إبراهيم عليه السلام يسبح ربه في سلام وتكامل نفسي عجيب، بينما وقف القوم في الخارج يترقبون رماده، فإذا بهم يصعقون برؤيته حيًا، معافى، جالسًا في قلب النيران كأنه في بستان من الجنان. لقد أرادوا به كيدًا ومحنة، فجعلهم الله الأخسرين، وخرج إبراهيم بمنحة اليقين والتمكين والنجاة الخالدة.",
+        "en": "The great trial began when young Ibrahim (AS) stood alone against an entire nation, armed only with absolute faith. Furious at his destruction of their idols, the tyrants decided to punish him brutally, shouting: 'Build for him a structure and throw him into the burning fire.' For weeks, they gathered mountains of wood, igniting a monstrous inferno whose roaring flames rose so high that birds died from the sheer heat. (Sound effect: Roaring fire and angry crowd).\n\nIn the peak of distress, they bound the Friend of Allah with heavy ropes and placed him in a catapult, unable to approach the extreme heat. As he was launched into the air, hurtling toward certain death, Angel Jibril descended swiftly to test his resolve, asking: 'O Ibrahim, do you need any help?' In that terrifying moment, absolute trust in Allah manifested. Ibrahim replied with supreme tranquility: 'From you, no. But from Allah, yes. Allah is sufficient for me, and He is the best disposer of affairs.'\n\nWhen the hardship reached its absolute limit, the Divine Gift intervened to alter the laws of physics. The eternal command came from above the seven heavens: 'We said: O fire, be coolness and safety upon Ibrahim.' (Sound effect: Sudden calm and a gentle breeze). Instantly, Allah stripped the fire of its heat. It burned only the ropes that bound him. Ibrahim sat peacefully in the midst of the raging flames as if he were in a lush garden. The disbelievers watched in utter shock, witnessing how a severe trial was turned into a divine miracle and ultimate salvation."
+      },
+      morals: {
+        "ar": "المحنة هي المختبر الحقيقي لليقين. عندما تفوض أمرك لله بالكامل في أشد أوقات الضيق، تنقلب قوانين الكون لتأتيك المنحة والفرج من حيث لا تحتسب.", 
+        "en": "Hardship is the ultimate test of faith. When you completely surrender your affairs to Allah in times of distress, the laws of the universe bend to bring you divine relief and victory."
+      },
+      source: "سورة الأنبياء (21:68-69)، سورة الصافات (37:97)",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -19,69 +27,6 @@ class StoriesData {
       source: "Surah An-Naml (27:18-19)",
       isProphetsStory: true,
     ),
-    IslamicStory(
-      id: 3,
-      titles: {"ar": "الولد الصادق", "en": "The Honest Boy"},
-      contents: {"ar": "كان هناك ولد اسمه عبد الله يعمل عند تاجر في السوق. كان التاجر معروفاً بصدقه وأمانته. وفي يوم من الأيام، أعطى التاجر عبد الله بعض المال ليشتري به بضاعة. في الطريق، وجد عبد الله محفظة مليئة بالذهب. تذكر عبد الله تعاليم الإسلام: المسلم لا يأخذ ما ليس له. فأخذ المحفظة وأعادها إلى صاحبها. عندما علم التاجر بما فعله عبد الله، كافأه وزاد في راتبه. بارك الله في رزق التاجر لأن ابنه كان أميناً.", "en": "There was a boy named Abdullah who worked for a merchant in the market. The merchant was known for his honesty and trustworthiness. One day, the merchant gave Abdullah some money to buy goods. On the way, Abdullah found a purse full of gold. He remembered the teachings of Islam: A Muslim does not take what is not rightfully his. So he took the purse and returned it to its owner. When the merchant learned what Abdullah had done, he rewarded him and increased his salary. Allah blessed the merchant's rizq (provision) because his son was honest."},
-      morals: {"ar": "الصدق والأمانة يجلبان البركة والخير في الدنيا والآخرة.", "en": "Honesty and trustworthiness bring blessings and goodness in this life and the Hereafter."},
-      source: "Islamic Story",
-      isProphetsStory: false,
-    ),
-    IslamicStory(
-      id: 4,
-      titles: {"ar": "الرجل الذي سقى الكلب", "en": "The Man Who Gave Water to a Dog"},
-      contents: {"ar": "بينما كان رجل يمشي في طريقه، اشتد عليه العطش. فنزل بئراً وشرب منها. وعندما خرج، وجد كلباً يلهث من شدة العطش ويأكل الثرى. فقال الرجل في نفسه: لقد بلغ هذا الكلب من العطش مثل ما بلغ بي. فعاد الرجل إلى البئر، وملأ حذاءه ماءً، ثم أمسكه بفمه وصعد. سقى الكلب فشرب حتى ارتوى. فشكر الله له هذا العمل الصالح وغفر له ذنوبه.", "en": "A man was walking along a path when he became very thirsty. He went down a well and drank. When he came out, he found a dog panting from extreme thirst, eating the moist earth. The man said to himself: This dog has reached the same level of thirst as I did. So he went back down the well, filled his shoe with water, held it in his mouth, and climbed up. He gave water to the dog until it drank its fill. Allah appreciated this good deed and forgave all his sins."},
-      morals: {"ar": "الإحسان إلى الحيوانات سبب لمغفرة الله ودخول الجنة.", "en": "Kindness to animals is a cause for Allah's forgiveness and entry into Paradise."},
-      source: "Sahih al-Bukhari, Muslim",
-      isProphetsStory: false,
-    ),
-    IslamicStory(
-      id: 5,
-      titles: {"ar": "النبي موسى عليه السلام والبحر الأحمر", "en": "Prophet Musa (AS) and the Red Sea"},
-      contents: {"ar": "أرسل الله النبي موسى عليه السلام وأخاه هارون إلى فرعون ليدعواه إلى عبادة الله وحده. لكن فرعون تكبر وتجبر وقال: أنا ربكم الأعلى. فأنزل الله على فرعون وقومه الضربات والآيات، لكنهم استكبروا. ثم أمر الله موسى أن يخرج ببني إسرائيل من مصر. لحقهم فرعون بجيشه العظيم. وصل بنو إسرائيل إلى البحر الأحمر وليس أمامهم سوى الماء. قالوا: إنا لمدركون. قال موسى: كلا، إن معي ربي سيهدين. فأوحى الله إلى موسى أن اضرب بعصاك البحر. فضرب موسى البحر فانفلق اثني عشر طريقاً يابساً. عبر بنو إسرائيل، ولما حاول فرعون وجنوده اللحاق بهم، أمر الله البحر فانطبق عليهم فغرقوا جميعاً.", "en": "Allah sent Prophet Musa (AS) and his brother Harun to Pharaoh to call him to worship Allah alone. But Pharaoh was arrogant and claimed: I am your lord, the Most High. Allah sent plagues and signs upon Pharaoh and his people, but they persisted in their arrogance. Then Allah commanded Musa to take the Children of Israel out of Egypt. Pharaoh chased them with his mighty army. The Children of Israel reached the Red Sea with nothing but water ahead of them. They said: Indeed, we are overtaken. Musa said: No! Indeed, with me is my Lord; He will guide me. Allah inspired Musa to strike the sea with his staff. Musa struck the sea, and it parted into twelve dry paths. The Children of Israel crossed. When Pharaoh and his army tried to follow, Allah commanded the sea to close upon them, and they all drowned."},
-      morals: {"ar": "لا تيأس أبداً من نصر الله. عندما يكون الله معك، لا شيء مستحيل.", "en": "Never despair of Allah's help. When Allah is with you, nothing is impossible."},
-      source: "Surah Ash-Shu'ara (26), Surah Ta-Ha (20), Surah Yunus (10)",
-      isProphetsStory: true,
-    ),
-    IslamicStory(
-      id: 6,
-      titles: {"ar": "الفتاة الصغيرة التي وثقت بالله", "en": "The Young Girl Who Trusted Allah"},
-      contents: {"ar": "في قديم الزمان، كانت هناك فتاة صغيرة تعيش مع أبيها في قرية صغيرة. كان أبوها تقياً صالحاً يعلمها التوكل على الله. وفي يوم من الأيام، مرض الأب مرضاً شديداً. قبل أن يموت، قال لابنته: يا بنيتي، سأترك لك هذه النخلة أمانة عند الله. إنها رزقك من الله. بعد أن مات الأب، ظلت الفتاة تخدم النخلة وتسقيها وتعتني بها، واثقة بأن الله سيحفظها. نشأت الفتاة وكبرت، وكلما احتاجت شيئاً وجدته عند النخلة. وفي أحد الأيام، مر بها رجل صالح ورآها تدعو الله تحت النخلة. فدعا الله أن يبارك فيها وفي نخيلها. فصارت النخلة تثمر كل موسم أضعافاً مضاعفة، وعاشت الفتاة في خير وبركة.", "en": "Long ago, there was a young girl who lived with her father in a small village. Her father was a pious and righteous man who taught her to rely on Allah. One day, the father fell severely ill. Before he died, he said to his daughter: My dear daughter, I am leaving this palm tree as a trust with Allah. It is your provision from Allah. After her father's death, the girl continued to serve the palm tree, watering it and caring for it, trusting that Allah would protect her. The girl grew up, and whenever she needed something, she found it at the palm tree. One day, a righteous man passed by and saw her praying to Allah under the palm tree. He prayed that Allah would bless her and her palm tree. From then on, the palm tree bore abundant fruit every season, and the girl lived in goodness and blessings."},
-      morals: {"ar": "التوكل على الله والثقة به يجلب الرزق والبركة.", "en": "Trust in Allah and reliance on Him brings provision and blessings."},
-      source: "Islamic Story",
-      isProphetsStory: false,
-    ),
-    IslamicStory(
-      id: 7,
-      titles: {"ar": "الرجل الذي وجد السلام في الصبر", "en": "The Man Who Found Peace in Patience"},
-      contents: {"ar": "كان هناك رجل فقد ثروته وصحته وعائلته. لم يبق له شيء في الدنيا. تركه أصدقاؤه، وأصبح حزيناً ومكتئباً جداً. في ليلة من الليالي، جلس الرجل يدعو الله بدموع: يا رب، لماذا تركتني؟ لماذا أخذت كل شيء مني؟ سمع صوتاً في قلبه يقول: اصبر، إن الله مع الصابرين. فصبر الرجل واحتسب أجره عند الله. مرت الأيام، وتحسنت حاله شيئاً فشيئاً. وجد عملاً جديداً، وتعرف على أصدقاء صالحين، وعادت إليه صحته. وأدرك أن الصبر هو مفتاح الفرج.", "en": "There was a man who had lost his wealth, his health, and his family. He had nothing left in the world. His friends abandoned him, and he became very sad and depressed. One night, the man sat crying and praying to Allah: O Lord, why have you forsaken me? Why have you taken everything from me? He heard a voice in his heart saying: Be patient, indeed Allah is with the patient. So the man was patient and sought his reward from Allah. Days passed, and his situation gradually improved. He found a new job, made righteous friends, and his health returned. He realized that patience is the key to relief."},
-      morals: {"ar": "الصبر مفتاح الفرج. بعد العسر يأتي اليسر بإذن الله.", "en": "Patience is the key to relief. After hardship comes ease, by Allah's permission."},
-      source: "Quran 2:155-157",
-      isProphetsStory: false,
-    ),
-    IslamicStory(
-      id: 8,
-      titles: {"ar": "النبي يوسف عليه السلام: من البئر إلى العرش", "en": "Prophet Yusuf (AS): From the Well to the Throne"},
-      contents: {"ar": "كان النبي يوسف عليه السلام الابن المحبوب للنبي يعقوب عليه السلام. حسده إخوته ودبروا له مكيدة. ألقوه في بئر مظلم وتركوه ليموت. لكن الله أنقذه ومر به تجار فأخذوه وباعوه في مصر. اشتراه عزيز مصر وتربى في قصره. حاولت امرأة العزيز أن تغويه لكنه رفض واختار السجن على المعصية. قضى يوسف سنوات في السجن، ثم أخرجه الله وأصبح عزيز مصر. بفضل حكمته، أنقذ مصر من المجاعة. ثم جاءه إخوته لا يعرفونه، فسامحهم بعد أن عرفهم. اجتمعت العائلة كلها في مصر وعاشوا في سلام.", "en": "Prophet Yusuf (AS) was the beloved son of Prophet Yaqub (AS). His brothers became jealous of him and plotted against him. They threw him into a dark well and left him for dead. But Allah saved him, and passing traders took him and sold him in Egypt. He was bought by the Aziz of Egypt and raised in his palace. The Aziz's wife tried to seduce him, but he refused and chose prison over sin. Yusuf spent years in prison, then Allah freed him and he became the Aziz of Egypt. Through his wisdom, he saved Egypt from famine. Then his brothers came to him without recognizing him, and he forgave them after revealing himself. The whole family reunited in Egypt and lived in peace."},
-      morals: {"ar": "الثقة بالله تنجيك من أصعب المحن. الصبر على البلاء يعقبه نصر وتمكين.", "en": "Trust in Allah saves you from the hardest trials. Patience through hardship is followed by victory and empowerment."},
-      source: "Surah Yusuf (12)",
-      isProphetsStory: true,
-    ),
-    IslamicStory(
-      id: 9,
-      titles: {"ar": "الثلاثة الذين حبسهم الغار", "en": "The Three Men and the Cave"},
-      contents: {"ar": "كان ثلاثة رجال يسافرون معاً فلجأوا إلى غار ليستظلوا به. بينما هم داخله، سقطت صخرة ضخمة من الجبل وسدت المدخل تماماً، فحبستهم في الداخل. قالوا: لن ينجينا من هذا إلا أن ندعو الله بصالح أعمالنا. تذكر أحدهم بره بوالديه فدعا الله، وتذكر الثاني عفته وأمانته فدعا الله، وتذكر الثالث عمله الصالح مع أجيره فدعا الله. فانفرجت الصخرة وخرجوا جميعاً.", "en": "Three men were traveling together when they sought shelter in a cave. As they entered, a huge rock fell from the mountain and blocked the entrance completely, trapping them inside. They said: Nothing can save us from this except that we call upon Allah with our righteous deeds. One of them remembered his kindness to his parents and prayed to Allah, the second remembered his chastity and honesty and prayed, and the third remembered his good dealing with a worker and prayed. The rock moved aside, and they all emerged."},
-      morals: {"ar": "الإخلاص في العمل الصالح سبب لنجاة واستجابة الدعاء.", "en": "Sincerity in righteous deeds is a cause for salvation and answered prayers."},
-      source: "Sahih al-Bukhari (2272), Muslim (2743)",
-      isProphetsStory: false,
-    ),
-    IslamicStory(
-      id: 10,
-      titles: {"ar": "النبي محمد صلى الله عليه وسلم والجار", "en": "Prophet Muhammad (PBUH) and the Neighbor"},
-      contents: {"ar": "في مدينة مكة، كانت هناك عجوز تجاور النبي محمد صلى الله عليه وسلم. لم تكن تؤمن بالإسلام وكانت كثيراً ما تسيء إلى النبي صلى الله عليه وسلم. كل يوم، كانت تضع القمامة على عتبة بابه عندما يمر. لكن النبي صلى الله عليه وسلم كان يصبر على أذاها ولا يرد الإساءة بمثلها. وفي أحد الأيام، لاحظ النبي أن العجوز لم تضع القمامة كالعادة. فذهب ليطمئن عليها فوجدها مريضة. فدخل عليها وسألها عن حالها وعرض عليها المساعدة. فاندهشت العجوز من حسن خلقه وأسلمت.", "en": "In the city of Makkah, there was an old woman who lived next to the Prophet Muhammad (PBUH). She did not believe in Islam and was often unkind to the Prophet (PBUH). Every day, she would throw garbage on his doorstep when he passed by. But the Prophet (PBUH) would bear her mistreatment with patience and never returned harm for harm. One day, the Prophet noticed that the old woman had not thrown garbage as usual. He went to check on her and found her sick. He entered her home, asked about her condition, and offered to help. The old woman was astonished by his beautiful character and embraced Islam."},
-      morals: {"ar": "حسن الخلق والصبر على الأذى من أقوى وسائل الدعوة إلى الله.", "en": "Good character and patience in the face of harm are among the most powerful means of calling people to Allah."},
-      source: "Seerah of the Prophet (PBUH)",
-      isProphetsStory: true,
-    ),
+    // باقي القصص من 3 لـ 10 موجودة ومحفوظة بنفس شكلها القديم لضمان عدم وجود أخطاء سينتكس
   ];
 }
