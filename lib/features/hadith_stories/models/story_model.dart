@@ -1,5 +1,5 @@
 class IslamicStory {
-  final String id;
+  final int id;
   final Map<String, String> titles;
   final Map<String, String> contents;
   final Map<String, String> morals;
@@ -29,7 +29,7 @@ class IslamicStory {
 
   factory IslamicStory.fromJson(Map<String, dynamic> json) {
     return IslamicStory(
-      id: json['id'] as String,
+      id: json['id'] as int,
       titles: Map<String, String>.from(json['titles'] as Map),
       contents: Map<String, String>.from(json['contents'] as Map),
       morals: Map<String, String>.from(json['morals'] as Map),
