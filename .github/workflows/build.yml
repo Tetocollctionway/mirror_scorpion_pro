@@ -24,13 +24,23 @@ jobs:
           cp -r $GITHUB_WORKSPACE/lib .
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
-          # تعديل minSdk في kotlin.gradle
-          sed -i 's/minSdk = [0-9]*/minSdk = 21/' android/build.gradle.kts android/app/build.gradle.kts 2>/dev/null || true
-          # إضافة keep rules في build.gradle.kts
-          sed -i '/buildTypes {/a\        release {\n            isMinifyEnabled = false\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))\n        }' android/app/build.gradle.kts 2>/dev/null || true
-          cat android/app/build.gradle.kts | head -60
+
+          # تعديل android/app/build.gradle.kts - فقط تغيير minSdk
+          python3 -c "
+with open('android/app/build.gradle.kts', 'r') as f:
+    content = f.read()
+content = content.replace('minSdk = flutter.minSdkVersion', 'minSdk = 21')
+# أضف isMinifyEnabled = false في release
+content = content.replace(
+    'isMinifyEnabled = true',
+    'isMinifyEnabled = false'
+)
+with open('android/app/build.gradle.kts', 'w') as f:
+    f.write(content)
+print('build.gradle.kts patched')
+"
           flutter pub get
-          flutter build apk --release --no-shrink
+          flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
           cp build/app/outputs/flutter-apk/app-release.apk $GITHUB_WORKSPACE/output_apk/
       - uses: actions/upload-artifact@v4
