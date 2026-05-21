@@ -16,6 +16,7 @@ jobs:
           channel: 'stable'
       - name: Create and build
         run: |
+          set -e
           cd /tmp
           mkdir -p clean
           cd /tmp/clean
@@ -24,21 +25,7 @@ jobs:
           cp -r $GITHUB_WORKSPACE/lib .
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
-
-          # تعديل android/app/build.gradle.kts - فقط تغيير minSdk
-          python3 -c "
-with open('android/app/build.gradle.kts', 'r') as f:
-    content = f.read()
-content = content.replace('minSdk = flutter.minSdkVersion', 'minSdk = 21')
-# أضف isMinifyEnabled = false في release
-content = content.replace(
-    'isMinifyEnabled = true',
-    'isMinifyEnabled = false'
-)
-with open('android/app/build.gradle.kts', 'w') as f:
-    f.write(content)
-print('build.gradle.kts patched')
-"
+          python3 $GITHUB_WORKSPACE/scripts/patch_gradle.py android/app/build.gradle.kts
           flutter pub get
           flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
