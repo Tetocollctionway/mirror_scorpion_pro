@@ -24,8 +24,12 @@ jobs:
           cp -r $GITHUB_WORKSPACE/lib .
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
-          ls android/app/ 2>/dev/null || echo "no android/app"
-          find android -name "build.gradle*" -o -name "build.gradle.kts" 2>/dev/null | head -10
+          sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' android/app/build.gradle.kts 2>/dev/null || \
+          sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/' android/app/build.gradle 2>/dev/null || true
+          # تعطيل R8 minification
+          find android -name "build.gradle*" -exec sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.debug\n            isMinifyEnabled = false/' {} \;
+          find android -name "build.gradle*" -exec sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.debug\n            minifyEnabled false/' {} \;
+          find android -name "build.gradle*" -exec sed -i 's/isMinifyEnabled = false/isMinifyEnabled = false\n            shrinkResources = false/' {} \;
           flutter pub get
           flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
