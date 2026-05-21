@@ -26,8 +26,10 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
   bool _showArabicHadith = true;
 
   // --- Story State ---
-  IslamicStory _currentStory = StoriesData.stories[0];
+  String _selectedStoryCategory = 'prophets'; // التصنيف الفرعي المختار
+  IslamicStory? _currentStory;
   bool _showArabicStory = true;
+  final TextEditingController _creativityController = TextEditingController(); // لمحطة الإبداع
 
   // --- Quote State ---
   IslamicQuote? _currentQuote;
@@ -44,12 +46,14 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadRandomHadith();
+    _filterStoriesByCategory();
     _loadRandomQuote();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _creativityController.dispose();
     super.dispose();
   }
 
@@ -83,12 +87,58 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
 
   // ===================== STORIES =====================
 
+  void _filterStoriesByCategory() {
+    // تصفية القصص بناءً على التصنيف المختار
+    final filtered = StoriesData.stories
+        .where((s) => s.category == _selectedStoryCategory)
+        .toList();
+
+    if (filtered.isNotEmpty) {
+      final random = Random();
+      setState(() {
+        _currentStory = filtered[random.nextInt(filtered.length)];
+      });
+    } else {
+      setState(() {
+        _currentStory = null; // في حال لم تتوفر داتا بعد
+      });
+    }
+  }
+
   void _nextStory() {
-    final random = Random();
-    final index = random.nextInt(StoriesData.stories.length);
-    setState(() {
-      _currentStory = StoriesData.stories[index];
-    });
+    if (_selectedStoryCategory == 'creativity') return;
+    _filterStoriesByCategory();
+  }
+
+  // دالة فحص المحتوى الصارمة لمحطة الإبداع
+  bool _isContentSafe(String text) {
+    final bannedWords = [
+      'تنمر', 'سخرية', 'شتيمة', 'كره', 'عنصرية', 'طائفية'
+    ]; // سيتم توسيعها برمجياً
+    for (var word in bannedWords) {
+      if (text.contains(word)) return false;
+    }
+    return true;
+  }
+
+  void _generateCreativeStory() {
+    final userMood = _creativityController.text.trim();
+    if (userMood.isEmpty) return;
+
+    if (!_isContentSafe(userMood)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('عذراً، يجب أن يكون المحتوى خالياً من الكراهية أو التنمر أو الإساءة.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // منطق التوليد (برمجياً أو عبر الـ API) سيتم ربطه هنا
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('جاري إلهام قصة خاصة بمزاجك...')),
+    );
   }
 
   // ===================== QUOTES =====================
@@ -110,7 +160,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         _quoteLoading = false;
       });
     } catch (e) {
-      // Fallback to Islamic quote
       final quote = QuoteService.getRandomIslamicQuote();
       setState(() {
         _currentQuote = quote;
@@ -162,11 +211,8 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         child: SafeArea(
           child: Column(
             children: [
-              // App Bar
               _buildAppBar(),
-              // Tab Bar
               _buildTabBar(),
-              // Tab Content
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -264,10 +310,8 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Collection Selector
           _buildCollectionSelector(),
           const SizedBox(height: 16),
-          // Hadith Content
           _hadithLoading
               ? _buildLoadingState('جاري تحميل الحديث...')
               : _hadithError != null
@@ -355,7 +399,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -396,10 +439,8 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               ],
             ),
             const SizedBox(height: 16),
-            // Divider
             Container(height: 1, color: Colors.amber.shade700.withOpacity(0.2)),
             const SizedBox(height: 16),
-            // Hadith Number
             Text(
               'الحديث رقم ${hadith.hadithNumber}',
               textAlign: TextAlign.center,
@@ -409,7 +450,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               ),
             ),
             const SizedBox(height: 12),
-            // Hadith Text - Arabic
             if (hadith.textAr != null && _showArabicHadith)
               Container(
                 margin: const EdgeInsets.only(bottom: 16),
@@ -433,7 +473,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                   ),
                 ),
               ),
-            // Hadith Text - English
             if (hadith.text.isNotEmpty)
               Text(
                 hadith.text,
@@ -446,7 +485,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                 ),
               ),
             const SizedBox(height: 16),
-            // Grade and Section
             if (hadith.grade != null || hadith.section != null)
               Container(
                 padding: const EdgeInsets.all(12),
@@ -468,7 +506,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                 ),
               ),
             const SizedBox(height: 16),
-            // Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -516,60 +553,115 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
   // ===================== STORIES TAB =====================
 
   Widget _buildStoriesTab() {
+    final categories = [
+      {'id': 'prophets', 'title': 'قصص الأنبياء'},
+      {'id': 'animals', 'title': 'قصص الحيوان'},
+      {'id': 'women', 'title': 'قصص النساء'},
+      {'id': 'creativity', 'title': 'محطة الإبداع'},
+    ];
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Story Card
-          _buildStoryCard(),
-          const SizedBox(height: 16),
-          // Navigation
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [Colors.amber.shade700, Colors.deepOrange.shade600],
+          // شريط التصنيفات الفرعية الجديد للقصص
+          SizedBox(
+            height: 38,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: categories.map((cat) {
+                final isSelected = _selectedStoryCategory == cat['id'];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(
+                      cat['title']!,
+                      style: TextStyle(
+                        color: isSelected ? Colors.purple.shade200 : Colors.white70,
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    selected: isSelected,
+                    selectedColor: Colors.purple.shade700.withOpacity(0.3),
+                    backgroundColor: Colors.white.withOpacity(0.08),
+                    side: BorderSide(
+                      color: isSelected ? Colors.purple.shade400 : Colors.white24,
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    onSelected: (_) {
+                      setState(() {
+                        _selectedStoryCategory = cat['id']!;
+                      });
+                      _filterStoriesByCategory();
+                    },
                   ),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // الـ Card الخاص بالقصص أو بمحطة الإبداع
+          _selectedStoryCategory == 'creativity'
+              ? _buildCreativityCard()
+              : _buildStoryCard(),
+          const SizedBox(height: 16),
+          // زر الانتقال (يختفي في محطة الإبداع)
+          if (_selectedStoryCategory != 'creativity')
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: _nextStory,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.shuffle, color: Colors.white, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            'قصة أخرى',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                    gradient: LinearGradient(
+                      colors: [Colors.purple.shade600, Colors.deepPurple.shade700],
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: _nextStory,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.shuffle, color: Colors.white, size: 18),
+                            SizedBox(width: 8),
+                            Text(
+                              'قصة أخرى',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );
   }
 
   Widget _buildStoryCard() {
-    final story = _currentStory;
+    if (_currentStory == null) {
+      return Container(
+        height: 200,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.04),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Text('قريباً.. جاري تجميع داتا هذا القسم بمصادرها الموثوقة', style: TextStyle(color: Colors.white54)),
+      );
+    }
+
+    final story = _currentStory!;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -588,7 +680,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Title & Badge
             Row(
               children: [
                 Expanded(
@@ -616,11 +707,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                         const SizedBox(width: 4),
                         Text(
                           'قصة نبي',
-                          style: TextStyle(
-                            color: Colors.amber.shade300,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(color: Colors.amber.shade300, fontSize: 10, fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -628,7 +715,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               ],
             ),
             const SizedBox(height: 8),
-            // Source
             Text(
               story.source,
               style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11, fontStyle: FontStyle.italic),
@@ -636,7 +722,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
             const SizedBox(height: 14),
             Container(height: 1, color: Colors.purple.shade300.withOpacity(0.2)),
             const SizedBox(height: 14),
-            // Story Content
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -658,15 +743,11 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               ),
             ),
             const SizedBox(height: 14),
-            // Moral Lesson
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.teal.shade700.withOpacity(0.2),
-                    Colors.teal.shade900.withOpacity(0.2),
-                  ],
+                  colors: [Colors.teal.shade700.withOpacity(0.2), Colors.teal.shade900.withOpacity(0.2)],
                 ),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.teal.shade300.withOpacity(0.2)),
@@ -680,11 +761,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                       const SizedBox(width: 8),
                       Text(
                         'العبرة المستفادة',
-                        style: TextStyle(
-                          color: Colors.teal.shade300,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(color: Colors.teal.shade300, fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -694,19 +771,13 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                     child: Text(
                       _showArabicStory ? story.moralAr : story.moralEn,
                       textAlign: _showArabicStory ? TextAlign.right : TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 13,
-                        height: 1.5,
-                        color: Colors.white.withOpacity(0.8),
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: TextStyle(fontSize: 13, height: 1.5, color: Colors.white.withOpacity(0.8), fontStyle: FontStyle.italic),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            // Toggle Language
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -714,17 +785,66 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                   onPressed: () {
                     setState(() => _showArabicStory = !_showArabicStory);
                   },
-                  icon: Icon(
-                    _showArabicStory ? Icons.translate : Icons.language,
-                    size: 16,
-                    color: Colors.purple.shade300,
-                  ),
-                  label: Text(
-                    _showArabicStory ? 'عرض بالإنجليزية' : 'عرض بالعربية',
-                    style: TextStyle(color: Colors.purple.shade300, fontSize: 12),
-                  ),
+                  icon: Icon(_showArabicStory ? Icons.translate : Icons.language, size: 16, color: Colors.purple.shade300),
+                  label: Text(_showArabicStory ? 'عرض بالإنجليزية' : 'عرض بالعربية', style: TextStyle(color: Colors.purple.shade300, fontSize: 12)),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreativityCard() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [const Color(0xFF1E1A3A).withOpacity(0.8), const Color(0xFF100F28).withOpacity(0.8)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.deepPurple.shade300.withOpacity(0.2)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'محطة الإبداع لتوليد القصص',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.purple.shade200),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'اكتب تفاصيل أو مزاج القصة التي تريدها وسيقوم التطبيق بنسجها لك بشرط خلوها من أي محتوى مسيء.',
+              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _creativityController,
+              maxLines: 3,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'مثال: قصة عن الصبر في مواجهة الصعاب ونهايتها سعيدة...',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.05),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _generateCreativeStory,
+              icon: const Icon(Icons.auto_fix_high, size: 18),
+              label: const Text('توليد القصة الآن'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple.shade700,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
           ],
         ),
@@ -740,20 +860,16 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Toggle Mode
           _buildModeToggle(),
           const SizedBox(height: 16),
-          // Quote Card
           _quoteLoading
               ? _buildLoadingState('جاري تحميل الاقتباس...')
               : _currentQuote != null
                   ? _buildQuoteCard()
                   : _buildErrorState('فشل تحميل الاقتباس'),
           const SizedBox(height: 20),
-          // Daily Wisdom
           _buildDailyWisdomSection(),
           const SizedBox(height: 20),
-          // Saved Quotes
           if (_savedQuotes.isNotEmpty) _buildSavedQuotesSection(),
         ],
       ),
@@ -787,11 +903,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                     const SizedBox(width: 6),
                     Text(
                       'اقتباسات إسلامية',
-                      style: TextStyle(
-                        color: _islamicQuoteMode ? Colors.green.shade300 : Colors.white54,
-                        fontWeight: _islamicQuoteMode ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: _islamicQuoteMode ? Colors.green.shade300 : Colors.white54, fontWeight: _islamicQuoteMode ? FontWeight.bold : FontWeight.normal, fontSize: 12),
                     ),
                   ],
                 ),
@@ -816,11 +928,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
                     const SizedBox(width: 6),
                     Text(
                       'عام',
-                      style: TextStyle(
-                        color: !_islamicQuoteMode ? Colors.blue.shade300 : Colors.white54,
-                        fontWeight: !_islamicQuoteMode ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: !_islamicQuoteMode ? Colors.blue.shade300 : Colors.white54, fontWeight: !_islamicQuoteMode ? FontWeight.bold : FontWeight.normal, fontSize: 12),
                     ),
                   ],
                 ),
@@ -839,10 +947,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1A3A2A).withOpacity(0.8),
-            const Color(0xFF0F2A1A).withOpacity(0.8),
-          ],
+          colors: [const Color(0xFF1A3A2A).withOpacity(0.8), const Color(0xFF0F2A1A).withOpacity(0.8)],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.green.shade300.withOpacity(0.2)),
@@ -851,45 +956,27 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Quote Icon
             Icon(Icons.format_quote, size: 40, color: Colors.green.shade300.withOpacity(0.3)),
             const SizedBox(height: 8),
-            // Arabic Quote
             if (quote.textAr != null)
               Directionality(
                 textDirection: TextDirection.rtl,
                 child: Text(
                   quote.textAr!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    height: 1.6,
-                    color: Colors.white,
-                    fontFamily: 'sans-serif',
-                  ),
+                  style: const TextStyle(fontSize: 20, height: 1.6, color: Colors.white, fontFamily: 'sans-serif'),
                 ),
               ),
             if (quote.textAr != null) const SizedBox(height: 12),
-            // English Quote
             Text(
               quote.text,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                height: 1.5,
-                color: Colors.white.withOpacity(0.85),
-                fontFamily: 'serif',
-                fontStyle: FontStyle.italic,
-              ),
+              style: TextStyle(fontSize: 16, height: 1.5, color: Colors.white.withOpacity(0.85), fontFamily: 'serif', fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 16),
-            // Attribution
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(12),
-              ),
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.06), borderRadius: BorderRadius.circular(12)),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -903,15 +990,12 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               ),
             ),
             const SizedBox(height: 20),
-            // Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildActionButton(Icons.content_copy, 'نسخ', () {
                   Clipboard.setData(ClipboardData(text: quote.text));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('تم نسخ الاقتباس')),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ الاقتباس')));
                 }),
                 _buildActionButton(Icons.bookmark_add, 'حفظ', _saveQuote),
                 _buildActionButton(Icons.shuffle, 'تجديد', _loadRandomQuote),
@@ -931,17 +1015,11 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(12),
-            ),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, size: 20, color: Colors.green.shade300),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10),
-          ),
+          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
         ],
       ),
     );
@@ -951,10 +1029,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.amber.shade900.withOpacity(0.3),
-            Colors.orange.shade900.withOpacity(0.2),
-          ],
+          colors: [Colors.amber.shade900.withOpacity(0.3), Colors.orange.shade900.withOpacity(0.2)],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.amber.shade300.withOpacity(0.15)),
@@ -968,14 +1043,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               children: [
                 Icon(Icons.wb_sunny, size: 18, color: Colors.amber.shade300),
                 const SizedBox(width: 8),
-                Text(
-                  'حكمة اليوم',
-                  style: TextStyle(
-                    color: Colors.amber.shade300,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text('حكمة اليوم', style: TextStyle(color: Colors.amber.shade300, fontSize: 15, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 12),
@@ -984,33 +1052,20 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               child: Text(
                 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  height: 1.6,
-                  color: Colors.white,
-                  fontFamily: 'sans-serif',
-                ),
+                style: const TextStyle(fontSize: 18, height: 1.6, color: Colors.white, fontFamily: 'sans-serif'),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '"Our Lord, give us in this world good and in the Hereafter good and protect us from the torment of the Fire."',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: Colors.white.withOpacity(0.6),
-              ),
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.white.withOpacity(0.6)),
             ),
             const SizedBox(height: 8),
             Text(
               '— Quran 2:201',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.amber.shade300.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(fontSize: 11, color: Colors.amber.shade300.withOpacity(0.7), fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -1026,14 +1081,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
           children: [
             Icon(Icons.bookmarks, size: 18, color: Colors.amber.shade300),
             const SizedBox(width: 8),
-            Text(
-              'المحفوظات (${_savedQuotes.length})',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Text('المحفوظات (${_savedQuotes.length})', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14, fontWeight: FontWeight.w600)),
           ],
         ),
         const SizedBox(height: 12),
@@ -1047,41 +1095,21 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
               return Container(
                 width: 200,
                 margin: const EdgeInsets.only(right: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
-                ),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.06), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.08))),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          saved.text,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white.withOpacity(0.8),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
+                        child: Text(saved.text, maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.8), fontStyle: FontStyle.italic)),
                       ),
                       const SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(
-                              saved.attribution ?? '',
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: Colors.green.shade300.withOpacity(0.7),
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            child: Text(saved.attribution ?? '', style: TextStyle(fontSize: 9, color: Colors.green.shade300.withOpacity(0.7)), overflow: TextOverflow.ellipsis),
                           ),
                           GestureDetector(
                             onTap: () => _removeSavedQuote(index),
@@ -1108,10 +1136,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
           const SizedBox(height: 60),
           CircularProgressIndicator(color: Colors.amber.shade300),
           const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
-          ),
+          Text(message, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
         ],
       ),
     );
@@ -1125,21 +1150,13 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
           const SizedBox(height: 60),
           Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
           const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
+          Text(message, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _loadRandomHadith,
             icon: const Icon(Icons.refresh, size: 18),
             label: const Text('حاول مرة أخرى'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber.shade700,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
           ),
         ],
       ),
@@ -1151,10 +1168,7 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(10),
-        ),
+        decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
         child: Icon(icon, size: 18, color: Colors.amber.shade300),
       ),
     );
