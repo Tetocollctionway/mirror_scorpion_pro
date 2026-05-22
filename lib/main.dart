@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'features/card1_translation/translation_screen.dart';
 import 'features/card2_dialogue/dialogue_screen.dart';
 import 'features/card3_document/document_screen.dart';
 import 'features/hadith_stories/hadith_stories_screen.dart';
 import 'features/games/rubik_cube/rubik_cube_screen.dart';
+import 'features/settings/settings_screen.dart';
+import 'core/theme/app_theme.dart';
+import 'services/database_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,104 +24,327 @@ class MirrorScriptionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mirror Scription',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.amber,
-        scaffoldBackgroundColor: const Color(0xFF0D1B2A),
-        fontFamily: 'sans-serif',
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DatabaseService()),
+      ],
+      child: MaterialApp(
+        title: 'Mirror Scription',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D1B2A), Color(0xFF1B2838), Color(0xFF0D1B2A)],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 20),
-                Text('Mirror Scription', textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.amber.shade300, letterSpacing: 1.5)),
-                const SizedBox(height: 4),
-                Text('نسخة المرآة - ترجمة، قصص، وألعاب', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.5))),
-                const SizedBox(height: 40),
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.85,
-                    children: [
-                      _buildCard(context, icon: Icons.translate, label: 'ترجمة نصوص', labelEn: 'Text Translation', color: Colors.blue, route: const TextTranslationScreen()),
-                      _buildCard(context, icon: Icons.headset_mic, label: 'ترجمة حوار', labelEn: 'Dialogue Translation', color: Colors.green, route: const DialogueTranslationScreen()),
-                      _buildCard(context, icon: Icons.document_scanner, label: 'ترجمة مستندات', labelEn: 'Document/Camera', color: Colors.orange, route: const DocumentTranslationScreen()),
-                      _buildCard(context, icon: Icons.auto_stories, label: 'أحاديث وقصص', labelEn: 'Hadith & Stories', color: Colors.purple, route: const HadithStoriesScreen()),
-                      _buildCard(context, icon: Icons.sports_esports, label: 'ألعاب', labelEn: 'Games', color: Colors.teal, route: const RubikCubeScreen()),
-                      _buildCard(context, icon: Icons.settings, label: 'الإعدادات', labelEn: 'Settings', color: Colors.grey, route: const SettingsPlaceholder()),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // ── Header Section ──
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.05),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text('Mirror Scription v1.0 | TetoCollectionWay', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.25))),
-              ],
+                child: Column(
+                  children: [
+                    // Animated scorpion + mirror logo
+                    AnimatedBuilder(
+                      animation: _pulseAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _pulseAnimation.value,
+                          child: CustomPaint(
+                            size: const Size(100, 100),
+                            painter: _ScorpionMirrorPainter(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Mirror Scription',
+                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'ترجمة بنّاءة • بناءً مستمر',
+                      style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                      ),
+                      child: Text(
+                        'حيث تُصنع البدايات',
+                        style: TextStyle(fontSize: 12, color: Colors.amber.shade300, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+
+            // ── 6 Cards Grid ──
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 14,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: 0.85,
+                ),
+                delegate: SliverChildListDelegate([
+                  _buildCard(
+                    icon: Icons.translate,
+                    title: 'ترجمة نصوص',
+                    subtitle: 'ترجمة فورية بين 100 لغة',
+                    color: Theme.of(context).colorScheme.primary,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TextTranslationScreen())),
+                  ),
+                  _buildCard(
+                    icon: Icons.chat_bubble_outline,
+                    title: 'حوار مترجم',
+                    subtitle: 'محادثة ثنائية مع ترجمة فورية',
+                    color: Theme.of(context).colorScheme.tertiary,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DialogueTranslationScreen())),
+                  ),
+                  _buildCard(
+                    icon: Icons.document_scanner,
+                    title: 'مستندات وكاميرا',
+                    subtitle: 'OCR + ترجمة من الصور والمستندات',
+                    color: Colors.teal,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentTranslationScreen())),
+                  ),
+                  _buildCard(
+                    icon: Icons.auto_stories,
+                    title: 'أحاديث وقصص',
+                    subtitle: 'مكتبة إسلامية مع ترجمة ذكية',
+                    color: Colors.deepOrange,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HadithStoriesScreen())),
+                  ),
+                  _buildCard(
+                    icon: Icons.sports_esports,
+                    title: 'ألعاب',
+                    subtitle: 'شطرنج ثلاثي الأبعاد + مكعب روبيك',
+                    color: Colors.purple,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RubikCubeScreen())),
+                  ),
+                  _buildCard(
+                    icon: Icons.settings,
+                    title: 'الإعدادات',
+                    subtitle: 'تحكم كامل بالتطبيق',
+                    color: Colors.blueGrey,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                  ),
+                ]),
+              ),
+            ),
+
+            // ── Footer ──
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Divider(color: Colors.white.withOpacity(0.1)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Mirror Scription v1.0.0',
+                      style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Developed by TetoCollectionWay',
+                      style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.3)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCard(BuildContext context, {required IconData icon, required String label, required String labelEn, required Color color, required Widget route}) {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => route)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [color.withOpacity(0.3), color.withOpacity(0.08)]),
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
-        ),
-        child: Padding(
+  Widget _buildCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      elevation: 2,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
+            ),
+            border: Border.all(color: color.withOpacity(0.15)),
+          ),
           padding: const EdgeInsets.all(16),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: color.withOpacity(0.2), borderRadius: BorderRadius.circular(16)), child: Icon(icon, size: 32, color: color.withOpacity(0.8))),
-            const SizedBox(height: 12),
-            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 4),
-            Text(labelEn, textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.4))),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 28, color: color),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class SettingsPlaceholder extends StatelessWidget {
-  const SettingsPlaceholder({super.key});
+// ── Custom Painter: Scorpion + Mirror ──
+class _ScorpionMirrorPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF1A237E)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width * 0.38;
+
+    // Mirror frame (circle)
+    canvas.drawCircle(center, radius, paint);
+
+    // Mirror handle
+    final handlePaint = Paint()
+      ..color = const Color(0xFF1A237E)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    canvas.drawLine(
+      Offset(center.dx, center.dy + radius),
+      Offset(center.dx, center.dy + radius + 20),
+      handlePaint,
+    );
+
+    // Scorpion silhouette inside mirror
+    final scorpionPaint = Paint()
+      ..color = const Color(0xFF1A237E).withOpacity(0.6)
+      ..style = PaintingStyle.fill;
+
+    // Body (oval)
+    canvas.drawOval(
+      Rect.fromCenter(center: center, width: 22, height: 14),
+      scorpionPaint,
+    );
+
+    // Tail (curved line)
+    final tailPaint = Paint()
+      ..color = const Color(0xFF1A237E).withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+    final tailPath = Path()
+      ..moveTo(center.dx + 11, center.dy)
+      ..quadraticBezierTo(center.dx + 18, center.dy - 12, center.dx + 8, center.dy - 18)
+      ..quadraticBezierTo(center.dx + 2, center.dy - 22, center.dx - 2, center.dy - 16);
+    canvas.drawPath(tailPath, tailPaint);
+
+    // Stinger dot
+    canvas.drawCircle(Offset(center.dx - 2, center.dy - 16), 2.5, scorpionPaint);
+
+    // Claws
+    final clawPath = Path()
+      ..moveTo(center.dx - 11, center.dy - 2)
+      ..quadraticBezierTo(center.dx - 18, center.dy - 8, center.dx - 22, center.dy - 4)
+      ..moveTo(center.dx - 11, center.dy + 2)
+      ..quadraticBezierTo(center.dx - 18, center.dy + 8, center.dx - 22, center.dy + 4);
+    canvas.drawPath(clawPath, tailPaint);
+
+    // Legs
+    for (int i = 0; i < 4; i++) {
+      final yOffset = -4 + (i * 3);
+      canvas.drawLine(
+        Offset(center.dx - 8, center.dy + yOffset),
+        Offset(center.dx - 16, center.dy + yOffset + 4),
+        tailPaint,
+      );
+      canvas.drawLine(
+        Offset(center.dx + 8, center.dy + yOffset),
+        Offset(center.dx + 16, center.dy + yOffset + 4),
+        tailPaint,
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('الإعدادات')),
-      body: const Center(child: Text('قريباً...')),
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

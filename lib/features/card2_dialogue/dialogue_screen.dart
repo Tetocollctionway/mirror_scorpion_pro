@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
 
 class DialogueTranslationScreen extends StatefulWidget {
   const DialogueTranslationScreen({super.key});
@@ -13,9 +15,13 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   final List<_Message> _messages = [];
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late stt.SpeechToText _speechToText;
+  late FlutterTts _flutterTts;
+  
   String _sourceLang = 'en';
   String _targetLang = 'ar';
   bool _isTranslating = false;
+  bool _isListening = false;
 
   final List<Map<String, String>> _languages = [
     {'code': 'en', 'name': 'English'}, {'code': 'ar', 'name': 'Arabic'},
@@ -27,10 +33,53 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _initializeSpeechAndTTS();
+  }
+
+  Future<void> _initializeSpeechAndTTS() async {
+    _speechToText = stt.SpeechToText();
+    _flutterTts = FlutterTts();
+    
+    await _speechToText.initialize(
+      onError: (error) => debugPrint('Speech error: $error'),
+      onStatus: (status) => debugPrint('Speech status: $status'),
+    );
+
+    await _flutterTts.setLanguage(_targetLang);
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     _scrollController.dispose();
+    _speechToText.stop();
+    _flutterTts.stop();
     super.dispose();
+  }
+
+  Future<void> _startListening() async {
+    if (!_isListening && await _speechToText.initialize()) {
+      setState(() => _isListening = true);
+      _speechToText.listen(
+        onResult: (result) {
+          setState(() {
+            _textController.text = result.recognizedWords;
+          });
+        },
+        localeId: _sourceLang,
+      );
+    }
+  }
+
+  Future<void> _stopListening() async {
+    await _speechToText.stop();
+    setState(() => _isListening = false);
+    
+    if (_textController.text.isNotEmpty) {
+      await sendMessage();
+    }
   }
 
   Future<void> sendMessage() async {
@@ -64,12 +113,30 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
     });
   }
 
+  void _swapLanguages() {
+    setState(() {
+      final temp = _sourceLang;
+      _sourceLang = _targetLang;
+      _targetLang = temp;
+    });
+  }
+
+  Future<void> _speakMessage(String text) async {
+    try {
+      await _flutterTts.setLanguage(_targetLang);
+      await _flutterTts.speak(text);
+    } catch (e) {
+      debugPrint('TTS Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dialogue Translation'),
-        backgroundColor: Colors.transparent, elevation: 0,
+        backgroundColor: Colors.transparent, 
+        elevation: 0,
         actions: [
           IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => setState(() => _messages.clear())),
         ],
@@ -78,14 +145,24 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
         decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)])),
         child: Column(
           children: [
-            // Language selectors
+            // Language selectors with swap button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
                   Expanded(child: _langDropdown('Source', _sourceLang, (v) => setState(() => _sourceLang = v))),
                   const SizedBox(width: 8),
-                  Icon(Icons.arrow_forward, color: Colors.white38, size: 20),
+                  GestureDetector(
+                    onTap: _swapLanguages,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.swap_horiz, color: Colors.white38, size: 20),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(child: _langDropdown('Target', _targetLang, (v) => setState(() => _targetLang = v))),
                 ],
@@ -98,7 +175,7 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                     Icon(Icons.chat_bubble_outline, size: 64, color: Colors.white.withOpacity(0.1)),
                     const SizedBox(height: 16),
                     Text('Start a conversation...', style: TextStyle(color: Colors.white.withOpacity(0.3))),
-                    Text('Type a message and it will be translated', style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12)),
+                    Text('Type a message or use microphone', style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12)),
                   ]))
                 : ListView.builder(
                     controller: _scrollController,
@@ -118,24 +195,33 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1)))),
               child: SafeArea(
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _textController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Type a message...',
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _textController,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'Type a message...',
+                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                            ),
+                            onSubmitted: (_) => sendMessage(),
+                          ),
                         ),
-                        onSubmitted: (_) => sendMessage(),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send_rounded, color: Colors.green.shade300),
-                      onPressed: sendMessage,
+                        IconButton(
+                          icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.red : Colors.white38),
+                          onPressed: _isListening ? _stopListening : _startListening,
+                          tooltip: _isListening ? 'Stop listening' : 'Start listening',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.send_rounded, color: Colors.green.shade300),
+                          onPressed: sendMessage,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -168,7 +254,19 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(msg.text, style: TextStyle(color: isUser ? Colors.blue.shade100 : Colors.green.shade100, fontSize: 15, height: 1.4)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(msg.text, style: TextStyle(color: isUser ? Colors.blue.shade100 : Colors.green.shade100, fontSize: 15, height: 1.4)),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _speakMessage(msg.text),
+                  child: Icon(Icons.volume_up, size: 16, color: isUser ? Colors.blue.shade100 : Colors.green.shade100),
+                ),
+              ],
+            ),
             if (msg.original != null) ...[
               const SizedBox(height: 6),
               Container(height: 1, color: Colors.white.withOpacity(0.1)),

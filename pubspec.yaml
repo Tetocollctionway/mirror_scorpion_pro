@@ -1,5 +1,5 @@
 name: mirror_scorpion_translate
-description: "Mirror Scorpion Project - Tamer's Edition"
+description: "Mirror Scorpion Project - Complete Translation & Inspiration App"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -9,15 +9,36 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # UI & Design
   cupertino_icons: ^1.0.6
   provider: ^6.1.1
+  
+  # Networking & Translation
   http: ^1.2.1
+  
+  # Text-to-Speech & Speech Recognition
   flutter_tts: ^4.0.2
   speech_to_text: ^7.0.0
+  
+  # Image & OCR
   google_mlkit_text_recognition: ^0.13.0
+  image_picker: ^1.0.0
+  
+  # Storage & Preferences
+  shared_preferences: ^2.2.0
+  
+  # Utilities
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/data/hadiths.json
+    - assets/data/quran_stories.json
     - assets/data/stories.json

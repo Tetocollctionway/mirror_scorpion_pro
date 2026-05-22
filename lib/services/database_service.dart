@@ -1,29 +1,20 @@
 import 'dart:async';
-
-class DatabaseService {
-  // هنا بنجهز الخزنة لحفظ كلماتك وترجماتك
-  
-  Future<void> saveTranslation(String original, String translated) async {
-    // كود الحفظ في قاعدة البيانات
-    print("تم حفظ النص في ذاكرة ميرور: $original -> $translated");
-  }
-
-  Future<List<Map<String, String>>> getHistory() async {
-    // كود استرجاع تاريخك (اللي كتبناه قبل كدة)
-    return [
-      {"original": "مرحباً", "translated": "Hello"},
-      {"original": "كيف حالك", "translated": "How are you?"}
-    ];
-  }
-}
-
-// --- Integrated Content ---
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:math';
 
 class DatabaseService extends ChangeNotifier {
+  // --- Translation History ---
+  static final DatabaseService _instance = DatabaseService._internal();
+  
+  factory DatabaseService() {
+    return _instance;
+  }
+  
+  DatabaseService._internal();
+
+  // --- Content Storage ---
   List<Map<String, dynamic>> _hadiths = [];
   List<Map<String, dynamic>> _quranStories = [];
   List<Map<String, dynamic>> _prophetStories = [];
@@ -31,9 +22,11 @@ class DatabaseService extends ChangeNotifier {
   List<Map<String, dynamic>> _animalStories = [];
   List<Map<String, dynamic>> _humanStories = [];
   List<Map<String, dynamic>> _nationsStories = [];
+  List<Map<String, String>> _translationHistory = [];
   
   bool _isLoaded = false;
 
+  // --- Getters ---
   List<Map<String, dynamic>> get hadiths => _hadiths;
   List<Map<String, dynamic>> get quranStories => _quranStories;
   List<Map<String, dynamic>> get prophetStories => _prophetStories;
@@ -41,12 +34,14 @@ class DatabaseService extends ChangeNotifier {
   List<Map<String, dynamic>> get animalStories => _animalStories;
   List<Map<String, dynamic>> get humanStories => _humanStories;
   List<Map<String, dynamic>> get nationsStories => _nationsStories;
+  List<Map<String, String>> get translationHistory => _translationHistory;
   bool get isLoaded => _isLoaded;
 
+  // --- Load All Data ---
   Future<void> loadAllData() async {
     try {
       final hadithsJson = await rootBundle.loadString('assets/data/hadiths.json');
-      final storiesJson = await rootBundle.loadString('assets/data/stories.json');
+      final storiesJson = await rootBundle.loadString('assets/data/quran_stories.json');
       
       final hadithsData = jsonDecode(hadithsJson);
       final storiesData = jsonDecode(storiesJson);
@@ -66,7 +61,28 @@ class DatabaseService extends ChangeNotifier {
     }
   }
 
-  // Get random hadith
+  // --- Translation History Management ---
+  Future<void> saveTranslation(String original, String translated, {String? sourceLang, String? targetLang}) async {
+    _translationHistory.insert(0, {
+      'original': original,
+      'translated': translated,
+      'sourceLang': sourceLang ?? 'unknown',
+      'targetLang': targetLang ?? 'unknown',
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    
+    // Keep only last 100 translations
+    if (_translationHistory.length > 100) {
+      _translationHistory.removeLast();
+    }
+    notifyListeners();
+  }
+
+  Future<List<Map<String, String>>> getHistory() async {
+    return _translationHistory;
+  }
+
+  // --- Random Content Getters ---
   Map<String, dynamic> getRandomHadith() {
     if (_hadiths.isEmpty) {
       return {
@@ -79,7 +95,6 @@ class DatabaseService extends ChangeNotifier {
     return _hadiths[random.nextInt(_hadiths.length)];
   }
 
-  // Get random story from specific category
   Map<String, dynamic> getRandomStory(String category) {
     final random = Random();
     List<Map<String, dynamic>> stories;
@@ -111,5 +126,16 @@ class DatabaseService extends ChangeNotifier {
       return {'title': 'قصة', 'text': 'يوجد قصة هنا', 'category': category};
     }
     return stories[random.nextInt(stories.length)];
+  }
+
+  // --- Load JSON Helper (for compatibility) ---
+  Future<Map<String, dynamic>> loadJson(String assetPath) async {
+    try {
+      final jsonString = await rootBundle.loadString(assetPath);
+      return jsonDecode(jsonString);
+    } catch (e) {
+      debugPrint('Error loading JSON from $assetPath: $e');
+      return {};
+    }
   }
 }

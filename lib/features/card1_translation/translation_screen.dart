@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
 
 class TextTranslationScreen extends StatefulWidget {
   const TextTranslationScreen({super.key});
@@ -13,10 +15,15 @@ class TextTranslationScreen extends StatefulWidget {
 class _TextTranslationScreenState extends State<TextTranslationScreen> {
   final TextEditingController _sourceController = TextEditingController();
   final TextEditingController _targetController = TextEditingController();
+  late stt.SpeechToText _speechToText;
+  late FlutterTts _flutterTts;
+  
   String _sourceLang = 'en';
   String _targetLang = 'ar';
   bool _isLoading = false;
-  bool _swapLock = false; // منع التبديل أثناء التحميل
+  bool _isListening = false;
+  bool _isSpeaking = false;
+  bool _swapLock = false;
 
   final List<Map<String, String>> _languages = [
     {'code': 'en', 'name': 'English', 'native': 'English'},
@@ -48,12 +55,27 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     super.initState();
     _selectedSourceLang = 'en';
     _selectedTargetLang = 'ar';
+    _initializeSpeechAndTTS();
+  }
+
+  Future<void> _initializeSpeechAndTTS() async {
+    _speechToText = stt.SpeechToText();
+    _flutterTts = FlutterTts();
+    
+    await _speechToText.initialize(
+      onError: (error) => debugPrint('Speech error: $error'),
+      onStatus: (status) => debugPrint('Speech status: $status'),
+    );
+
+    await _flutterTts.setLanguage(_targetLang);
   }
 
   @override
   void dispose() {
     _sourceController.dispose();
     _targetController.dispose();
+    _speechToText.stop();
+    _flutterTts.stop();
     super.dispose();
   }
 
@@ -70,7 +92,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final translated = (data[0] as List).map((e) => e[0] as String).join();
-        _targetController.text = translated;
+        setState(() => _targetController.text = translated);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -86,6 +108,47 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _startListening() async {
+    if (!_isListening && await _speechToText.initialize()) {
+      setState(() => _isListening = true);
+      _speechToText.listen(
+        onResult: (result) {
+          setState(() {
+            _sourceController.text = result.recognizedWords;
+          });
+        },
+        localeId: _sourceLang,
+      );
+    }
+  }
+
+  Future<void> _stopListening() async {
+    await _speechToText.stop();
+    setState(() => _isListening = false);
+    
+    if (_sourceController.text.isNotEmpty) {
+      await translate();
+    }
+  }
+
+  Future<void> _speakTranslation() async {
+    if (_targetController.text.isEmpty) return;
+    
+    setState(() => _isSpeaking = true);
+    
+    try {
+      await _flutterTts.setLanguage(_targetLang);
+      await _flutterTts.speak(_targetController.text);
+      
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _isSpeaking = false);
+      });
+    } catch (e) {
+      debugPrint('TTS Error: $e');
+      setState(() => _isSpeaking = false);
     }
   }
 
@@ -106,6 +169,14 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     Clipboard.setData(ClipboardData(text: _targetController.text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Copied to clipboard')),
+    );
+  }
+
+  void _shareTranslation() {
+    final text = 'ترجمة بواسطة Mirror Scorpion:\n\n${_sourceController.text}\n\n➜\n\n${_targetController.text}';
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Translation copied for sharing')),
     );
   }
 
@@ -134,12 +205,12 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         ),
         child: Column(
           children: [
-            // Source language selector + input
+            // Source language selector
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: _buildLanguageSelector('Source', _sourceLang, (v) => setState(() { _sourceLang = v; _selectedSourceLang = v; })),
             ),
-            // Source text input
+            // Source text input with microphone
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -148,20 +219,37 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.blue.withOpacity(0.3)),
                 ),
-                child: TextField(
-                  controller: _sourceController,
-                  maxLines: 4,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                  decoration: InputDecoration(
-                    hintText: 'Enter text to translate...',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(16),
-                    suffixIcon: _sourceController.text.isNotEmpty
-                        ? IconButton(icon: const Icon(Icons.clear, color: Colors.white38), onPressed: () => _sourceController.clear())
-                        : null,
-                  ),
-                  onChanged: (_) => setState(() {}),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _sourceController,
+                      maxLines: 4,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      decoration: InputDecoration(
+                        hintText: 'Enter text or use microphone...',
+                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.all(16),
+                        suffixIcon: _sourceController.text.isNotEmpty
+                            ? IconButton(icon: const Icon(Icons.clear, color: Colors.white38), onPressed: () => setState(() => _sourceController.clear()))
+                            : null,
+                      ),
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.red : Colors.blue),
+                            onPressed: _isListening ? _stopListening : _startListening,
+                            tooltip: _isListening ? 'Stop listening' : 'Start listening',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -192,7 +280,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: _buildLanguageSelector('Target', _targetLang, (v) => setState(() { _targetLang = v; _selectedTargetLang = v; })),
             ),
-            // Target text output
+            // Target text output with speaker and share
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -201,24 +289,46 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.green.withOpacity(0.3)),
                 ),
-                child: TextField(
-                  controller: _targetController,
-                  maxLines: 4,
-                  readOnly: true,
-                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                  style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
-                  decoration: InputDecoration(
-                    hintText: 'Translation will appear here...',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(16),
-                    suffixIcon: _targetController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.copy, color: Colors.white38),
-                            onPressed: copyToClipboard,
-                          )
-                        : null,
-                  ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _targetController,
+                      maxLines: 4,
+                      readOnly: true,
+                      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                      style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
+                      decoration: InputDecoration(
+                        hintText: 'Translation will appear here...',
+                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.all(16),
+                      ),
+                    ),
+                    if (_targetController.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: Icon(_isSpeaking ? Icons.volume_up : Icons.volume_mute, color: Colors.green),
+                              onPressed: _speakTranslation,
+                              tooltip: 'Speak translation',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.share, color: Colors.green),
+                              onPressed: _shareTranslation,
+                              tooltip: 'Share translation',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy, color: Colors.green),
+                              onPressed: copyToClipboard,
+                              tooltip: 'Copy translation',
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
