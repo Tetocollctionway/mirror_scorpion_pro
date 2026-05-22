@@ -9,6 +9,7 @@ class StoriesData {
       contents: const {"ar": "عندما حطم النبي إبراهيم عليه السلام أصنام قومه، غضبوا غضباً شديداً وقرروا معاقبته بإلقائه في نار عظيمة. جمعوا الحطب لأيام وأوقدوا أكبر نار رأوها على الإطلاق. ثم قيدوا إبراهيم عليه السلام وألقوه في النار بالمقلاع. بينما كان إبراهيم عليه السلام يسقط في النار، جاءه الملك جبريل عليه السلام وسأله: هل لك حاجة؟ فقال إبراهيم: أما إليك فلا، أما الله فعالم بحالي. أمر الله النار: يا نار كوني برداً وسلاماً على إبراهيم. أطاعت النار أمر الله.", "en": "When Prophet Ibrahim (AS) smashed the idols of his people, they became furious and decided to punish him by throwing him into a huge fire. They gathered wood for days and lit the largest fire they had ever seen. Then they tied Ibrahim (AS) and threw him into the fire with a catapult. As Ibrahim (AS) fell, Angel Jibril came and asked: Do you need anything? Ibrahim replied: From you, no. But Allah knows my situation. Allah commanded the fire: O fire, be coolness and safety upon Ibrahim."},
       morals: const {"ar": "توكل على الله تماماً. إنه على كل شيء قدير.", "en": "Trust in Allah completely. He has power over all things."},
       source: "Surah Al-Anbiya (21:68-69)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -17,6 +18,7 @@ class StoriesData {
       contents: const {"ar": "النبي سليمان عليه السلام كان ملكاً ونبياً عظيماً. أعطاه الله معجزات كثيرة، منها فهم لغة الحيوانات والطيور. وفي يوم من الأيام، بينما كان يسير مع جيشه من الإنس والجن والطيور، مروا بوادي النمل. فلما رأت النملة الملك سليمان وجيشه، حذرت بقية النمل: يا أيها النمل، ادخلوا مساكنكم لا يحطمنكم سليمان وجنوده وهم لا يشعرون.", "en": "Prophet Sulaiman (AS) was a great king and prophet. Allah gave him many miracles, including the ability to understand the language of animals and birds. One day, as he was marching with his army of humans, jinn, and birds, they passed through a valley of ants. When an ant saw Prophet Sulaiman and his army, she warned the other ants: O ants, enter your dwellings lest Sulaiman and his army crush you unknowingly."},
       morals: const {"ar": "كل مخلوق له حكمة.", "en": "Every creature has wisdom."},
       source: "Surah An-Naml (27:18-19)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -25,6 +27,7 @@ class StoriesData {
       contents: const {"ar": "كان هناك ولد اسمه عبد الله يعمل عند تاجر في السوق. كان التاجر معروفاً بصدقه وأمانته. وفي يوم من الأيام، أعطى التاجر عبد الله بعض المال ليشتري به بضاعة. في الطريق، وجد عبد الله محفظة مليئة بالذهب. تذكر عبد الله تعاليم الإسلام: المسلم لا يأخذ ما ليس له. فأخذ المحفظة وأعادها إلى صاحبها.", "en": "There was a boy named Abdullah who worked for a merchant in the market. One day, the merchant gave Abdullah some money to buy goods. On the way, Abdullah found a purse full of gold. He remembered the teachings of Islam: A Muslim does not take what is not rightfully his. So he took the purse and returned it to its owner."},
       morals: const {"ar": "الصدق والأمانة يجلبان البركة.", "en": "Honesty and trustworthiness bring blessings."},
       source: "Islamic Story",
+      category: "faith",
       isProphetsStory: false,
     ),
     IslamicStory(
@@ -33,6 +36,7 @@ class StoriesData {
       contents: const {"ar": "بينما كان رجل يمشي في طريقه، اشتد عليه العطش. فنزل بئراً وشرب منها. وعندما خرج، وجد كلباً يلهث من شدة العطش ويأكل الثرى. فقال الرجل في نفسه: لقد بلغ هذا الكلب من العطش مثل ما بلغ بي. فعاد الرجل إلى البئر، وملأ حذاءه ماءً، ثم أمسكه بفمه وصعد. سقى الكلب فشرب حتى ارتوى.", "en": "A man was walking along a path when he became very thirsty. He went down a well and drank. When he came out, he found a dog panting from extreme thirst. The man said to himself: This dog has reached the same level of thirst as I did. So he went back down the well, filled his shoe with water, held it in his mouth, and climbed up. He gave water to the dog until it drank its fill."},
       morals: const {"ar": "الإحسان إلى الحيوانات سبب لمغفرة الله.", "en": "Kindness to animals is a cause for Allah's forgiveness."},
       source: "Sahih al-Bukhari, Muslim",
+      category: "faith",
       isProphetsStory: false,
     ),
     IslamicStory(
@@ -41,6 +45,7 @@ class StoriesData {
       contents: const {"ar": "أرسل الله النبي موسى عليه السلام وأخاه هارون إلى فرعون ليدعواه إلى عبادة الله وحده. لكن فرعون تكبر وتجبر. فأنزل الله على فرعون وقومه الضربات والآيات. ثم أمر الله موسى أن يخرج ببني إسرائيل من مصر. لحقهم فرعون بجيشه العظيم. وصل بنو إسرائيل إلى البحر الأحمر. أوحى الله إلى موسى أن اضرب بعصاك البحر. فضرب موسى البحر فانفلق اثني عشر طريقاً يابساً. عبر بنو إسرائيل، ولما حاول فرعون وجنوده اللحاق بهم، أمر الله البحر فانطبق عليهم فغرقوا جميعاً.", "en": "Allah sent Prophet Musa (AS) and his brother Harun to Pharaoh. Pharaoh was arrogant. Allah sent plagues upon them. Then Allah commanded Musa to take the Children of Israel out of Egypt. Pharaoh chased them. They reached the Red Sea. Allah inspired Musa to strike the sea with his staff. The sea parted into twelve dry paths. The Children of Israel crossed. When Pharaoh and his army tried to follow, Allah commanded the sea to close upon them, and they all drowned."},
       morals: const {"ar": "لا تيأس أبداً من نصر الله.", "en": "Never despair of Allah's help."},
       source: "Surah Ash-Shu'ara, Ta-Ha, Yunus",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -49,6 +54,7 @@ class StoriesData {
       contents: const {"ar": "في قديم الزمان، كانت هناك فتاة صغيرة تعيش مع أبيها في قرية صغيرة. كان أبوها تقياً صالحاً يعلمها التوكل على الله. وفي يوم من الأيام، مرض الأب مرضاً شديداً. قبل أن يموت، قال لابنته: يا بنيتي، سأترك لك هذه النخلة أمانة عند الله. إنها رزقك من الله. بعد أن مات الأب، ظلت الفتاة تخدم النخلة وتسقيها وتعتني بها.", "en": "Long ago, there was a young girl who lived with her father in a small village. Her father was a righteous man who taught her to rely on Allah. One day, the father fell severely ill. Before he died, he said: My dear daughter, I am leaving this palm tree as a trust with Allah. It is your provision from Allah. After his death, the girl continued to care for the palm tree."},
       morals: const {"ar": "التوكل على الله يجلب الرزق والبركة.", "en": "Trust in Allah brings provision and blessings."},
       source: "Islamic Story",
+      category: "faith",
       isProphetsStory: false,
     ),
     IslamicStory(
@@ -57,6 +63,7 @@ class StoriesData {
       contents: const {"ar": "كان هناك رجل فقد ثروته وصحته وعائلته. لم يبق له شيء في الدنيا. جلس الرجل يدعو الله: يا رب، لماذا تركتني؟ سمع صوتاً في قلبه يقول: اصبر، إن الله مع الصابرين. فصبر الرجل واحتسب أجره عند الله. تحسنت حاله شيئاً فشيئاً. وجد عملاً جديداً، وعادت إليه صحته. وأدرك أن الصبر هو مفتاح الفرج.", "en": "There was a man who had lost his wealth, his health, and his family. He had nothing left. He prayed: O Lord, why have you forsaken me? He heard a voice in his heart: Be patient, indeed Allah is with the patient. So he was patient. His situation improved gradually. He found a new job, and his health returned."},
       morals: const {"ar": "الصبر مفتاح الفرج.", "en": "Patience is the key to relief."},
       source: "Quran 2:155-157",
+      category: "faith",
       isProphetsStory: false,
     ),
     IslamicStory(
@@ -65,6 +72,7 @@ class StoriesData {
       contents: const {"ar": "كان النبي يوسف عليه السلام الابن المحبوب للنبي يعقوب عليه السلام. حسده إخوته ودبروا له مكيدة. ألقوه في بئر مظلم وتركوه ليموت. لكن الله أنقذه ومر به تجار فأخذوه وباعوه في مصر. قضى يوسف سنوات في السجن، ثم أخرجه الله وأصبح عزيز مصر. ثم جاءه إخوته لا يعرفونه، فسامحهم بعد أن عرفهم.", "en": "Prophet Yusuf (AS) was the beloved son of Prophet Yaqub (AS). His brothers became jealous and threw him into a dark well. But Allah saved him. He was sold in Egypt, spent years in prison, then Allah freed him and he became the Aziz of Egypt. His brothers came to him without recognizing him, and he forgave them."},
       morals: const {"ar": "الثقة بالله تنجيك من أصعب المحن.", "en": "Trust in Allah saves you from the hardest trials."},
       source: "Surah Yusuf (12)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -73,6 +81,7 @@ class StoriesData {
       contents: const {"ar": "كان ثلاثة رجال يسافرون معاً فلجأوا إلى غار ليستظلوا به. بينما هم داخله، سقطت صخرة ضخمة من الجبل وسدت المدخل تماماً. قالوا: لن ينجينا من هذا إلا أن ندعو الله بصالح أعمالنا. تذكر أحدهم بره بوالديه فدعا الله، وتذكر الثاني عفته فدعا الله، وتذكر الثالث عمله الصالح فدعا الله. فانفرجت الصخرة وخرجوا جميعاً.", "en": "Three men were traveling together when they took shelter in a cave. A huge rock fell and blocked the entrance. They said: Nothing can save us except that we call upon Allah with our righteous deeds. Each remembered a good deed and prayed. The rock moved aside, and they all emerged."},
       morals: const {"ar": "الإخلاص في العمل الصالح سبب للنجاة.", "en": "Sincerity in righteous deeds is a cause for salvation."},
       source: "Sahih al-Bukhari, Muslim",
+      category: "faith",
       isProphetsStory: false,
     ),
     IslamicStory(
@@ -81,6 +90,7 @@ class StoriesData {
       contents: const {"ar": "في مدينة مكة، كانت هناك عجوز تجاور النبي محمد صلى الله عليه وسلم. لم تكن تؤمن بالإسلام وكانت كثيراً ما تسيء إلى النبي. كل يوم، كانت تضع القمامة على عتبة بابه. لكن النبي كان يصبر على أذاها. وفي أحد الأيام، لاحظ النبي أن العجوز لم تضع القمامة. فذهب ليطمئن عليها فوجدها مريضة. فدخل عليها وعرض عليها المساعدة. فأسلمت.", "en": "In Makkah, there was an old woman who lived next to the Prophet Muhammad (PBUH). She did not believe in Islam and was often unkind. Every day, she would throw garbage on his doorstep. But the Prophet bore it with patience. One day, he noticed she hadn't thrown garbage. He went to check on her and found her sick. He offered help. She embraced Islam."},
       morals: const {"ar": "حسن الخلق أقوى وسائل الدعوة.", "en": "Good character is the most powerful means of dawah."},
       source: "Seerah of the Prophet (PBUH)",
+      category: "prophets",
       isProphetsStory: true,
     ),
 
@@ -91,6 +101,7 @@ class StoriesData {
       contents: const {"ar": "كان النبي أيوب عليه السلام من الأنبياء الصابرين. ابتلاه الله في ماله فذهب، وفي أولاده فماتوا، وفي جسده بالمرض. صبر أيوب ولم يشتك. قال: ربي مسني الضر وأنت أرحم الراحمين. فاستجاب الله له، وأمره أن يضرب الأرض برجله فانبعث ماء فاغتسل وشرب، وعافاه الله من كل مرض، ورد إليه أهله وماله.", "en": "Prophet Ayyub (AS) was one of the most patient prophets. Allah tested him: he lost his wealth, his children died, and he fell ill. Ayyub remained patient. He prayed: My Lord, indeed adversity has touched me, and You are the Most Merciful. Allah responded, commanded him to strike the ground, and a spring gushed forth. He bathed and drank, and Allah cured him completely, restoring his family and wealth."},
       morals: const {"ar": "الصبر على البلاء يعقبه فرج من الله.", "en": "Patience through affliction is followed by relief from Allah."},
       source: "Surah Al-Anbiya (21:83-84), Surah Sad (38:41-44)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -99,6 +110,7 @@ class StoriesData {
       contents: const {"ar": "أرسل الله النبي شعيب عليه السلام إلى قوم مدين. كانوا يبخسون المكيال والميزان ويظلمون الناس في المعاملات. دعاهم شعيب إلى عبادة الله وحده وإلى العدل في التجارة: أوفوا الكيل والميزان ولا تبخسوا الناس أشياءهم. لكنهم كذبوه وهددوه بالرجم. فأهلكهم الله بعذاب يوم الظلة.", "en": "Allah sent Prophet Shu'ayb (AS) to the people of Madyan. They cheated in weights and measures and oppressed people in transactions. Shu'ayb called them to worship Allah alone and to be just in trade: Give full measure and weight and do not deprive people of their rights. But they denied him. Allah destroyed them with the punishment of the Day of Shadow."},
       morals: const {"ar": "العدل في التجارة والوفاء بالكيل من تقوى الله.", "en": "Fairness in trade and honest dealing are part of piety."},
       source: "Surah Hud (11:84-95), Surah Al-A'raf (7:85-93)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -107,6 +119,7 @@ class StoriesData {
       contents: const {"ar": "خرج النبي موسى عليه السلام في رحلة ليتعلم من العبد الصالح (الخضر). صحبه موسى وطلب منه أن يتعلم مما علمه الله. رأى موسى العبد الصالح يخرق السفينة ويقتل غلاماً ويبني جداراً. كان موسى يستنكر كل فعل حتى فسره العبد الصالح: السفينة لمساكين وكان وراءهم ملك يأخذ كل سفينة غصباً، والغلام كان كافراً وأبدله الله خيراً منه، والجدار تحته كنز ليتيمين.", "en": "Prophet Musa (AS) embarked on a journey to learn from the righteous servant (Al-Khidr). Musa accompanied him to learn what Allah had taught him. Musa saw him scuttle a ship, kill a boy, and repair a wall. He objected each time until Al-Khidr explained: the ship belonged to poor people and a tyrant king was seizing ships; the boy was destined to be a disbeliever; beneath the wall was a treasure for two orphans."},
       morals: const {"ar": "العلم رحلة، والصبر على التعلم مفتاح الفهم.", "en": "Knowledge is a journey, and patience in learning is the key to understanding."},
       source: "Surah Al-Kahf (18:60-82)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -115,6 +128,7 @@ class StoriesData {
       contents: const {"ar": "بعث الله النبي يونس عليه السلام إلى قوم نينوى. دعاهم إلى التوحيد لكنهم أعرضوا. غضب يونس وترك قومه وركب سفينة. هاج البحر فاقترعوا فوقع يونس في الماء، فالتقمه حوت ضخم. في بطن الحوت، نادى يونس ربه: لا إله إلا أنت سبحانك إني كنت من الظالمين. فاستجاب الله له وأخرجه من بطن الحوت، وأرسله إلى قومه الذين آمنوا.", "en": "Allah sent Prophet Yunus (AS) to the people of Nineveh. He called them to monotheism, but they turned away. Yunus became angry and left, boarding a ship. The sea raged, lots were cast, and Yunus was thrown into the water. A huge whale swallowed him. In the whale's belly, he cried: There is no god but You, Glory to You, indeed I have been among the wrongdoers. Allah answered him, released him, and sent him back to his people who had believed."},
       morals: const {"ar": "التوبة والاستغفار في الشدة ينجيك من كل ضيق.", "en": "Repentance and seeking forgiveness in hardship saves from every distress."},
       source: "Surah Al-Anbiya (21:87-88), Surah As-Saffat (37:139-148)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -123,6 +137,7 @@ class StoriesData {
       contents: const {"ar": "أعطى الله النبي سليمان عليه السلام ملكاً لا ينبغي لأحد من بعده. سخر له الرياح والجن والطيور. كان يفهم لغة كل شيء. وفي يوم من الأيام، تفقد سليمان الطير فلم يجد الهدهد. غضب وتوعد الهدهد بالعذاب، ثم جاء الهدهد وأخبره بخبر مملكة سبأ وقوم يعبدون الشمس. فأرسل سليمان رسالة إلى ملكتهم بلقيس تدعوهم إلى الإسلام، فآمنت بلقيس وأسلمت.", "en": "Allah granted Prophet Sulaiman (AS) a kingdom unlike any other. He controlled the winds, jinn, and birds. He understood the language of all creatures. One day, he inspected the birds and found the hoopoe missing. He threatened the hoopoe, but it returned with news of the kingdom of Saba where people worshipped the sun. Sulaiman sent a letter to their Queen Bilqis, calling them to Islam. She accepted and embraced Islam."},
       morals: const {"ar": "الشكر على النعم سبب لزيادتها.", "en": "Gratitude for blessings is the cause of their increase."},
       source: "Surah An-Naml (27:15-44), Surah Saba (34:12-14)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -131,6 +146,7 @@ class StoriesData {
       contents: const {"ar": "كان النبي زكريا عليه السلام شيخاً كبيراً ولم يرزق ولداً. كان يدعو الله في المحراب: رب هب لي من لدنك ذرية طيبة. فبشرته الملائكة بيحيى وهو في المحراب. تعجب زكريا: أنى يكون لي غلام وقد بلغني الكبر وامرأتي عاقر؟ قال الله: هو علي هين. فأمسك زكريا عن الكلام ثلاث ليال آيةً له. ورزقه الله يحيى نبياً من الصالحين.", "en": "Prophet Zakariyya (AS) was an old man with no child. He prayed in the sanctuary: My Lord, grant me from Yourself a good offspring. The angels gave him glad tidings of Yahya while he stood praying. He wondered: How can I have a son when I am old and my wife is barren? Allah said: It is easy for Me. Zakariyya was silent for three nights as a sign. Allah granted him Yahya, a righteous prophet."},
       morals: const {"ar": "لا تيأس من رحمة الله مهما تأخر الفرج.", "en": "Never despair of Allah's mercy, no matter how long relief takes."},
       source: "Surah Maryam (19:1-11), Surah Al Imran (3:38-41)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -139,6 +155,7 @@ class StoriesData {
       contents: const {"ar": "بشرت الملائكة مريم بنت عمران بأن الله اصطفاها وطهرها. ثم جاءها الروح بشراً سوياً وبشرها بغلام اسمه المسيح عيسى ابن مريم. قالت: أنى يكون لي غلام ولم يمسسني بشر؟ قال: كذلك الله يخلق ما يشاء. حملت مريم وانتبذت مكاناً قصياً. وضعته تحت النخلة، وأمرها الله أن تهز النخلة ليسقط عليها الرطب، وأن تأكل وتشرب وتقر عيناً. ثم كلم عيسى الناس في المهد.", "en": "The angels told Maryam (Mary) that Allah had chosen and purified her. Then Gabriel came to her as a man and gave her glad tidings of a son: the Messiah, Isa son of Maryam. She said: How can I have a son when no man has touched me? He said: Thus Allah creates what He wills. She conceived and retreated to a distant place. She gave birth under a palm tree. Allah commanded her to shake the tree for dates, eat, drink, and be comforted. Then Isa spoke to the people while still an infant."},
       morals: const {"ar": "لا شيء مستحيل على الله.", "en": "Nothing is impossible for Allah."},
       source: "Surah Maryam (19:16-35), Surah Al Imran (3:45-55)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -147,6 +164,7 @@ class StoriesData {
       contents: const {"ar": "كان النبي إدريس عليه السلام من الأنبياء الصادقين. كان يكثر من التسبيح والصيام. آتاه الله الحكمة وعلمه الحساب والفلك. ذكره الله في القرآن: واذكر في الكتاب إدريس إنه كان صديقاً نبياً ورفعناه مكاناً علياً. رفعه الله مكاناً عالياً في الجنة.", "en": "Prophet Idris (AS) was one of the truthful prophets. He often glorified Allah and fasted. Allah gave him wisdom and taught him mathematics and astronomy. Allah mentioned him in the Quran: And mention Idris in the Book; indeed, he was a man of truth and a prophet. And We raised him to a high station."},
       morals: const {"ar": "الصدق والعبادة يرفعان الدرجات.", "en": "Truthfulness and worship elevate one's rank."},
       source: "Surah Maryam (19:56-57), Surah Al-Anbiya (21:85-86)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -155,6 +173,7 @@ class StoriesData {
       contents: const {"ar": "أرسل الله النبي هود عليه السلام إلى قوم عاد، وكانوا قوماً أقوياء ذوي أجسام ضخمة وبنوا المعالم العالية. لكنهم أشركوا بالله وطغوا في الأرض. دعاهم هود إلى عبادة الله وحده: يا قوم اعبدوا الله ما لكم من إله غيره. فكذبوه واتهموه بالسفه والكذب. فأهلكهم الله بريح صرصر عاتية دمرت كل شيء.", "en": "Allah sent Prophet Hud (AS) to the people of 'Ad, who were a powerful people with huge bodies and tall buildings. But they associated partners with Allah and tyrannized the earth. Hud called them: O my people, worship Allah, you have no god other than Him. They denied him and accused him of foolishness. Allah destroyed them with a violent wind that destroyed everything."},
       morals: const {"ar": "القوة بدون إيمان لا تنفع.", "en": "Power without faith is of no benefit."},
       source: "Surah Hud (11:50-60), Surah Al-Ahqaf (46:21-25)",
+      category: "prophets",
       isProphetsStory: true,
     ),
     IslamicStory(
@@ -163,6 +182,7 @@ class StoriesData {
       contents: const {"ar": "أرسل الله النبي صالح عليه السلام إلى قوم ثمود، وكانوا ينحتون بيوتاً في الجبال. طلبوا من صالح آيةً، فأخرج الله لهم ناقة من الصخر. قال صالح: هذه ناقة الله، ذروها تأكل في أرض الله ولا تمسوها بسوء. لكنهم عقروا الناقة فقال لهم صالح: تمتعوا في داركم ثلاثة أيام. فجاءتهم الصيحة وأصبحوا في ديارهم جاثمين.", "en": "Allah sent Prophet Salih (AS) to the people of Thamud, who carved homes in the mountains. They asked Salih for a miracle, and Allah brought a she-camel out of the rock. Salih said: This is Allah's she-camel, let her graze and do not harm her. But they killed her. Salih said: Enjoy your homes for three days. Then the blast seized them, and they were found dead in their homes."},
       morals: const {"ar": "التمرد على آيات الله يؤدي إلى الهلاك.", "en": "Rebellion against Allah's signs leads to destruction."},
       source: "Surah Al-A'raf (7:73-79), Surah Hud (11:61-68), Surah Ash-Shu'ara (26:141-158)",
+      category: "prophets",
       isProphetsStory: true,
     ),
   ];
