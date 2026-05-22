@@ -94,9 +94,16 @@ class CreativityService extends ChangeNotifier {
     required String category,
     required String authorName,
   }) async {
-    // Check content for violations
+    // ميرور: فحص صارم للمحتوى قبل التحويل أو النشر
     final result = await _moderationService.checkContent(content);
     final safetyScore = 1.0 - result.riskScore;
+
+    // ميرور: تطبيق شروط "ركن الإبداع" الصارمة
+    // منع: تنمر، تلامس، كراهية (عرق/دين/نوع)، كلمات بذيئة، تلميحات جنسية، سخرية مفرطة متدنية
+    final bool passesMirrorRules = result.isApproved && 
+                                  !content.contains('تلامس') && 
+                                  !content.contains('لمس') &&
+                                  result.riskScore < 0.25;
 
     final story = UserStory(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -104,7 +111,7 @@ class CreativityService extends ChangeNotifier {
       content: content,
       category: category,
       createdAt: DateTime.now(),
-      isApproved: result.isApproved,
+      isApproved: passesMirrorRules,
       safetyScore: safetyScore,
       violations: result.violatedRules,
       authorName: authorName,

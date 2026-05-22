@@ -28,8 +28,18 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
+            
+            // Enable ProGuard/R8 for obfuscation and code shrinking
+            minifyEnabled true
+            shrinkResources true
+            
+            // Add ProGuard rules for better protection
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Mirror Scorpion Security: Protect against reverse engineering
+            ndk {
+                debugSymbolLevel 'NONE'
+            }
         }
     }
 }

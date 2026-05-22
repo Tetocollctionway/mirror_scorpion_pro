@@ -7,6 +7,12 @@ class AppConstants {
   static const int inspirationCooldownHours = 3;
   static const int freeVideosPerDay = 1;
   static const int freeStoriesPerDay = 3;
+  
+  // Security & Anti-Reverse Engineering
+  static const bool enableAntiReverseEngineering = true;
+  static const String protectionLevel = '360_DEGREE';
+  static const bool obfuscateBusinessLogic = true;
+  
   static const List<String> supportedLanguages = [
     'ar', 'en', 'fr', 'es', 'de', 'it', 'pt', 'ru', 'zh', 'ja',
     'ko', 'tr', 'ur', 'fa', 'hi', 'bn', 'id', 'ms', 'sw', 'ha',

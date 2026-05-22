@@ -1,128 +1,66 @@
-[
-  {
-    "id": "prophet_01",
-    "category": "انبياء",
-    "title": "قصة سيدنا آدم عليه السلام",
-    "text_ar": "خلق الله آدم من طين، ثم علمه الأسماء كلها، وأمر الملائكة بالسجود له فسجدوا إلا إبليس أبى واستكبر. ثم أسكنه الجنة مع زوجه حواء، فأغواهما الشيطان فأكلا من الشجرة. فأهبطهما الله إلى الأرض، لكن الله قبل توبتهما.",
-    "text_en": "Allah created Adam from clay, then taught him all names. He commanded the angels to prostrate to him, and they did except Iblis who refused and was arrogant. Then He placed him in Paradise with his wife Eve. The devil seduced them, so they ate from the tree. Allah sent them down to earth, but accepted their repentance.",
-    "source": "سورة البقرة، سورة ص",
-    "lessons": ["التواضع", "التوبة", "رحمة الله"]
-  },
-  {
-    "id": "prophet_02",
-    "category": "انبياء",
-    "title": "قصة سيدنا نوح عليه السلام",
-    "text_ar": "بعث الله نوحاً إلى قومه يدعوهم لعبادة الله وحده، فلبث فيهم ألف سنة إلا خمسين عاماً يدعوهم فلم يؤمن معه إلا قليل. فصبر على أذاهم وسخريتهم، فأنجاه الله ومن آمن معه في الفلك، وأغرق الكافرين.",
-    "text_en": "Allah sent Noah to his people to call them to worship Allah alone. He stayed among them for 950 years calling them, but only a few believed with him. He endured their harm and mockery. Allah saved him and those who believed with him in the ark and drowned the disbelievers.",
-    "source": "سورة نوح، سورة هود",
-    "lessons": ["الصبر", "الدعوة", "الثبات"]
-  },
-  {
-    "id": "prophet_03",
-    "category": "انبياء",
-    "title": "قصة سيدنا إبراهيم عليه السلام",
-    "text_ar": "كان إبراهيم يبحث عن ربه، فرأى كوكباً فقال هذا ربي، فلما أفل قال لا أحب الآفلين. ثم رأى القمر فقال هذا ربي فلما أفل قال لئن لم يهدن ربي لأكونن من القوم الضالين. فلما رأى الشمس قال هذا ربي هذا أكبر فلما أفلت قال يا قوم إني بريء مما تشركون. اختبره الله بكلمات فأتمهن فجعله إماماً للناس.",
-    "text_en": "Abraham searched for his Lord. He saw a star and said 'This is my Lord,' but when it set he said 'I do not like those that set.' Then he saw the moon and said 'This is my Lord,' but when it set he said 'If my Lord does not guide me, I will be among the lost people.' When he saw the sun he said 'This is my Lord, this is greater,' but when it set he said 'O my people, I am free from what you associate with Allah.' Allah tested Abraham with certain commands and he fulfilled them, so Allah made him an Imam for mankind.",
-    "source": "سورة الأنعام، سورة إبراهيم",
-    "lessons": ["التوحيد", "التضحية", "الثقة بالله"]
-  },
-  {
-    "id": "prophet_04",
-    "category": "انبياء",
-    "title": "قصة سيدنا موسى عليه السلام",
-    "text_ar": "ولد موسى في وقت كان فرعون يذبح أبناء بني إسرائيل، فأوحى الله إلى أمه أن تلقيه في اليم. التقطه آل فرعون فتبنوه. لما كبر دعا فرعون إلى الله وأظهر المعجزات العظيمة كالعصا واليد البيضاء. فأرسل الله عليهم الطاغية والجراد والقمل والضفادع والدم والظلام والجراد والقحط. وأخيراً أغرق الله فرعون وجنوده وأنجى موسى وقومه.",
-    "text_en": "Moses was born when Pharaoh was killing the sons of the Children of Israel. Allah revealed to his mother to cast him into the sea. Pharaoh's family picked him up and adopted him. When he grew up, he called Pharaoh to Allah and showed great miracles like the staff and the white hand. Allah sent upon them tyranny, locusts, lice, frogs, blood, darkness, locusts, and drought. Finally, Allah drowned Pharaoh and his soldiers and saved Moses and his people.",
-    "source": "سورة القصص، سورة طه",
-    "lessons": ["الثقة بالله", "الشجاعة", "العدل"]
-  },
-  {
-    "id": "prophet_05",
-    "category": "انبياء",
-    "title": "قصة سيدنا يوسف عليه السلام",
-    "text_ar": "رأى يوسف أحد عشر كوكباً والشمس والقمر له ساجدين، فقص رؤياه على أبيه يعقوب. فحسده إخوته وألقوه في البئر، ثم باعوه بثمن بخس. ابتلاه الله بالسجن، لكنه صبر واتقى. فأخرجه الله من السجن وجعله عزيزاً في مصر. استقام على دينه رغم محاولة امرأة العزيز إغواءه.",
-    "text_en": "Joseph saw eleven stars, the sun, and the moon prostrating to him. He told his father about his dream. His brothers envied him and threw him into a well, then sold him for a pittance. Allah tested him with imprisonment, but he was patient and righteous. Allah brought him out of prison and made him a mighty one in Egypt. He remained steadfast in his religion despite the wife of Al-Aziz trying to seduce him.",
-    "source": "سورة يوسف",
-    "lessons": ["الصبر", "العفة", "التسامح"]
-  },
-  {
-    "id": "woman_01",
-    "category": "نساء",
-    "title": "قصة آسية بنت مزاحم",
-    "text_ar": "امرأة فرعون التي آمنت بالله سراً، وصبرت على أشد أنواع العذاب من فرعون. رفضت أن تسجد لفرعون وتابعت دينه. فعذبها فرعون بقسوة، فدعت ربها قائلة: رب ابن لي عندك بيتاً في الجنة ونجني من فرعون وعمله. فاستجاب الله دعاءها.",
-    "text_en": "Pharaoh's wife who believed in Allah in secret and endured the harshest torture from Pharaoh. She refused to prostrate to Pharaoh and follow his religion. Pharaoh tortured her cruelly, so she prayed to her Lord saying: 'My Lord, build for me a house in Paradise with You and save me from Pharaoh and his deeds.' Allah answered her prayer.",
-    "source": "سورة التحريم",
-    "lessons": ["الإيمان", "الصبر", "التضحية"]
-  },
-  {
-    "id": "woman_02",
-    "category": "نساء",
-    "title": "قصة مريم بنت عمران",
-    "text_ar": "اصطفاها الله وطهرها واصطفاها على نساء العالمين. كانت تعبد الله بإخلاص وتحفظ فرجها. حملت بعيسى معجزة من الله بدون أب. صبرت على الأذى والتهم الباطلة من قومها. فجعلها الله آية للعالمين وأم لنبي كريم.",
-    "text_en": "Allah chose her, purified her, and chose her above the women of the world. She worshipped Allah sincerely and guarded her chastity. She conceived Jesus as a miracle from Allah without a father. She endured harm and false accusations from her people. Allah made her a sign for the worlds and the mother of a noble prophet.",
-    "source": "سورة آل عمران، سورة مريم",
-    "lessons": ["التقوى", "التسليم لله", "العفة"]
-  },
-  {
-    "id": "woman_03",
-    "category": "نساء",
-    "title": "قصة خديجة رضي الله عنها",
-    "text_ar": "كانت خديجة امرأة ثرية وعاقلة وعفيفة. آمنت برسول الله محمد قبل أن يؤمن به أحد. ساندته بمالها وقلبها وجهدها. صبرت معه على الأذى والحصار من قريش. كانت أم المؤمنين وأفضل نساء الأمة.",
-    "text_en": "Khadijah was a wealthy, intelligent, and chaste woman. She believed in the Prophet Muhammad before anyone else believed in him. She supported him with her wealth, heart, and effort. She endured harm and siege from Quraysh with him. She was the mother of the believers and the best woman of the nation.",
-    "source": "السيرة النبوية",
-    "lessons": ["الإيمان", "الدعم", "الصبر"]
-  },
-  {
-    "id": "animal_01",
-    "category": "حيوان",
-    "title": "قصة حوت يونس عليه السلام",
-    "text_ar": "التقم الحوت يونس عليه السلام وهو ملوم، فنادى في الظلمات أن لا إله إلا أنت سبحانك إني كنت من الظالمين. فاستجاب الله دعاءه وأخرجه من بطن الحوت سقيماً. فآمن قومه بعدما رأوا معجزة الله.",
-    "text_en": "The whale swallowed Jonah while he was blaming himself. He called out in the darkness: 'There is no god but You, glory be to You, indeed I was among the wrongdoers.' Allah answered his prayer and brought him out of the whale's belly sick. His people believed after they saw Allah's miracle.",
-    "source": "سورة الأنبياء، سورة الصافات",
-    "lessons": ["التوبة", "الدعاء", "رحمة الله"]
-  },
-  {
-    "id": "animal_02",
-    "category": "حيوان",
-    "title": "قصة هدهد سليمان عليه السلام",
-    "text_ar": "تفقد سليمان الطير فقال ما لي لا أرى الهدهد أم كان من الغائبين. فأتى الهدهد بخبر مملكة سبأ وملكتها التي أوتيت من كل شيء. فأرسل معهم كتاباً بسم الله الرحمن الرحيم. فآمنت ملكة سبأ بالله مع سليمان.",
-    "text_en": "Solomon inspected the birds and said 'Why do I not see the hoopoe? Is he among the absent?' The hoopoe came with news of the kingdom of Sheba and its queen who was given everything. He sent a letter with them in the name of Allah, the Most Merciful. The queen of Sheba believed in Allah along with Solomon.",
-    "source": "سورة النمل",
-    "lessons": ["الملاحظة", "نقل الخير", "الحكمة"]
-  },
-  {
-    "id": "human_01",
-    "category": "انسان",
-    "title": "قصة لقمان الحكيم",
-    "text_ar": "آتاه الله الحكمة، وكان يعظ ابنه بأعظم المواعظ. قال له: يا بني لا تشرك بالله إن الشرك لظلم عظيم. ووصاه ببر الوالدين والإحسان والتواضع والصبر. كان لقمان مثالاً للحكمة والأخلاق الحميدة.",
-    "text_en": "Allah gave him wisdom, and he used to advise his son with the greatest advice. He said to him: 'O my son, do not associate anything with Allah. Indeed, association with Allah is a great wrong.' He advised him about honoring parents, doing good, humility, and patience. Luqman was an example of wisdom and good character.",
-    "source": "سورة لقمان",
-    "lessons": ["الحكمة", "بر الوالدين", "التواضع"]
-  },
-  {
-    "id": "human_02",
-    "category": "انسان",
-    "title": "قصة أصحاب الكهف",
-    "text_ar": "فتية آمنوا بربهم فزادهم الله هدى. قالوا ربنا آتنا من لدنك رحمة وهيئ لنا من أمرنا رشداً. فضرب الله على آذانهم في الكهف سنين عدداً. ثم بعثهم الله ليعلم أي الحزبين أحصى لما لبثوا أمداً. استيقظوا بعد نوم طويل فظنوا أنهم لبثوا يوماً أو بعض يوم.",
-    "text_en": "Young men who believed in their Lord, so Allah increased them in guidance. They said: 'Our Lord, give us mercy from You and prepare for us right guidance in our affair.' Allah covered their ears in the cave for a number of years. Then Allah raised them to know which of the two groups was better in calculating the time they had stayed. They woke up after a long sleep thinking they had stayed only a day or part of a day.",
-    "source": "سورة الكهف",
-    "lessons": ["الثبات على الإيمان", "التوكل", "الأمل"]
-  },
-  {
-    "id": "nation_01",
-    "category": "اقوام",
-    "title": "قصة قوم عاد",
-    "text_ar": "أرسل الله إليهم أخاهم هوداً قال يا قوم اعبدوا الله ما لكم من إله غيره. فكذبوه واستكبروا. فأرسل الله عليهم ريحاً صرصراً في أيام نحسات لنذيقهم عذاب الخزي في الحياة الدنيا. فأهلكهم الله جميعاً إلا من آمن معه.",
-    "text_en": "Allah sent to them their brother Hud. He said: 'O my people, worship Allah, you have no god other than Him.' But they denied him and were arrogant. So Allah sent upon them a furious wind for several days of misfortune to make them taste the punishment of disgrace in this worldly life. Allah destroyed them all except those who believed with him.",
-    "source": "سورة هود، سورة الأعراف",
-    "lessons": ["الاستكبار", "عاقبة الكفر", "الدعوة"]
-  },
-  {
-    "id": "nation_02",
-    "category": "اقوام",
-    "title": "قصة قوم ثمود",
-    "text_ar": "أرسل الله إليهم صالحاً قال يا قوم اعبدوا الله ما لكم من إله غيره. فطلبوا منه آية فأخرج لهم الناقة من الصخرة. لكنهم كفروا وعقروا الناقة. فأخذتهم الصيحة فأهلكهم الله جميعاً.",
-    "text_en": "Allah sent to them Salih. He said: 'O my people, worship Allah, you have no god other than Him.' They asked him for a sign, so he brought out the she-camel from the rock. But they disbelieved and hamstrung the she-camel. So the scream seized them and Allah destroyed them all.",
-    "source": "سورة الأعراف، سورة النمل",
-    "lessons": ["العبرة", "الاستكبار", "عاقبة الكفر"]
-  }
-]
+{
+  "prophets": [
+    {
+      "id": "prophet_01",
+      "category": "انبياء",
+      "title": "قصة آدم عليه السلام (كاملة)",
+      "text_ar": "بدأت قصة آدم عليه السلام عندما أخبر الله سبحانه وتعالى ملائكته بأنه سيجعل في الأرض خليفة. قال الله تعالى: 'وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً'. فخلق الله آدم من طين، ونفخ فيه من روحه، وعلمه الأسماء كلها. ثم أمر الملائكة بالسجود له تكريماً، فسجدوا جميعاً إلا إبليس الذي أبى واستكبر وكان من الكافرين، زاعماً أنه خير من آدم لأنه خُلق من نار وآدم خُلق من طين. طُرد إبليس من الجنة، وتوعد بإغواء بني آدم. أسكن الله آدم وزوجته حواء الجنة، وأباح لهما كل ثمارها إلا شجرة واحدة. لكن إبليس وسوس لهما فأكلا منها، فبدت لهما سوآتهما. ندم آدم وحواء وتابا إلى الله، فقبل الله توبتهما ولكنه أهبطهما إلى الأرض لتبدأ رحلة البشرية عليها. عاش آدم في الأرض وعلم أبناءه عبادة الله وحده، وكان أول الأنبياء وأبو البشر.",
+      "text_en": "The story of Adam began when Allah created him from clay and breathed life into him. Angels prostrated except Iblis. Adam and Eve lived in Paradise but were tempted by Iblis to eat from the forbidden tree. They repented, and Allah sent them to Earth.",
+      "source": "سورة البقرة، سورة الأعراف",
+      "lessons": ["التوبة النصوحة", "خطر الكبر", "عداوة الشيطان"]
+    },
+    {
+      "id": "prophet_02",
+      "category": "انبياء",
+      "title": "قصة نوح عليه السلام (كاملة)",
+      "text_ar": "بعد قرون من وفاة آدم، بدأ الناس يعبدون الأصنام، فأرسل الله نوحاً عليه السلام ليدعوهم إلى التوحيد. لبث نوح في قومه ألف سنة إلا خمسين عاماً، يدعوهم ليلاً ونهاراً، سراً وجهراً، لكنهم استكبروا وأصروا على كفرهم. سخروا منه ومن القلة المؤمنة معه. أوحى الله إلى نوح أن يصنع السفينة، وكان كلما مر عليه ملأ من قومه سخروا منه. عندما جاء أمر الله، وفار التنور، أمر الله نوحاً أن يحمل في السفينة من كل زوجين اثنين وأهله إلا من سبق عليه القول والمؤمنين. انهمرت السماء بالماء وتفجرت الأرض عيوناً، فالتقى الماء على أمر قد قُدر. غرق الكافرون جميعاً، ومن بينهم ابن نوح الذي رفض الركوب ظناً منه أن الجبل سيعصمه من الماء. رست السفينة على الجودي، وبدأت حياة جديدة على الأرض بالتوحيد.",
+      "text_en": "Noah called his people for 950 years. They mocked him while he built the Ark. A great flood came, saving only the believers and animals in the Ark. The Ark rested on Mount Judi.",
+      "source": "سورة نوح، سورة هود",
+      "lessons": ["الصبر في الدعوة", "الإيمان ينجي", "لا عاصم من أمر الله إلا من رحم"]
+    },
+    {
+      "id": "prophet_03",
+      "category": "انبياء",
+      "title": "قصة إبراهيم عليه السلام (كاملة)",
+      "text_ar": "وُلد إبراهيم عليه السلام في قوم يعبدون الكواكب والأصنام، وكان والده آزر يصنعها. بدأ إبراهيم يحاور قومه بالعقل والمنطق، فأثبت لهم بطلان عبادة الكواكب والقمر والشمس لأنها تغيب. حطم إبراهيم أصنام قومه إلا كبيراً لهم لعلهم يرجعون إليه، وعندما سألوه قال 'بل فعله كبيرهم هذا فاسألوهم إن كانوا ينطقون'. غضب القوم وقرروا إحراقه في نار عظيمة، لكن الله قال 'يا نار كوني برداً وسلاماً على إبراهيم'. هاجر إبراهيم إلى الشام ثم الحجاز، وبنى مع ابنه إسماعيل الكعبة المشرفة. اختبره الله بذبح ابنه إسماعيل، فلما استسلما لأمر الله فداه الله بذبح عظيم. لُقب إبراهيم بخليل الله وهو أبو الأنبياء.",
+      "text_en": "Abraham challenged idols and was thrown into fire, which Allah made cool. He built the Kaaba and was tested with the sacrifice of his son Ishmael.",
+      "source": "سورة الأنبياء، سورة الصافات",
+      "lessons": ["التوحيد الخالص", "التسليم لأمر الله", "قوة الحجة"]
+    }
+  ],
+  "quran": [
+    {
+      "id": "quran_01",
+      "category": "انسان",
+      "title": "قصة أصحاب الكهف (كاملة)",
+      "text_ar": "هم فتية آمنوا بالله في زمن ملك جبار كافر كان يجبر الناس على عبادة الأصنام. قرروا الفرار بدينهم واعتزلوا في كهف، وسألوا الله الرحمة والهدى. ألقى الله عليهم النوم العميق لسنوات طويلة (ثلاثمائة سنين وازدادوا تسعاً). كان معهم كلبهم باسطاً ذراعيه بالوصيد. تغيرت أحوال البلاد وذهب الملك الجبار وجاء مؤمنون. عندما استيقظوا، ظنوا أنهم ناموا يوماً أو بعض يوم. أرسلوا أحدهم بورقهم (نقودهم) ليشتري طعاماً، فتعجب الناس من نقوده القديمة واكتشفوا أمرهم. كانت قصتهم آية للناس على قدرة الله على البعث بعد الموت.",
+      "text_en": "Believing youth fled a tyrant and slept in a cave for 309 years. Their story is a sign of Allah's power of resurrection.",
+      "source": "سورة الكهف",
+      "lessons": ["الفرار بالدين من الفتن", "قدرة الله على البعث", "رعاية الله للمؤمنين"]
+    }
+  ],
+  "women": [
+    {
+      "id": "woman_01",
+      "category": "نساء",
+      "title": "قصة مريم بنت عمران (كاملة)",
+      "text_ar": "مريم ابنة عمران، التي اصطفاها الله وطهرها على نساء العالمين. نشأت في عبادة الله وطاعته في المحراب. بشرتها الملائكة بعيسى كلمة من الله، فحملت به بمعجزة إلهية دون أب. واجهت قومها بشجاعة وصبر، وأنطق الله عيسى في المهد ليبرئها ويخبر الناس بنبوته. كانت مريم مثالاً للعفة والتقوى واليقين بالله.",
+      "text_en": "Mary, chosen by Allah, miraculously conceived Jesus. She faced her people with faith, and baby Jesus spoke to clear her name.",
+      "source": "سورة مريم، سورة آل عمران",
+      "lessons": ["العفة", "اليقين بالله", "الصبر على الابتلاء"]
+    }
+  ],
+  "animals": [
+    {
+      "id": "animal_01",
+      "category": "حيوان",
+      "title": "قصة هدهد سليمان (كاملة)",
+      "text_ar": "كان الهدهد جندياً في جيش سليمان عليه السلام. غاب لفترة ثم عاد بخبر عظيم عن مملكة سبأ وملكتها التي تسجد للشمس. كان سبباً في هداية أمة كاملة إلى التوحيد بعد أن أرسل سليمان رسالة مع الهدهد للملكة بلقيس. تظهر القصة ذكاء الهدهد ودوره في الدعوة إلى الله.",
+      "text_en": "Solomon's hoopoe discovered the Kingdom of Sheba worshipping the sun. This led to the conversion of the entire kingdom to Islam.",
+      "source": "سورة النمل",
+      "lessons": ["الدقة في نقل الخبر", "الإيجابية في الدعوة", "التوحيد"]
+    }
+  ],
+  "humans": [],
+  "nations": []
+}

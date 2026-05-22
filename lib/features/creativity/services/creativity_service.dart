@@ -1,26 +1,52 @@
-class CreativityService {
-  // شروط ميرور للإبداع القصصي
-  static String processCreativeWork(String text) {
-    // 1. لا تلامس (منع أي سياق جسدي غير لائق)
-    if (text.contains('تلامس') || text.contains('لمس')) {
-      return "⚠️ ميرور: الإبداع مرفوض (شرط منع التلامس).";
+import 'package:flutter/foundation.dart';
+
+class CreativityService extends ChangeNotifier {
+  // Forbidden categories and their keywords
+  static const Map<String, List<String>> _forbiddenKeywords = {
+    'تنمر': ['غبي', 'فاشل', 'قبيح', 'ضعيف', 'تافه', 'سخيف', 'أحمق', 'حقير', 'دنيء'],
+    'كراهية': ['عرق', 'دين', 'لون', 'طائفة', 'مذهب', 'كافر', 'ملحد', 'عدو', 'اقتل', 'أبد'],
+    'تلامس/جنس': ['لمس', 'تلامس', 'جسد', 'عري', 'جنس', 'قبلة', 'حضن', 'فراش', 'شهوة'],
+    'بذاءة': ['بذيء', 'لعن', 'شتم', 'سب', 'قذف', 'خنزير', 'كلب', 'حمار'],
+    'سخرية مفرطة': ['أضحوكة', 'مهزلة', 'مسخرة', 'فضيحة', 'عار', 'ذل', 'هوان'],
+  };
+
+  static String checkAndProcessContent(String text) {
+    if (text.trim().isEmpty) {
+      return "⚠️ الرجاء كتابة شيء ما في ركن الإبداع.";
     }
 
-    // 2. لا كراهية (عرق، دين، لون)
-    if (text.contains('عرق') || text.contains('دين') || text.contains('لون')) {
-      return "⚠️ ميرور: الإبداع مرفوض (منع خطاب الكراهية).";
+    String lowerText = text.toLowerCase();
+    List<String> violations = [];
+
+    _forbiddenKeywords.forEach((category, keywords) {
+      for (var keyword in keywords) {
+        if (lowerText.contains(keyword)) {
+          violations.add(category);
+          break;
+        }
+      }
+    });
+
+    if (violations.isNotEmpty) {
+      String violationMsg = violations.join(' و ');
+      return "⚠️ ميرور: عذراً، لا يمكن قبول هذا المحتوى بسبب وجود ( $violationMsg ). نحن نشجع الإبداع النظيف والراقي.";
     }
 
-    // 3. لا تنمر أو كلمات بذيئة
-    if (text.contains('تنمر') || text.contains('بذاءة')) {
-      return "⚠️ ميرور: الإبداع مرفوض (منع التنمر والبذاءة).";
+    // Additional AI-like checks can be added here
+    if (_hasExcessiveMockery(lowerText)) {
+      return "⚠️ ميرور: السخرية المفرطة المتدنية مرفوضة. حاول جعل أسلوبك أكثر رقياً.";
     }
 
-    // 4. السخرية المعتدلة (مسموح بها للضحك والمرح)
-    if (text.contains('سخرية مفرطة')) {
-      return "⚠️ ميرور: السخرية المفرطة مرفوضة، المعتدلة مسموحة.";
-    }
+    return "✅ تم قبول إبداعك في ميرور! سيتم عرضه بعد المراجعة النهائية.";
+  }
 
-    return "✅ تم قبول إبداعك في ميرور.";
+  static bool _hasExcessiveMockery(String text) {
+    // Simple logic for excessive mockery detection
+    int mockeryCount = 0;
+    List<String> mockeryWords = ['هههه', 'مسخرة', 'نكتة', 'يضحك', 'غبي'];
+    for (var word in mockeryWords) {
+      if (text.contains(word)) mockeryCount++;
+    }
+    return mockeryCount > 5; // Example threshold
   }
 }
