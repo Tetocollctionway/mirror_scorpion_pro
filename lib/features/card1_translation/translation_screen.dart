@@ -34,7 +34,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     {'code': 'bn', 'name': 'Bengali', 'native': 'বাংলা'},
     {'code': 'si', 'name': 'Sinhala', 'native': 'සිංහල'},
     {'code': 'fr', 'name': 'French', 'native': 'Français'},
-    {'code': 'es', 'name': 'Spanish', 'native': 'Español'},
+    {'code': 'es', 'name': 'Spanish', 'native': 'Espائول'},
     {'code': 'de', 'name': 'German', 'native': 'Deutsch'},
     {'code': 'tr', 'name': 'Turkish', 'native': 'Türkçe'},
     {'code': 'ur', 'name': 'Urdu', 'native': 'اردو'},
@@ -69,12 +69,16 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    if (cameras.isEmpty) return;
-    
-    _cameraController = CameraController(cameras[0], ResolutionPreset.high);
-    await _cameraController!.initialize();
-    if (mounted) setState(() {});
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) return;
+      
+      _cameraController = CameraController(cameras[0], ResolutionPreset.high);
+      await _cameraController!.initialize();
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('Camera error: $e');
+    }
   }
 
   @override
@@ -154,8 +158,8 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
         // Scanning Overlay (Google Lens Style)
         Center(
           child: Container(
-            width: 250,
-            height: 350,
+            width: 280,
+            height: 400,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
               borderRadius: BorderRadius.circular(20),
