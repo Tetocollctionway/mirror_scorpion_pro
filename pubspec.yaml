@@ -25,6 +25,7 @@ dependencies:
   google_mlkit_text_recognition: ^0.13.0
   image_picker: ^1.0.0
   camera: ^0.11.0
+  webview_flutter: ^4.7.0
   
   # Storage & Preferences
   shared_preferences: ^2.2.0
