@@ -26,6 +26,10 @@ jobs:
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
           python3 $GITHUB_WORKSPACE/scripts/patch_gradle.py android/app/build.gradle.kts
+          python3 $GITHUB_WORKSPACE/scripts/patch_manifest.py android/app/src/main/AndroidManifest.xml
+          # Force SDK 35 in the newly created project
+          sed -i 's/compileSdk = .*/compileSdk = 35/g' android/app/build.gradle.kts
+          sed -i 's/targetSdk = .*/targetSdk = 35/g' android/app/build.gradle.kts
           flutter pub get
           flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
