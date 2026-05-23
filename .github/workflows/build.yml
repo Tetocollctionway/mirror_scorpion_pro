@@ -30,6 +30,8 @@ jobs:
           # Force SDK 35 in the newly created project
           sed -i 's/compileSdk = .*/compileSdk = 35/g' android/app/build.gradle.kts
           sed -i 's/targetSdk = .*/targetSdk = 35/g' android/app/build.gradle.kts
+          sed -i 's/compileSdkVersion .*/compileSdkVersion 35/g' android/app/build.gradle || true
+          sed -i 's/targetSdkVersion .*/targetSdkVersion 35/g' android/app/build.gradle || true
           flutter pub get
           flutter build apk --release
           mkdir -p $GITHUB_WORKSPACE/output_apk
