@@ -18,8 +18,8 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   late stt.SpeechToText _speechToText;
   late FlutterTts _flutterTts;
   
-  String _sourceLang = 'en';
-  String _targetLang = 'ar';
+  String _sourceLang = 'en'; // Left button
+  String _targetLang = 'ar'; // Right button
   bool _isTranslating = false;
   bool _isListening = false;
 
@@ -57,6 +57,18 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
     _speechToText.stop();
     _flutterTts.stop();
     super.dispose();
+  }
+
+  Future<void> _handleMicClick() async {
+    if (_isListening) {
+      await _stopListening();
+    } else {
+      // Description: Auto-clear text when clicking mic to start new recognition
+      setState(() {
+        _textController.clear();
+      });
+      await _startListening();
+    }
   }
 
   Future<void> _startListening() async {
@@ -109,7 +121,9 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
     }
 
     Future.delayed(const Duration(milliseconds: 100), () {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
     });
   }
 
@@ -121,9 +135,9 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
     });
   }
 
-  Future<void> _speakMessage(String text) async {
+  Future<void> _speakMessage(String text, String lang) async {
     try {
-      await _flutterTts.setLanguage(_targetLang);
+      await _flutterTts.setLanguage(lang);
       await _flutterTts.speak(text);
     } catch (e) {
       debugPrint('TTS Error: $e');
@@ -134,23 +148,34 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dialogue Translation'),
-        backgroundColor: Colors.transparent, 
+        title: const Text('ترجمة حوارية', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF0D1B2A),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => setState(() => _messages.clear())),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep, color: Colors.white70), 
+            onPressed: () => setState(() => _messages.clear()),
+            tooltip: 'مسح السجل',
+          ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)])),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter, 
+            end: Alignment.bottomCenter, 
+            colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)]
+          )
+        ),
         child: Column(
           children: [
-            // Language selectors with swap button
+            // Language selectors
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  Expanded(child: _langDropdown('Source', _sourceLang, (v) => setState(() => _sourceLang = v))),
+                  Expanded(child: _langDropdown('اللغة اليسرى', _sourceLang, (v) => setState(() => _sourceLang = v))),
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: _swapLanguages,
@@ -160,22 +185,22 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.swap_horiz, color: Colors.white38, size: 20),
+                      child: const Icon(Icons.swap_horiz, color: Colors.white, size: 24),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(child: _langDropdown('Target', _targetLang, (v) => setState(() => _targetLang = v))),
+                  Expanded(child: _langDropdown('اللغة اليمنى', _targetLang, (v) => setState(() => _targetLang = v))),
                 ],
               ),
             ),
-            // Messages
+            
+            // Messages List
             Expanded(
               child: _messages.isEmpty
                 ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(Icons.chat_bubble_outline, size: 64, color: Colors.white.withOpacity(0.1)),
+                    Icon(Icons.chat_bubble_outline, size: 80, color: Colors.white.withOpacity(0.05)),
                     const SizedBox(height: 16),
-                    Text('Start a conversation...', style: TextStyle(color: Colors.white.withOpacity(0.3))),
-                    Text('Type a message or use microphone', style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12)),
+                    Text('ابدأ المحادثة...', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 18)),
                   ]))
                 : ListView.builder(
                     controller: _scrollController,
@@ -183,43 +208,66 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                     itemCount: _messages.length + (_isTranslating ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == _messages.length) {
-                        return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
+                        return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator(color: Colors.white38)));
                       }
                       final msg = _messages[index];
                       return _buildMessageBubble(msg);
                     },
                   ),
             ),
-            // Input
+
+            // Input Section (Upper Editor)
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1)))),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1B263B),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, spreadRadius: 2)],
+              ),
               child: SafeArea(
                 child: Column(
                   children: [
+                    // Description: Upper editor follows Right button language
                     Row(
                       children: [
                         Expanded(
-                          child: TextField(
-                            controller: _textController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: 'Type a message...',
-                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.white.withOpacity(0.1)),
                             ),
-                            onSubmitted: (_) => sendMessage(),
+                            child: TextField(
+                              controller: _textController,
+                              style: const TextStyle(color: Colors.white),
+                              textAlign: _targetLang == 'ar' || _targetLang == 'ur' || _targetLang == 'fa' ? TextAlign.right : TextAlign.left,
+                              decoration: InputDecoration(
+                                hintText: 'اكتب هنا (تتبع اللغة اليمنى)...',
+                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                                border: InputBorder.none,
+                              ),
+                              onSubmitted: (_) => sendMessage(),
+                            ),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.red : Colors.white38),
-                          onPressed: _isListening ? _stopListening : _startListening,
-                          tooltip: _isListening ? 'Stop listening' : 'Start listening',
+                        const SizedBox(width: 12),
+                        GestureDetector(
+                          onTap: _handleMicClick,
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: _isListening ? Colors.red.withOpacity(0.8) : Colors.blueAccent.withOpacity(0.8),
+                            child: Icon(_isListening ? Icons.stop : Icons.mic, color: Colors.white),
+                          ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.send_rounded, color: Colors.green.shade300),
-                          onPressed: sendMessage,
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: sendMessage,
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: Colors.green.withOpacity(0.8),
+                            child: const Icon(Icons.send, color: Colors.white),
+                          ),
                         ),
                       ],
                     ),
@@ -235,46 +283,58 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
 
   Widget _buildMessageBubble(_Message msg) {
     final isUser = msg.isUser;
+    final isRTL = msg.lang == 'ar' || msg.lang == 'ur' || msg.lang == 'fa';
+    
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        padding: const EdgeInsets.all(14),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isUser ? Colors.blue.withOpacity(0.2) : Colors.green.withOpacity(0.15),
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: isUser ? const Radius.circular(18) : Radius.zero,
-            bottomRight: isUser ? Radius.zero : const Radius.circular(18),
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: isUser ? const Radius.circular(20) : Radius.zero,
+            bottomRight: isUser ? Radius.zero : const Radius.circular(20),
           ),
           border: Border.all(color: (isUser ? Colors.blue : Colors.green).withOpacity(0.3)),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: isRTL ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
-                Flexible(
-                  child: Text(msg.text, style: TextStyle(color: isUser ? Colors.blue.shade100 : Colors.green.shade100, fontSize: 15, height: 1.4)),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () => _speakMessage(msg.text),
-                  child: Icon(Icons.volume_up, size: 16, color: isUser ? Colors.blue.shade100 : Colors.green.shade100),
-                ),
+                if (!isRTL) ...[
+                  Flexible(child: Text(msg.text, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5))),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, size: 20, color: Colors.white70),
+                    onPressed: () => _speakMessage(msg.text, msg.lang),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ] else ...[
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, size: 20, color: Colors.white70),
+                    onPressed: () => _speakMessage(msg.text, msg.lang),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text(msg.text, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5))),
+                ],
               ],
             ),
             if (msg.original != null) ...[
-              const SizedBox(height: 6),
-              Container(height: 1, color: Colors.white.withOpacity(0.1)),
-              const SizedBox(height: 6),
-              Text(msg.original!, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, fontStyle: FontStyle.italic)),
+              const SizedBox(height: 8),
+              Divider(color: Colors.white.withOpacity(0.1), height: 1),
+              const SizedBox(height: 8),
+              Text(msg.original!, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12, fontStyle: FontStyle.italic)),
             ],
-            const SizedBox(height: 4),
-            Text(msg.lang.toUpperCase(), style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 9)),
           ],
         ),
       ),
@@ -282,17 +342,31 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   }
 
   Widget _langDropdown(String label, String value, ValueChanged<String> onChanged) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value, isExpanded: true, dropdownColor: const Color(0xFF1B2838),
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-          items: _languages.map((l) => DropdownMenuItem(value: l['code'], child: Text('${l['name']}'))).toList(),
-          onChanged: (v) { if (v != null) onChanged(v); },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05), 
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value, 
+              isExpanded: true, 
+              dropdownColor: const Color(0xFF1B2838),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              items: _languages.map((l) => DropdownMenuItem(value: l['code'], child: Text('${l['name']}'))).toList(),
+              onChanged: (v) { if (v != null) onChanged(v); },
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
