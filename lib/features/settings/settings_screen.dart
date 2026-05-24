@@ -15,6 +15,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _soundEnabled = true;
   bool _isPremium = false;
   String _selectedVoice = 'voice_1_female';
+  bool _bubbleEnabled = false;
+  double _bubbleOpacity = 0.8;
+  int _bubbleSize = 120;
+  String _bubbleLanguage = 'en';
+  bool _bubbleAutoTranslate = true;
+  bool _bubbleSound = true;
 
   final List<Map<String, String>> _voices = [
     {'id': 'voice_1_female', 'name': 'سلمى (أنثى)'},
@@ -38,6 +44,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _soundEnabled = _prefs.getBool('soundEnabled') ?? true;
       _isPremium = _prefs.getBool('isPremium') ?? false;
       _selectedVoice = _prefs.getString('selectedVoice') ?? 'voice_1_female';
+      _bubbleEnabled = _prefs.getBool('bubble_enabled') ?? false;
+      _bubbleOpacity = _prefs.getDouble('bubble_opacity') ?? 0.8;
+      _bubbleSize = _prefs.getInt('bubble_size') ?? 120;
+      _bubbleLanguage = _prefs.getString('bubble_language') ?? 'en';
+      _bubbleAutoTranslate = _prefs.getBool('bubble_auto_translate') ?? true;
+      _bubbleSound = _prefs.getBool('bubble_sound') ?? true;
     });
   }
 
@@ -137,6 +149,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 20),
 
+            // Floating Bubble Settings
+            _buildSectionTitle('🫧 الفقاعة العائمة'),
+            _buildSettingTile(
+              'تفعيل الفقاعة العائمة',
+              'ترجمة فورية مع فقاعة عائمة فوق التطبيقات',
+              _bubbleEnabled,
+              (value) {
+                setState(() => _bubbleEnabled = value);
+                _saveSetting('bubble_enabled', value);
+              },
+            ),
+            if (_bubbleEnabled) ...[const SizedBox(height: 12),
+              _buildSliderTile('الشفافية', _bubbleOpacity, 0.3, 1.0, (value) {
+                setState(() => _bubbleOpacity = value);
+                _saveSetting('bubble_opacity', value);
+              }),
+              const SizedBox(height: 12),
+              _buildSliderTile('الحجم', _bubbleSize.toDouble(), 60, 200, (value) {
+                setState(() => _bubbleSize = value.toInt());
+                _saveSetting('bubble_size', value.toInt());
+              }),
+              const SizedBox(height: 12),
+              _buildSettingTile(
+                'الترجمة التلقائية',
+                'ترجم النصوص تلقائياً عند النسخ',
+                _bubbleAutoTranslate,
+                (value) {
+                  setState(() => _bubbleAutoTranslate = value);
+                  _saveSetting('bubble_auto_translate', value);
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildSettingTile(
+                'الصوت',
+                'تشغيل صوت عند الترجمة',
+                _bubbleSound,
+                (value) {
+                  setState(() => _bubbleSound = value);
+                  _saveSetting('bubble_sound', value);
+                },
+              ),
+            ],
+            const SizedBox(height: 20),
+
             // Premium Section
             if (!_isPremium)
               _buildPremiumCard()
@@ -227,6 +283,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: value,
             onChanged: onChanged,
             activeColor: Colors.blue,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSliderTile(String title, double value, double min, double max, Function(double) onChanged) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                value.toStringAsFixed(2),
+                style: TextStyle(color: Colors.blue.shade300, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Slider(
+            value: value,
+            min: min,
+            max: max,
+            activeColor: Colors.blue,
+            inactiveColor: Colors.white.withOpacity(0.2),
+            onChanged: onChanged,
           ),
         ],
       ),
