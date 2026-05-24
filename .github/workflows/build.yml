@@ -38,10 +38,18 @@ jobs:
             # Find all build.gradle files in dependencies and add namespace if missing
             find $HOME/.pub-cache/hosted/pub.dev -name "build.gradle" -exec sed -i '/android {/a \    namespace "com.example.placeholder"' {} +
             
-            # Specifically fix dash_bubble namespace
+            # Specifically fix dash_bubble namespace in build.gradle
             DASH_BUBBLE_GRADLE=$(find $HOME/.pub-cache/hosted/pub.dev -path "*/dash_bubble-*/android/build.gradle" | head -n 1)
             if [ ! -z "$DASH_BUBBLE_GRADLE" ]; then
               sed -i 's/namespace "com.example.placeholder"/namespace "dev.moaz.dash_bubble"/' "$DASH_BUBBLE_GRADLE"
+            fi
+            
+            # Fix dash_bubble build.gradle.kts if it exists
+            DASH_BUBBLE_GRADLE_KTS=$(find $HOME/.pub-cache/hosted/pub.dev -path "*/dash_bubble-*/android/build.gradle.kts" | head -n 1)
+            if [ ! -z "$DASH_BUBBLE_GRADLE_KTS" ]; then
+              if ! grep -q "namespace" "$DASH_BUBBLE_GRADLE_KTS"; then
+                sed -i '/android {/a \    namespace = "dev.moaz.dash_bubble"' "$DASH_BUBBLE_GRADLE_KTS"
+              fi
             fi
           fi
 
