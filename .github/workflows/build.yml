@@ -33,6 +33,9 @@ jobs:
           # Run pub get first to download dependencies
           flutter pub get
           
+          # Run the dash_bubble patching script
+          python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble.py
+          
           # FIX: Patch dependencies that are missing namespace (e.g., dash_bubble)
           if [ -d "$HOME/.pub-cache/hosted/pub.dev" ]; then
             # Find all build.gradle files in dependencies and add namespace if missing
