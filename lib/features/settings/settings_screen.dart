@@ -23,11 +23,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _bubbleSound = true;
 
   final List<Map<String, String>> _voices = [
-    {'id': 'voice_1_female', 'name': 'سلمى (أنثى)'},
-    {'id': 'voice_2_male', 'name': 'سيف (ذكر)'},
-    {'id': 'voice_3_female', 'name': 'سما (أنثى)'},
-    {'id': 'voice_4_female', 'name': 'ساره (أنثى)'},
-    {'id': 'voice_5_premium', 'name': 'صوت ذكي متقدم (برو)'},
+    {'id': 'voice_1_female', 'name': 'سلمى'},
+    {'id': 'voice_2_male', 'name': 'سيف'},
+    {'id': 'voice_3_female', 'name': 'سما'},
+    {'id': 'voice_4_female', 'name': 'ساره'},
   ];
 
   @override
