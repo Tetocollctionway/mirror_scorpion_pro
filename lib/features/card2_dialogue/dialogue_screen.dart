@@ -8,7 +8,7 @@ class DialogueTranslationScreen extends StatefulWidget {
   const DialogueTranslationScreen({super.key});
 
   @override
-  State<DialogueTranslationScreenState> createState() => _DialogueTranslationScreenState();
+  State<DialogueTranslationScreen> createState() => _DialogueTranslationScreenState();
 }
 
 class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {

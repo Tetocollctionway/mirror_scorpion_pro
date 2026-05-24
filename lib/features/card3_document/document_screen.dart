@@ -9,7 +9,7 @@ class DocumentTranslationScreen extends StatefulWidget {
   const DocumentTranslationScreen({super.key});
 
   @override
-  State<DocumentTranslationScreenState> createState() => _DocumentTranslationScreenState();
+  State<DocumentTranslationScreen> createState() => _DocumentTranslationScreenState();
 }
 
 class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> with SingleTickerProviderStateMixin {
