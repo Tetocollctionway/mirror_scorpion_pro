@@ -15,9 +15,10 @@ with open(filepath, 'r') as f:
 content = content.replace('minSdk = flutter.minSdkVersion', 'minSdk = 21')
 
 # 2. Fix compileSdk and targetSdk syntax for Kotlin DSL
-content = re.sub(r'compileSdk\s+\d+', 'compileSdk = 35', content)
+# Using 36 as requested by the latest plugins
+content = re.sub(r'compileSdk\s+\d+', 'compileSdk = 36', content)
 content = re.sub(r'targetSdk\s+\d+', 'targetSdk = 35', content)
-content = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion = 35', content)
+content = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion = 36', content)
 content = re.sub(r'targetSdkVersion\s+\d+', 'targetSdkVersion = 35', content)
 
 # 3. Force isMinifyEnabled to false wherever it appears
