@@ -57,13 +57,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                    ],
+                  image: DecorationImage(
+                    image: const AssetImage('assets/images/scorpion_bg.jpeg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.7),
+                      BlendMode.darken,
+                    ),
                   ),
                 ),
                 child: Column(
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                               image: const DecorationImage(
                                 image: AssetImage('assets/images/scorpion_icon.jpeg'),
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ),

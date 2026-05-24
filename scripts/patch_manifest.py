@@ -16,7 +16,9 @@ permissions = [
     '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n',
     '    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n',
     '    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n',
-    '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n'
+    '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n',
+    '    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />\n',
+    '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />\n'
 ]
 
 new_lines = []

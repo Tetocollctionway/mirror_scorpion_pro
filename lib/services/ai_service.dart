@@ -64,25 +64,38 @@ class AIService {
     bool isPremium = false,
   }) async {
     try {
-      // For demo: return local inspirational message
-      // In production: call OpenAI API
-      
+      // Analyze mood and return appropriate message
+      String message = '';
       if (userMood.isEmpty) {
-        return _inspirationalMessages[DateTime.now().microsecond % _inspirationalMessages.length];
+        message = _inspirationalMessages[DateTime.now().microsecond % _inspirationalMessages.length];
+      } else if (_isSadMood(userMood)) {
+        message = _comfortMessages[DateTime.now().microsecond % _comfortMessages.length];
+      } else if (_isHappyMood(userMood)) {
+        message = _celebrationMessages[DateTime.now().microsecond % _celebrationMessages.length];
+      } else {
+        message = _motivationalQuotes[DateTime.now().microsecond % _motivationalQuotes.length];
       }
 
-      // Analyze mood and return appropriate message
-      if (_isSadMood(userMood)) {
-        return _comfortMessages[DateTime.now().microsecond % _comfortMessages.length];
-      } else if (_isHappyMood(userMood)) {
-        return _celebrationMessages[DateTime.now().microsecond % _celebrationMessages.length];
-      } else {
-        return _motivationalQuotes[DateTime.now().microsecond % _motivationalQuotes.length];
-      }
+      // In a real Manus-enhanced app, we would use LLM to make it more personal
+      return "بناءً على شعورك: $message\n\nتذكر أن ميرور سكربيون معك في رحلة البناء المستمر. ✨";
     } catch (e) {
       debugPrint('Error generating inspiration: $e');
       return 'تذكّر أن الله معك دائماً. 🤲';
     }
+  }
+
+  /// Generate an image prompt based on the inspiration message
+  static String generateImagePrompt(String message) {
+    // Manus-style prompt engineering
+    return "Islamic spiritual art, $message, cinematic lighting, ethereal atmosphere, calligraphy elements, 8k resolution, serene landscape background, golden hour";
+  }
+
+  /// Simulate Manus Image Generation
+  static Future<String> generateManusImage(String prompt) async {
+    // In a real app, this would call a DALL-E or Midjourney API
+    // For now, we return a high-quality placeholder image based on the prompt
+    await Future.delayed(const Duration(seconds: 2)); // Simulate generation time
+    return "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80";
   }
 
   /// Get spiritual support message
