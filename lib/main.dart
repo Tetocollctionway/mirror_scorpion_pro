@@ -6,6 +6,7 @@ import 'features/card2_dialogue/dialogue_screen.dart';
 import 'features/card3_document/document_screen.dart';
 import 'features/hadith_stories/hadith_stories_screen.dart';
 import 'features/games/rubik_cube/rubik_cube_screen.dart';
+import 'features/games/chess/chess_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'services/database_service.dart';
