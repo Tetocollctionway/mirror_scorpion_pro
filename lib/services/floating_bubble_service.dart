@@ -77,7 +77,7 @@ class FloatingBubbleService extends ChangeNotifier {
           distanceToClose: 100,
           enableAnimateToEdge: true,
           enableClose: true,
-          size: _size,
+          bubbleSize: _size.toDouble(),
           opacity: _opacity,
         ),
         onTap: () {

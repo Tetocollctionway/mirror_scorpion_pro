@@ -130,7 +130,7 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _langBtn(_leftLang, (v) => setState(() => _leftLang = v)),
+                  _langBtn(_leftLang, (v) => setState(() => _leftLang = v!)),
                   IconButton(icon: const Icon(Icons.swap_horiz, color: Colors.amber), onPressed: _swap),
                   GestureDetector(
                     onTap: _handleMic,
@@ -140,7 +140,7 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                       child: Icon(_isListening ? Icons.stop : Icons.mic, color: Colors.white, size: 30),
                     ),
                   ),
-                  _langBtn(_rightLang, (v) => setState(() => _rightLang = v)),
+                  _langBtn(_rightLang, (v) => setState(() => _rightLang = v!)),
                 ],
               ),
               const SizedBox(height: 16),
