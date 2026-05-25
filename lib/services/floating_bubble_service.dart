@@ -2,7 +2,7 @@ import 'package:dash_bubble/dash_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Enhanced Floating Bubble Service with full control
+/// Enhanced Floating Bubble Service with full control and fixed permissions
 class FloatingBubbleService extends ChangeNotifier {
   static final FloatingBubbleService _instance = FloatingBubbleService._internal();
   
@@ -63,13 +63,17 @@ class FloatingBubbleService extends ChangeNotifier {
       final hasPermission = await DashBubble.instance.hasOverlayPermission();
       if (!hasPermission) {
         debugPrint('🫧 Requesting overlay permission...');
-        await DashBubble.instance.requestOverlayPermission();
+        final granted = await DashBubble.instance.requestOverlayPermission();
+        if (!granted) {
+          debugPrint('❌ Overlay permission denied');
+          return;
+        }
       }
       
       // Start the bubble with saved settings
       _isStarted = await DashBubble.instance.startBubble(
         bubbleOptions: BubbleOptions(
-          bubbleIcon: "scorpion_icon",
+          bubbleIcon: "scorpion_icon", // Ensure this exists in android/app/src/main/res/drawable
           distanceToClose: 100,
           enableAnimateToEdge: true,
           enableClose: true,
@@ -82,12 +86,12 @@ class FloatingBubbleService extends ChangeNotifier {
         },
       );
       
-      _isEnabled = true;
-      await _saveSettings();
-      notifyListeners();
-      
-      debugPrint('🫧 Floating bubble started successfully!');
-      debugPrint('📍 Size: $_size | Opacity: $_opacity | Language: $_selectedLanguage');
+      if (_isStarted) {
+        _isEnabled = true;
+        await _saveSettings();
+        notifyListeners();
+        debugPrint('🫧 Floating bubble started successfully!');
+      }
     } catch (e) {
       debugPrint('❌ Error starting bubble: $e');
       _isStarted = false;
@@ -96,15 +100,15 @@ class FloatingBubbleService extends ChangeNotifier {
   
   /// Stop the floating bubble
   Future<void> stopBubble() async {
-    if (!_isStarted) return;
-    
     try {
-      await DashBubble.instance.stopBubble();
-      _isStarted = false;
-      _isEnabled = false;
-      await _saveSettings();
-      notifyListeners();
-      debugPrint('🫧 Floating bubble stopped');
+      final stopped = await DashBubble.instance.stopBubble();
+      if (stopped) {
+        _isStarted = false;
+        _isEnabled = false;
+        await _saveSettings();
+        notifyListeners();
+        debugPrint('🫧 Floating bubble stopped');
+      }
     } catch (e) {
       debugPrint('❌ Error stopping bubble: $e');
     }
@@ -112,9 +116,9 @@ class FloatingBubbleService extends ChangeNotifier {
   
   /// Toggle bubble on/off
   Future<void> toggleBubble(BuildContext context, bool enabled) async {
-    if (enabled && !_isStarted) {
+    if (enabled) {
       await startBubble(context);
-    } else if (!enabled && _isStarted) {
+    } else {
       await stopBubble();
     }
     notifyListeners();
@@ -123,26 +127,24 @@ class FloatingBubbleService extends ChangeNotifier {
   /// Update bubble opacity
   Future<void> setOpacity(double opacity) async {
     _opacity = opacity.clamp(0.3, 1.0);
-    
-    if (_isStarted) {
-      await stopBubble();
-      // Restart with new settings (in real app, would update live)
-    }
-    
     await _saveSettings();
+    if (_isStarted) {
+      // Re-start to apply changes
+      await DashBubble.instance.stopBubble();
+      _isStarted = false;
+      // Note: In a real scenario, we might need a context here or handle it via a global key
+    }
     notifyListeners();
   }
   
   /// Update bubble size
   Future<void> setSize(int size) async {
     _size = size.clamp(60, 200);
-    
-    if (_isStarted) {
-      await stopBubble();
-      // Restart with new settings (in real app, would update live)
-    }
-    
     await _saveSettings();
+    if (_isStarted) {
+      await DashBubble.instance.stopBubble();
+      _isStarted = false;
+    }
     notifyListeners();
   }
   
@@ -151,7 +153,6 @@ class FloatingBubbleService extends ChangeNotifier {
     _selectedLanguage = language;
     await _saveSettings();
     notifyListeners();
-    debugPrint('🌐 Bubble language changed to: $language');
   }
   
   /// Toggle auto-translate feature
@@ -159,61 +160,30 @@ class FloatingBubbleService extends ChangeNotifier {
     _autoTranslate = enabled;
     await _saveSettings();
     notifyListeners();
-    debugPrint('🔄 Auto-translate: ${enabled ? 'enabled' : 'disabled'}');
-  }
-  
-  /// Toggle sound for translations
-  Future<void> toggleSound(bool enabled) async {
-    _soundEnabled = enabled;
-    await _saveSettings();
-    notifyListeners();
-    debugPrint('🔊 Sound: ${enabled ? 'enabled' : 'disabled'}');
   }
   
   /// Handle bubble tap event
   void _onBubbleTapped(BuildContext context) {
-    if (_soundEnabled) {
-      _playSound();
-    }
-    
-    // Show a quick translation dialog or menu
-    _showBubbleMenu(context);
-  }
-  
-  /// Show bubble menu/options
-  void _showBubbleMenu(BuildContext context) {
-    debugPrint('📋 Showing bubble menu...');
-    // In a real app, show a menu with translation options
-  }
-  
-  /// Play sound effect
-  void _playSound() {
-    debugPrint('🔊 Playing sound...');
-    // In a real app, use audio_players package
-  }
-  
-  /// Get bubble status
-  Map<String, dynamic> getBubbleStatus() {
-    return {
-      'isStarted': _isStarted,
-      'isEnabled': _isEnabled,
-      'opacity': _opacity,
-      'size': _size,
-      'language': _selectedLanguage,
-      'autoTranslate': _autoTranslate,
-      'soundEnabled': _soundEnabled,
-    };
-  }
-  
-  /// Reset to default settings
-  Future<void> resetToDefaults() async {
-    _opacity = 0.8;
-    _size = 120;
-    _selectedLanguage = 'en';
-    _autoTranslate = true;
-    _soundEnabled = true;
-    await _saveSettings();
-    notifyListeners();
-    debugPrint('🔄 Bubble settings reset to defaults');
+    // Show translation UI
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ميرور سكربيون - ترجمة فورية'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('الفقاعة العائمة نشطة وتعمل على ترجمة نصوص تطبيقات التواصل.'),
+            const SizedBox(height: 10),
+            Text('اللغة الحالية: $_selectedLanguage'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
   }
 }
