@@ -12,8 +12,8 @@ class TTSService extends ChangeNotifier {
     {'id': 'voice_1_female', 'name': 'سلمى'},
     {'id': 'voice_2_male', 'name': 'سيف'},
     {'id': 'voice_3_female_warm', 'name': 'سما'},
-    {'id': 'voice_4_male_deep', 'name': 'ساره'}, // Note: Name in requirement is Sara, but often voices vary
-    {'id': 'voice_5_premium_ai', 'name': 'صوت المستخدم'}, // Premium AI cloned voice
+    {'id': 'voice_4_female_soft', 'name': 'سارة'},
+    {'id': 'voice_5_premium_ai', 'name': 'صوت المستخدم'},
   ];
 
   bool get isSpeaking => _isSpeaking;
@@ -46,24 +46,23 @@ class TTSService extends ChangeNotifier {
     
     // Configure based on voice type
     switch (voiceId) {
-      case 'voice_1_female': // سلمى
-        await _flutterTts.setPitch(1.2);
+      case 'voice_1_female': // سلمى (متزن)
+        await _flutterTts.setPitch(1.0);
         await _flutterTts.setSpeechRate(0.5);
         break;
-      case 'voice_2_male': // سيف
+      case 'voice_2_male': // سيف (خشن/عميق)
         await _flutterTts.setPitch(0.8);
         await _flutterTts.setSpeechRate(0.45);
         break;
-      case 'voice_3_female_warm': // سما
-        await _flutterTts.setPitch(1.1);
-        await _flutterTts.setSpeechRate(0.4);
+      case 'voice_3_female_warm': // سما (دافئ/ناعم)
+        await _flutterTts.setPitch(1.2);
+        await _flutterTts.setSpeechRate(0.45);
         break;
-      case 'voice_4_male_deep': // ساره (as requested, but configured deep)
-        await _flutterTts.setPitch(0.7);
-        await _flutterTts.setSpeechRate(0.4);
+      case 'voice_4_female_soft': // سارة (رقيق)
+        await _flutterTts.setPitch(1.4);
+        await _flutterTts.setSpeechRate(0.5);
         break;
       case 'voice_5_premium_ai':
-        // Premium AI voice - uses external API or special config
         await _flutterTts.setPitch(1.0);
         await _flutterTts.setSpeechRate(0.5);
         break;
