@@ -4,6 +4,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
 class DocumentTranslationScreen extends StatefulWidget {
   const DocumentTranslationScreen({super.key});
@@ -21,36 +22,27 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   String _translatedText = '';
   String _selectedLanguage = 'ar';
   bool _isProcessing = false;
-  bool _showTranslation = false;
+  bool _showOriginal = false;
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
 
   final Map<String, String> _languages = {
-    'ar': 'العربية',
-    'en': 'English',
-    'fr': 'Français',
-    'es': 'Español',
-    'de': 'Deutsch',
-    'it': 'Italiano',
-    'pt': 'Português',
-    'ru': 'Русский',
-    'ja': 'Japanese',
-    'zh': '中文',
-    'ko': '한국어',
-    'tr': 'Türkçe',
+    'ar': 'العربية', 'en': 'English', 'fr': 'Français', 'es': 'Español',
+    'de': 'Deutsch', 'it': 'Italiano', 'pt': 'Português', 'ru': 'Русский',
+    'ja': 'Japanese', 'zh': '中文', 'ko': '한국어', 'tr': 'Türkçe',
   };
 
   @override
   void initState() {
     super.initState();
     _slideController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
   }
 
   @override
@@ -61,109 +53,76 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   }
 
   Future<void> _pickImage() async {
-    try {
-      final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _selectedImage = File(pickedFile.path);
-          _extractedText = '';
-          _translatedText = '';
-          _showTranslation = false;
-        });
-        await _extractTextFromImage();
-      }
-    } catch (e) {
-      debugPrint('Image picker error: $e');
+    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _urlController.text = pickedFile.path;
+        _extractedText = '';
+        _translatedText = '';
+        _slideController.reset();
+      });
+      await _extractTextFromImage();
     }
   }
 
   Future<void> _extractTextFromImage() async {
     if (_selectedImage == null) return;
-
     setState(() => _isProcessing = true);
-
     try {
       final inputImage = InputImage.fromFile(_selectedImage!);
       final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
       final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-
-      String extractedText = '';
+      String text = '';
       for (TextBlock block in recognizedText.blocks) {
         for (TextLine line in block.lines) {
-          extractedText += '${line.text}\n';
+          text += '${line.text}\n';
         }
       }
-
-      setState(() {
-        _extractedText = extractedText.trim();
-      });
-
+      setState(() => _extractedText = text.trim());
       await textRecognizer.close();
     } catch (e) {
       debugPrint('OCR error: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في استخراج النص: $e')),
-        );
-      }
     }
-
     setState(() => _isProcessing = false);
   }
 
   Future<void> _translateDocument() async {
-    if (_extractedText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى اختيار صورة أولاً')),
-      );
-      return;
-    }
-
+    if (_extractedText.isEmpty) return;
     setState(() => _isProcessing = true);
-
     try {
-      // Limit to 5 pages in free version (simulate by limiting text length)
-      final textToTranslate = _extractedText.length > 5000 
-        ? _extractedText.substring(0, 5000) 
-        : _extractedText;
-
+      // Show loading for 3 seconds as requested
+      await Future.delayed(const Duration(seconds: 3));
+      
       final url = Uri.parse(
-        'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=$_selectedLanguage&dt=t&q=${Uri.encodeComponent(textToTranslate)}'
+        'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=$_selectedLanguage&dt=t&q=${Uri.encodeComponent(_extractedText)}'
       );
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final translated = (data[0] as List).map((e) => e[0] as String).join();
-        
-        setState(() {
-          _translatedText = translated;
-          _isProcessing = false;
-          _showTranslation = false;
-        });
-
-        // Animate the paper slide
-        await _slideController.forward();
+        setState(() => _translatedText = translated);
+        _slideController.forward();
       }
     } catch (e) {
       debugPrint('Translation error: $e');
-      setState(() => _isProcessing = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في الترجمة: $e')),
-        );
-      }
     }
+    setState(() => _isProcessing = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('مستندات وعدسة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('مستندات وعدسة', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF0D1B2A),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.language, color: Colors.amber),
+            onSelected: (v) => setState(() => _selectedLanguage = v),
+            itemBuilder: (context) => _languages.entries.map((e) => PopupMenuItem(value: e.key, child: Text(e.value))).toList(),
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -173,247 +132,67 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
             colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)]
           )
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Language selector
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedLanguage,
-                    isExpanded: true,
-                    dropdownColor: const Color(0xFF1B2838),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                    items: _languages.entries.map((entry) {
-                      return DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => _selectedLanguage = value);
-                      }
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Image picker section
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'اختر صورة المستند',
-                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
-                    ),
-                    const SizedBox(height: 12),
-                    // Selected image preview
-                    if (_selectedImage != null)
-                      Container(
-                        width: double.infinity,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: FileImage(_selectedImage!),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        width: double.infinity,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white.withOpacity(0.1), style: BorderStyle.solid),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.image, size: 40, color: Colors.white.withOpacity(0.3)),
-                              const SizedBox(height: 8),
-                              Text(
-                                'لم تختر صورة بعد',
-                                style: TextStyle(color: Colors.white.withOpacity(0.3)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _pickImage,
-                        icon: const Icon(Icons.photo_library),
-                        label: const Text('فتح المعرض'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _urlController,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      decoration: InputDecoration(
+                        hintText: 'رابط الملف أو مساره...',
+                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.05),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.search, color: Colors.blue),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.folder_open),
+                label: const Text('فتح من المستعرض'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
               ),
               const SizedBox(height: 20),
-
-              // Extracted text section
-              if (_extractedText.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'النص المستخرج',
-                        style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _extractedText,
-                        style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.6),
-                        maxLines: 6,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 20),
-
-              // Translate button
               if (_extractedText.isNotEmpty)
                 SizedBox(
                   width: double.infinity,
+                  height: 50,
                   child: ElevatedButton(
                     onPressed: _isProcessing ? null : _translateDocument,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: _isProcessing
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'ترجمة المستند',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+                    child: _isProcessing 
+                      ? const CircularProgressIndicator(color: Colors.white) 
+                      : const Text('ترجمة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                 ),
               const SizedBox(height: 20),
-
-              // Translated document view (full screen)
               if (_translatedText.isNotEmpty)
-                SizedBox(
-                  width: double.infinity,
-                  height: 300,
+                Expanded(
                   child: GestureDetector(
-                    onLongPress: () {
-                      setState(() => _showTranslation = false);
-                    },
-                    onLongPressEnd: (_) {
-                      setState(() => _showTranslation = true);
-                    },
+                    onLongPressStart: (_) => setState(() => _showOriginal = true),
+                    onLongPressEnd: (_) => setState(() => _showOriginal = false),
                     child: Stack(
                       children: [
-                        // Original document
-                        Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white.withOpacity(0.2)),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Text(
-                              _extractedText,
-                              style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.5),
-                            ),
-                          ),
-                        ),
-                        // Translated paper slide effect
-                        if (!_showTranslation)
+                        // Original Document
+                        _buildDocumentPaper(_extractedText, Colors.white10, Colors.white70),
+                        // Translated Paper with Slide
+                        if (!_showOriginal)
                           SlideTransition(
                             position: _slideAnimation,
-                            child: Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.95),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: Stack(
-                                children: [
-                                  // Translated text
-                                  SingleChildScrollView(
-                                    child: Text(
-                                      _translatedText,
-                                      style: const TextStyle(color: Colors.black87, fontSize: 12, height: 1.5),
-                                    ),
-                                  ),
-                                  // Transparent signature (130 degrees)
-                                  Positioned(
-                                    bottom: 20,
-                                    right: 10,
-                                    child: Transform.rotate(
-                                      angle: 130 * 3.14 / 180,
-                                      child: Text(
-                                        'Mirror Scorpion',
-                                        style: TextStyle(
-                                          color: Colors.black.withOpacity(0.08),
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.italic,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: _buildDocumentPaper(_translatedText, Colors.white, Colors.black87, hasWatermark: true),
                           ),
                       ],
                     ),
@@ -422,6 +201,44 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDocumentPaper(String text, Color bgColor, Color textColor, {bool hasWatermark = false}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+        boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 10)],
+      ),
+      child: Stack(
+        children: [
+          if (hasWatermark)
+            Center(
+              child: Transform.rotate(
+                angle: -130 * 3.14 / 180,
+                child: Text(
+                  'ترجم هذا المستند بواسطة ميرور سكربيون',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.1),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          SingleChildScrollView(
+            child: Text(
+              text,
+              style: TextStyle(color: textColor, fontSize: 14, height: 1.6),
+              textDirection: TextDirection.rtl,
+            ),
+          ),
+        ],
       ),
     );
   }
