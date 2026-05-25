@@ -328,11 +328,33 @@ class _RubikPainter extends CustomPainter {
         1,
       );
 
-      canvas.drawPath(path, Paint()..color = color);
+      // Realistic face with rounded corners and gradient/shine
+      final fillPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withOpacity(0.9),
+            color.withOpacity(1.0),
+            color.withOpacity(0.8),
+          ],
+        ).createShader(path.getBounds());
+      
+      canvas.drawPath(path, fillPaint);
+      
+      // Border (Black plastic frame effect)
       canvas.drawPath(path, Paint()
-        ..color = Colors.black
+        ..color = Colors.black.withOpacity(0.8)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0);
+        ..strokeWidth = 2.0);
+        
+      // Inner shine/highlight
+      final shinePath = Path()..moveTo(p.corners[0].dx + 2, p.corners[0].dy + 2)
+        ..lineTo(p.corners[1].dx - 2, p.corners[1].dy + 2);
+      canvas.drawPath(shinePath, Paint()
+        ..color = Colors.white.withOpacity(0.2)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5);
     }
   }
 

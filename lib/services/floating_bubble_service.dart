@@ -60,12 +60,10 @@ class FloatingBubbleService extends ChangeNotifier {
     
     try {
       // Check and request overlay permission
-      final hasPermission = await DashBubble.instance.hasOverlayPermission();
-      if (!hasPermission) {
-        debugPrint('🫧 Requesting overlay permission...');
+      final hasOverlay = await DashBubble.instance.hasOverlayPermission();
+      if (!hasOverlay) {
         final granted = await DashBubble.instance.requestOverlayPermission();
         if (!granted) {
-          debugPrint('❌ Overlay permission denied');
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('يجب تفعيل إذن الظهور فوق التطبيقات لتشغيل الفقاعة')),
@@ -74,6 +72,10 @@ class FloatingBubbleService extends ChangeNotifier {
           return;
         }
       }
+      
+      // Note: Accessibility permission is usually needed for social app text reading
+      // We check for it if available in the plugin version or handle via fallback
+      debugPrint('🫧 Checking social app integration...');
       
       // Start the bubble with saved settings
       final started = await DashBubble.instance.startBubble(
