@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
             const SizedBox(width: 10),
-            const Text('إلهام ميرور سكربيون ✨', style: TextStyle(color: Colors.amber, fontSize: 16)),
+            const Text('ذكاء مانوس (Manus Intelligence) ✨', style: TextStyle(color: Colors.amber, fontSize: 16)),
           ],
         ),
         backgroundColor: const Color(0xFF1B2838),

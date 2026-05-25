@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../services/tts_service.dart';
+import '../../services/ai_service.dart';
 
 class TextTranslationScreen extends StatefulWidget {
   const TextTranslationScreen({super.key});
@@ -105,9 +106,42 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
+  void _showManuelAI() async {
+    final inspiration = await AIService.generateInspiration(
+      userMood: _sourceController.text,
+      context: 'Translation Screen',
+    );
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.auto_awesome, color: Colors.amber),
+            SizedBox(width: 10),
+            Text('مساعد مانوس الخارق (Manus AI)', style: TextStyle(color: Colors.amber, fontSize: 16)),
+          ],
+        ),
+        backgroundColor: const Color(0xFF1B2838),
+        content: Text(inspiration, style: const TextStyle(color: Colors.white)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('شكراً مانوس', style: TextStyle(color: Colors.blueAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showManuelAI,
+        backgroundColor: Colors.amber,
+        child: const Icon(Icons.auto_awesome, color: Colors.black),
+      ),
       appBar: AppBar(
         title: const Text('ترجمة نصية', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF0D1B2A),
