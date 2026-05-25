@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import '../../services/tts_service.dart';
 
@@ -18,13 +17,13 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   final TextEditingController _lowerController = TextEditingController();
   late stt.SpeechToText _speechToText;
   
-  String _rightLang = 'en'; // Right button
-  String _leftLang = 'ar';  // Left button
+  String _rightLang = 'ar'; // Right button (Source)
+  String _leftLang = 'en';  // Left button (Target)
   bool _isListening = false;
   bool _isTranslating = false;
 
   final List<Map<String, String>> _languages = [
-    {'code': 'en', 'name': 'English'}, {'code': 'ar', 'name': 'العربية'},
+    {'code': 'ar', 'name': 'العربية'}, {'code': 'en', 'name': 'English'},
     {'code': 'fr', 'name': 'Français'}, {'code': 'es', 'name': 'Español'},
     {'code': 'de', 'name': 'Deutsch'}, {'code': 'tr', 'name': 'Türkçe'},
     {'code': 'ur', 'name': 'اردو'}, {'code': 'fa', 'name': 'فارسی'},
@@ -35,7 +34,6 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   void initState() {
     super.initState();
     _speechToText = stt.SpeechToText();
-    _speechToText.initialize();
   }
 
   Future<void> _handleMic() async {
@@ -44,11 +42,13 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
       setState(() => _isListening = false);
       _translate();
     } else {
+      // Clear screen on new mic press as requested
       _upperController.clear();
       _lowerController.clear();
       bool available = await _speechToText.initialize();
       if (available) {
         setState(() => _isListening = true);
+        // Always uses the right button language for the upper editor
         _speechToText.listen(
           onResult: (result) {
             setState(() => _upperController.text = result.recognizedWords);
@@ -88,8 +88,9 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('حوار مترجم', style: TextStyle(color: Colors.white)),
+        title: const Text('حوار مترجم', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF0D1B2A),
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -103,56 +104,79 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Upper Editor (Enlarged for visibility)
+              // Upper Editor (Source)
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
                   child: TextField(
                     controller: _upperController,
                     maxLines: null,
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
                     decoration: const InputDecoration(
-                      hintText: 'الكلام الملتقط يظهر هنا...',
+                      hintText: 'تحدث ليتم التقاط الكلمات هنا...',
                       hintStyle: TextStyle(color: Colors.white24),
                       border: InputBorder.none,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              // Controls Row
+              const SizedBox(height: 20),
+              
+              // Controls Row: Left Lang | Swap | Mic | Right Lang
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  // Left Lang Button (Target)
                   _langBtn(_leftLang, (v) => setState(() => _leftLang = v!)),
-                  IconButton(icon: const Icon(Icons.swap_horiz, color: Colors.amber), onPressed: _swap),
+                  
+                  // Swap Button
+                  IconButton(
+                    icon: const Icon(Icons.swap_horiz, color: Colors.amber, size: 32),
+                    onPressed: _swap,
+                  ),
+                  
+                  // Mic Button (Good size)
                   GestureDetector(
                     onTap: _handleMic,
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: _isListening ? Colors.red : Colors.blueAccent,
-                      child: Icon(_isListening ? Icons.stop : Icons.mic, color: Colors.white, size: 30),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _isListening ? Colors.redAccent : Colors.blueAccent,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: (_isListening ? Colors.red : Colors.blue).withOpacity(0.4),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          )
+                        ],
+                      ),
+                      child: Icon(_isListening ? Icons.stop : Icons.mic, color: Colors.white, size: 35),
                     ),
                   ),
+                  
+                  // Right Lang Button (Source - Always used for input)
                   _langBtn(_rightLang, (v) => setState(() => _rightLang = v!)),
                 ],
               ),
-              const SizedBox(height: 16),
+              
+              const SizedBox(height: 20),
+              
               // Lower Editor (Translation)
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    color: Colors.blueAccent.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blueAccent.withOpacity(0.2)),
                   ),
                   child: Stack(
                     children: [
@@ -160,18 +184,19 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                         controller: _lowerController,
                         maxLines: null,
                         readOnly: true,
-                        style: const TextStyle(color: Colors.amber, fontSize: 18),
+                        style: const TextStyle(color: Colors.amberAccent, fontSize: 20, fontWeight: FontWeight.w500),
                         decoration: const InputDecoration(
-                          hintText: 'الترجمة تظهر هنا...',
+                          hintText: 'الترجمة ستظهر هنا...',
                           hintStyle: TextStyle(color: Colors.white24),
                           border: InputBorder.none,
                         ),
                       ),
+                      // Speaker on bottom right
                       Positioned(
                         bottom: 0,
                         right: 0,
                         child: IconButton(
-                          icon: const Icon(Icons.volume_up, color: Colors.blue),
+                          icon: const Icon(Icons.volume_up, color: Colors.blueAccent, size: 30),
                           onPressed: () {
                             Provider.of<TTSService>(context, listen: false).speak(_lowerController.text);
                           },
@@ -190,14 +215,22 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
 
   Widget _langBtn(String value, ValueChanged<String?> onChanged) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(8)),
-      child: DropdownButton<String>(
-        value: value,
-        dropdownColor: const Color(0xFF1B2838),
-        underline: const SizedBox(),
-        items: _languages.map((l) => DropdownMenuItem(value: l['code'], child: Text(l['name']!, style: const TextStyle(color: Colors.white, fontSize: 12)))).toList(),
-        onChanged: onChanged,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          dropdownColor: const Color(0xFF1B2838),
+          items: _languages.map((l) => DropdownMenuItem(
+            value: l['code'], 
+            child: Text(l['name']!, style: const TextStyle(color: Colors.white, fontSize: 14))
+          )).toList(),
+          onChanged: onChanged,
+        ),
       ),
     );
   }

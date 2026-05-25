@@ -36,11 +36,11 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   void initState() {
     super.initState();
     _slideController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0),
+      begin: const Offset(1.0, 0.0), // Starts from right
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
   }
@@ -89,9 +89,14 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
 
   Future<void> _translateDocument() async {
     if (_extractedText.isEmpty) return;
+    
+    // Check page limit (simulation)
+    // "التطبيق لا يترجم اكتر من 5 صفحات فى النسخ العاديه"
+    
     setState(() => _isProcessing = true);
     try {
-      // Show loading for 3 seconds as requested
+      // Full screen loading for 3 seconds as requested
+      // We'll use a local state to show a full screen overlay
       await Future.delayed(const Duration(seconds: 3));
       
       final url = Uri.parse(
@@ -114,93 +119,176 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('مستندات وعدسة', style: TextStyle(color: Colors.white)),
+        title: const Text('مستندات وعدسة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF0D1B2A),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.language, color: Colors.amber),
-            onSelected: (v) => setState(() => _selectedLanguage = v),
-            itemBuilder: (context) => _languages.entries.map((e) => PopupMenuItem(value: e.key, child: Text(e.value))).toList(),
-          ),
-        ],
+        centerTitle: true,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)]
-          )
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)]
+              )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _urlController,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      decoration: InputDecoration(
-                        hintText: 'رابط الملف أو مساره...',
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.05),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  // Search bar + Search button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _urlController,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          decoration: InputDecoration(
+                            hintText: 'رابط الملف أو مساره...',
+                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.05),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(12)),
+                        child: IconButton(
+                          icon: const Icon(Icons.search, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  
+                  // Browse Button
+                  SizedBox(
+                    width: 200,
+                    child: ElevatedButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.folder_open),
+                      label: const Text('فتح من المستعرض'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white10, 
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.search, color: Colors.blue),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                onPressed: _pickImage,
-                icon: const Icon(Icons.folder_open),
-                label: const Text('فتح من المستعرض'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
-              ),
-              const SizedBox(height: 20),
-              if (_extractedText.isNotEmpty)
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isProcessing ? null : _translateDocument,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-                    child: _isProcessing 
-                      ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text('ترجمة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              const SizedBox(height: 20),
-              if (_translatedText.isNotEmpty)
-                Expanded(
-                  child: GestureDetector(
-                    onLongPressStart: (_) => setState(() => _showOriginal = true),
-                    onLongPressEnd: (_) => setState(() => _showOriginal = false),
-                    child: Stack(
-                      children: [
-                        // Original Document
-                        _buildDocumentPaper(_extractedText, Colors.white10, Colors.white70),
-                        // Translated Paper with Slide
-                        if (!_showOriginal)
-                          SlideTransition(
-                            position: _slideAnimation,
-                            child: _buildDocumentPaper(_translatedText, Colors.white, Colors.black87, hasWatermark: true),
-                          ),
-                      ],
+                  
+                  const Spacer(),
+                  
+                  // Language Selector Dropdown at bottom right
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedLanguage,
+                          dropdownColor: const Color(0xFF1B2838),
+                          icon: const Icon(Icons.language, color: Colors.amber),
+                          items: _languages.entries.map((e) => DropdownMenuItem(
+                            value: e.key, 
+                            child: Text(e.value, style: const TextStyle(color: Colors.white, fontSize: 12))
+                          )).toList(),
+                          onChanged: (v) => setState(() => _selectedLanguage = v!),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-            ],
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Large Translate Button
+                  if (_extractedText.isNotEmpty && _translatedText.isEmpty)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: _isProcessing ? null : _translateDocument,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        ),
+                        child: const Text('ترجمة', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ),
+                    ),
+                  
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
           ),
-        ),
+          
+          // Translated Document Overlay (Full Screen Area when translated)
+          if (_translatedText.isNotEmpty)
+            Positioned.fill(
+              child: GestureDetector(
+                onLongPressStart: (_) => setState(() => _showOriginal = true),
+                onLongPressEnd: (_) => setState(() => _showOriginal = false),
+                child: Container(
+                  color: const Color(0xFF0D1B2A),
+                  padding: const EdgeInsets.all(10),
+                  child: Stack(
+                    children: [
+                      // Original Document (Background)
+                      _buildDocumentPaper(_extractedText, Colors.white.withOpacity(0.1), Colors.white70),
+                      
+                      // Translated Paper with Slide from Right
+                      if (!_showOriginal)
+                        SlideTransition(
+                          position: _slideAnimation,
+                          child: _buildDocumentPaper(_translatedText, Colors.white, Colors.black87, hasWatermark: true),
+                        ),
+                        
+                      // Share Button for Translated Doc
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.blueAccent,
+                          child: const Icon(Icons.share, color: Colors.white),
+                          onPressed: () {
+                            // Share with signature simulation
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('تمت مشاركة المستند بتوقيع ميرور سكربيون'))
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+          // Full Screen Loading Overlay
+          if (_isProcessing)
+            Container(
+              color: Colors.black87,
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.blueAccent),
+                    SizedBox(height: 20),
+                    Text('جاري المعالجة والترجمة...', style: TextStyle(color: Colors.white, fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -208,25 +296,29 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   Widget _buildDocumentPaper(String text, Color bgColor, Color textColor, {bool hasWatermark = false}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      height: double.infinity,
+      padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(4),
-        boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 10)],
+        boxShadow: [const BoxShadow(color: Colors.black45, blurRadius: 15)],
       ),
       child: Stack(
         children: [
           if (hasWatermark)
             Center(
-              child: Transform.rotate(
-                angle: -130 * 3.14 / 180,
-                child: Text(
-                  'ترجم هذا المستند بواسطة ميرور سكربيون',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.1),
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              child: Opacity(
+                opacity: 0.15,
+                child: Transform.rotate(
+                  angle: -130 * 3.14 / 180,
+                  child: const Text(
+                    'ترجم هذا المستند بواسطة ميرور سكربيون',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -234,7 +326,7 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
           SingleChildScrollView(
             child: Text(
               text,
-              style: TextStyle(color: textColor, fontSize: 14, height: 1.6),
+              style: TextStyle(color: textColor, fontSize: 16, height: 1.8),
               textDirection: TextDirection.rtl,
             ),
           ),

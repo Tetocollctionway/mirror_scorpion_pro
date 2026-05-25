@@ -18,22 +18,39 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   final TextEditingController _translatedController = TextEditingController();
   late stt.SpeechToText _speechToText;
   
-  String _selectedLanguage = 'ar';
+  String _selectedLanguage = 'en';
   bool _isTranslating = false;
   bool _isListening = false;
 
+  // Expanded language list (approx 100 common languages)
   final Map<String, String> _languages = {
-    'ar': 'العربية', 'en': 'English', 'fr': 'Français', 'es': 'Español',
-    'de': 'Deutsch', 'it': 'Italiano', 'pt': 'Português', 'ru': 'Русский',
-    'ja': 'Japanese', 'zh': '中文', 'ko': '한국어', 'tr': 'Türkçe',
-    // ... more languages can be added
+    'af': 'Afrikaans', 'sq': 'Albanian', 'am': 'Amharic', 'ar': 'Arabic', 'hy': 'Armenian',
+    'az': 'Azerbaijani', 'eu': 'Basque', 'be': 'Belarusian', 'bn': 'Bengali', 'bs': 'Bosnian',
+    'bg': 'Bulgarian', 'ca': 'Catalan', 'ceb': 'Cebuano', 'ny': 'Chichewa', 'zh': 'Chinese',
+    'co': 'Corsican', 'hr': 'Croatian', 'cs': 'Czech', 'da': 'Danish', 'nl': 'Dutch',
+    'en': 'English', 'eo': 'Esperanto', 'et': 'Estonian', 'tl': 'Filipino', 'fi': 'Finnish',
+    'fr': 'French', 'fy': 'Frisian', 'gl': 'Galician', 'ka': 'Georgian', 'de': 'German',
+    'el': 'Greek', 'gu': 'Gujarati', 'ht': 'Haitian Creole', 'ha': 'Hausa', 'haw': 'Hawaiian',
+    'iw': 'Hebrew', 'hi': 'Hindi', 'hmn': 'Hmong', 'hu': 'Hungarian', 'is': 'Icelandic',
+    'ig': 'Igbo', 'id': 'Indonesian', 'ga': 'Irish', 'it': 'Italian', 'ja': 'Japanese',
+    'jw': 'Javanese', 'kn': 'Kannada', 'kk': 'Kazakh', 'km': 'Khmer', 'ko': 'Korean',
+    'ku': 'Kurdish (Kurmanji)', 'ky': 'Kyrgyz', 'lo': 'Lao', 'la': 'Latin', 'lv': 'Latvian',
+    'lt': 'Lithuanian', 'lb': 'Luxembourgish', 'mk': 'Macedonian', 'mg': 'Malagasy', 'ms': 'Malay',
+    'ml': 'Malayalam', 'mt': 'Maltese', 'mi': 'Maori', 'mr': 'Marathi', 'mn': 'Mongolian',
+    'my': 'Myanmar (Burmese)', 'ne': 'Nepali', 'no': 'Norwegian', 'ps': 'Pashto', 'fa': 'Persian',
+    'pl': 'Polish', 'pt': 'Portuguese', 'pa': 'Punjabi', 'ro': 'Romanian', 'ru': 'Russian',
+    'sm': 'Samoan', 'gd': 'Scots Gaelic', 'sr': 'Serbian', 'st': 'Sesotho', 'sn': 'Shona',
+    'sd': 'Sindhi', 'si': 'Sinhala', 'sk': 'Slovak', 'sl': 'Slovenian', 'so': 'Somali',
+    'es': 'Spanish', 'su': 'Sundanese', 'sw': 'Swahili', 'sv': 'Swedish', 'tg': 'Tajik',
+    'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tr': 'Turkish', 'uk': 'Ukrainian',
+    'ur': 'Urdu', 'uz': 'Uzbek', 'vi': 'Vietnamese', 'cy': 'Welsh', 'xh': 'Xhosa',
+    'yi': 'Yiddish', 'yo': 'Yoruba', 'zu': 'Zulu'
   };
 
   @override
   void initState() {
     super.initState();
     _speechToText = stt.SpeechToText();
-    _speechToText.initialize();
   }
 
   Future<void> _handleMic() async {
@@ -42,6 +59,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       setState(() => _isListening = false);
       _translate();
     } else {
+      // Clear editors for new translation as requested
       _sourceController.clear();
       _translatedController.clear();
       bool available = await _speechToText.initialize();
@@ -74,11 +92,16 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   }
 
   void _shareAudio() {
-    // Simulate sharing audio file message
-    final message = "${_translatedController.text}\n\nتمت الترجمة بواسطة ميرور سكربيون";
-    Clipboard.setData(ClipboardData(text: message));
+    // Description says: share audio file only with specific signature
+    // Since we are simulating, we'll show a snackbar and copy the text with signature
+    final signature = "\n\nتمت الترجمة بواسطة ميرور سكربيون";
+    final content = _translatedController.text + signature;
+    Clipboard.setData(ClipboardData(text: content));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم نسخ النص مع التوقيع للمشاركة')),
+      const SnackBar(
+        content: Text('تم تجهيز ملف الصوت (محاكاة) والمشاركة مع التوقيع'),
+        backgroundColor: Colors.blueAccent,
+      ),
     );
   }
 
@@ -86,8 +109,9 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ترجمة نصية', style: TextStyle(color: Colors.white)),
+        title: const Text('ترجمة نصية', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF0D1B2A),
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -101,35 +125,51 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Language Selector
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(12)),
-                child: DropdownButton<String>(
-                  value: _selectedLanguage,
-                  isExpanded: true,
-                  dropdownColor: const Color(0xFF1B2838),
-                  underline: const SizedBox(),
-                  items: _languages.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value, style: const TextStyle(color: Colors.white)))).toList(),
-                  onChanged: (v) => setState(() => _selectedLanguage = v!),
+              // Language Selector in the middle top
+              Center(
+                child: Container(
+                  width: 200,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blueAccent.withOpacity(0.5)),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedLanguage,
+                      isExpanded: true,
+                      dropdownColor: const Color(0xFF1B2838),
+                      icon: const Icon(Icons.language, color: Colors.blueAccent),
+                      items: _languages.entries.map((e) => DropdownMenuItem(
+                        value: e.key, 
+                        child: Text(e.value, style: const TextStyle(color: Colors.white, fontSize: 14))
+                      )).toList(),
+                      onChanged: (v) => setState(() => _selectedLanguage = v!),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
+              
               // Source Editor
-              _buildEditor(_sourceController, 'اكتب أو انطق النص...', Icons.mic, _handleMic, _isListening),
+              _buildSourceEditor(),
+              
               const SizedBox(height: 20),
-              // Translate Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isTranslating ? null : _translate,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-                  child: _isTranslating ? const CircularProgressIndicator(color: Colors.white) : const Text('ترجمة'),
-                ),
-              ),
-              const SizedBox(height: 20),
+              
               // Translated Editor
               _buildTranslatedEditor(),
+              
+              const SizedBox(height: 30),
+              
+              // Branding
+              const Opacity(
+                opacity: 0.3,
+                child: Text(
+                  "Mirror Scorpion Translate",
+                  style: TextStyle(color: Colors.white, letterSpacing: 2, fontSize: 12),
+                ),
+              )
             ],
           ),
         ),
@@ -137,7 +177,7 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     );
   }
 
-  Widget _buildEditor(TextEditingController controller, String hint, IconData icon, VoidCallback onIconTap, bool isActive) {
+  Widget _buildSourceEditor() {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -148,22 +188,33 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
       child: Column(
         children: [
           TextField(
-            controller: controller,
-            maxLines: 5,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(hintText: hint, hintStyle: const TextStyle(color: Colors.white24), border: InputBorder.none),
+            controller: _sourceController,
+            maxLines: 6,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+            decoration: const InputDecoration(
+              hintText: 'اكتب النص هنا أو استخدم المايك...',
+              hintStyle: TextStyle(color: Colors.white24),
+              border: InputBorder.none,
+            ),
             onChanged: (v) {
-              if (v.isNotEmpty) {
-                // Future enhancement: Auto-clear on new input if needed
-              }
+              // If user starts typing, we might want to clear previous translation or auto-translate
             },
           ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: IconButton(
-              icon: Icon(icon, color: isActive ? Colors.red : Colors.blue),
-              onPressed: onIconTap,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Mic on the bottom left as requested
+              IconButton(
+                icon: Icon(_isListening ? Icons.stop_circle : Icons.mic, 
+                  color: _isListening ? Colors.redAccent : Colors.blueAccent, size: 30),
+                onPressed: _handleMic,
+              ),
+              if (_sourceController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.translate, color: Colors.amber),
+                  onPressed: _translate,
+                ),
+            ],
           )
         ],
       ),
@@ -174,35 +225,42 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.blueAccent.withOpacity(0.05),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.blueAccent.withOpacity(0.2)),
       ),
       child: Column(
         children: [
           TextField(
             controller: _translatedController,
-            maxLines: 5,
+            maxLines: 6,
             readOnly: true,
-            style: const TextStyle(color: Colors.amber),
-            decoration: const InputDecoration(hintText: 'الترجمة تظهر هنا...', hintStyle: TextStyle(color: Colors.white24), border: InputBorder.none),
+            style: const TextStyle(color: Colors.amberAccent, fontSize: 18, fontWeight: FontWeight.w500),
+            decoration: const InputDecoration(
+              hintText: 'الترجمة ستظهر هنا...',
+              hintStyle: TextStyle(color: Colors.white24),
+              border: InputBorder.none,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // Speaker for TTS
               IconButton(
-                icon: const Icon(Icons.volume_up, color: Colors.blue),
+                icon: const Icon(Icons.volume_up, color: Colors.blueAccent),
                 onPressed: () => Provider.of<TTSService>(context, listen: false).speak(_translatedController.text),
               ),
+              // Share button (audio file simulation)
               IconButton(
-                icon: const Icon(Icons.share, color: Colors.green),
+                icon: const Icon(Icons.share, color: Colors.greenAccent),
                 onPressed: _shareAudio,
               ),
+              // Copy button
               IconButton(
                 icon: const Icon(Icons.copy, color: Colors.white70),
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: _translatedController.text));
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ النص')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ النص المترجم')));
                 },
               ),
             ],

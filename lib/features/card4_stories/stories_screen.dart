@@ -22,6 +22,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
   final TextEditingController _inspirationController = TextEditingController();
   String _inspirationResult = '';
   bool _isGenerating = false;
+  bool _autoInspirationEnabled = false;
 
   static const List<String> _storyCategories = [
     'الكل', 'قصص قرآنية', 'قصص الأنبياء', 'نساء مؤمنات',
@@ -40,7 +41,6 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     await db.loadAllData();
     setState(() {
       _hadiths = db.hadiths;
-      // Combine all stories for "All" filter
       _stories = [
         ...db.quranStories.map((e) => {...e, 'category': 'قصص قرآنية'}),
         ...db.prophetStories.map((e) => {...e, 'category': 'قصص الأنبياء'}),
@@ -57,8 +57,9 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('أحاديث وقصص وإلهام', style: TextStyle(color: Colors.white)),
+        title: const Text('أحاديث وقصص وإلهام', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF0D1B2A),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.amber,
@@ -94,7 +95,6 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
   }
 
   Widget _buildHadithsTab() {
-    // Shuffle hadiths for random order as requested
     List<Map<String, dynamic>> shuffledHadiths = List.from(_hadiths)..shuffle();
     
     return ListView.builder(
@@ -103,11 +103,12 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
       itemBuilder: (context, index) {
         final hadith = shuffledHadiths[index];
         return _buildContentCard(
-          title: hadith['narrator'] ?? 'حديث شريف',
+          title: hadith['narrator'] ?? 'حديث قدسي',
           content: hadith['text'] ?? '',
-          subtitle: hadith['source'] ?? '',
+          subtitle: hadith['source'] ?? 'معاني الكلمات متوفرة بالأسفل',
           icon: Icons.auto_stories,
           color: Colors.amber,
+          isHadith: true,
         );
       },
     );
@@ -152,8 +153,9 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
                 content: story['text'] ?? '',
                 subtitle: story['category'] ?? '',
                 icon: Icons.history_edu,
-                color: Colors.blue,
+                color: Colors.blueAccent,
                 showVideoBtn: true,
+                showListenBtn: true,
               );
             },
           ),
@@ -166,12 +168,25 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("تفعيل الإلهام التلقائي (كل 3 ساعات)", style: TextStyle(color: Colors.white, fontSize: 14)),
+              Switch(
+                value: _autoInspirationEnabled,
+                onChanged: (v) => setState(() => _autoInspirationEnabled = v),
+                activeColor: Colors.amber,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
           TextField(
             controller: _inspirationController,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'اكتب ما تشعر به للحصول على إلهام...',
+              hintText: 'كيف تشعر اليوم؟ (فرح، حزن، تعب...)',
               hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
               filled: true,
               fillColor: Colors.white.withOpacity(0.05),
@@ -180,19 +195,28 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
             maxLines: 3,
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _isGenerating ? null : _generateInspiration,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
-            child: Text(_isGenerating ? 'جاري التوليد...' : 'احصل على إلهام'),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _isGenerating ? null : _generateInspiration,
+              icon: const Icon(Icons.auto_awesome),
+              label: Text(_isGenerating ? 'جاري التحليل...' : 'اطلب كلمة تثبت فؤادك'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber, 
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
           ),
           if (_inspirationResult.isNotEmpty) ...[
             const SizedBox(height: 24),
             _buildContentCard(
-              title: 'رسالة ملهمة',
+              title: 'رسالة لقلبك',
               content: _inspirationResult,
-              subtitle: 'توليد ذكاء اصطناعي',
-              icon: Icons.lightbulb,
-              color: Colors.orange,
+              subtitle: 'بناءً على حالتك الحالية',
+              icon: Icons.favorite,
+              color: Colors.pinkAccent,
             ),
           ]
         ],
@@ -202,10 +226,10 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
 
   Future<void> _generateInspiration() async {
     setState(() => _isGenerating = true);
-    // Simulate AI Generation or call service
+    // Simulate AI understanding user state
     await Future.delayed(const Duration(seconds: 2));
     setState(() {
-      _inspirationResult = "تذكر دائماً أن كل انكسار هو بداية لانطلاقة أعظم. قصتك لا تزال تُكتب، والنهاية لم يحن وقتها بعد.";
+      _inspirationResult = "لقد استخدمت أدوات الترجمة والقصص مؤخراً، ويبدو أنك تبحث عن المعنى. تذكر أن كل عسر يتبعه يسر، وأن ميرور سكربيون هنا ليدعم رحلتك.";
       _isGenerating = false;
     });
   }
@@ -217,49 +241,72 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     required IconData icon,
     required Color color,
     bool showVideoBtn = false,
+    bool showListenBtn = true,
+    bool isHadith = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(color: color.withOpacity(0.05), blurRadius: 10, spreadRadius: 1)
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: color),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: color, size: 24),
               ),
-              if (showVideoBtn)
-                IconButton(
-                  icon: const Icon(Icons.smart_display, color: Colors.red),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('جاري توليد فيديو القصة بالذكاء الاصطناعي...')),
-                    );
-                  },
-                ),
-              IconButton(
-                icon: const Icon(Icons.volume_up, color: Colors.blue),
-                onPressed: () {
-                  Provider.of<TTSService>(context, listen: false).speak(content);
-                },
+              const SizedBox(width: 15),
+              Expanded(
+                child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(subtitle, style: TextStyle(color: color.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
+          Text(subtitle, style: TextStyle(color: color.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 15),
           Text(
             content,
-            style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9), 
+              fontSize: isHadith ? 20 : 16, // Larger for weak vision as requested
+              height: 1.6,
+              fontWeight: isHadith ? FontWeight.w500 : FontWeight.normal,
+            ),
             textDirection: TextDirection.rtl,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (showVideoBtn)
+                TextButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('سيتم توليد فيديو مبهر مدته 10-15 دقيقة (نسخة برو)')),
+                    );
+                  },
+                  icon: const Icon(Icons.movie_creation, color: Colors.redAccent),
+                  label: const Text('مشاهدة', style: TextStyle(color: Colors.redAccent)),
+                ),
+              if (showListenBtn)
+                TextButton.icon(
+                  onPressed: () {
+                    Provider.of<TTSService>(context, listen: false).speak(content);
+                  },
+                  icon: const Icon(Icons.volume_up, color: Colors.blueAccent),
+                  label: const Text('استماع', style: TextStyle(color: Colors.blueAccent)),
+                ),
+            ],
           ),
         ],
       ),

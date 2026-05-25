@@ -70,196 +70,212 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final bubbleService = Provider.of<FloatingBubbleService>(context);
     final isBubbleActive = bubbleService.isStarted;
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // ── Header Section ──
-            SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: const AssetImage('assets/images/scorpion_bg.jpeg'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.7),
-                      BlendMode.darken,
-                    ),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    // Animated scorpion image logo
-                    AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _pulseAnimation.value,
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withOpacity(0.3),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                              image: const DecorationImage(
-                                image: AssetImage('assets/images/scorpion_icon.jpeg'),
-                                fit: BoxFit.contain,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0D1B2A), Color(0xFF1B2838)],
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // ── Header Section ──
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  child: Column(
+                    children: [
+                      // Scorpion in Mirror reflection effect (Center Top)
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Mirror reflection effect
+                          Opacity(
+                            opacity: 0.2,
+                            child: Transform.translate(
+                              offset: const Offset(0, 40),
+                              child: Transform(
+                                transform: Matrix4.identity()..scale(1.0, -0.6),
+                                alignment: Alignment.center,
+                                child: _buildScorpionLogo(),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'ميرور سكربيون',
-                      style: TextStyle(
-                        fontSize: 32, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 1.5,
-                        color: Color(0xFF00B0FF),
-                        shadows: [
-                          Shadow(
-                            color: Colors.black45,
-                            offset: Offset(2, 2),
-                            blurRadius: 4,
-                          ),
+                          _buildScorpionLogo(),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'ترجمة بنّاءة • بناءً مستمر',
-                      style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                    ),
-                    const SizedBox(height: 15),
-                    // AI Inspiration Button
-                    GestureDetector(
-                      onTap: _showAIInspiration,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.amber.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'ميرور سكربيون',
+                        style: TextStyle(
+                          fontSize: 36, 
+                          fontWeight: FontWeight.bold, 
+                          letterSpacing: 2,
+                          color: Color(0xFF00B0FF),
+                          shadows: [
+                            Shadow(color: Colors.blueAccent, blurRadius: 10),
+                            Shadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 4),
+                          ],
                         ),
-                        child: const Row(
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'حيث تُصنع البدايات',
+                        style: TextStyle(fontSize: 16, color: Colors.white54, fontStyle: FontStyle.italic),
+                      ),
+                      const SizedBox(height: 25),
+                      
+                      // Floating Bubble Toggle Switch
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: isBubbleActive ? Colors.blueAccent : Colors.white24),
+                        ),
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.auto_awesome, color: Colors.amber, size: 18),
-                            SizedBox(width: 8),
+                            Icon(
+                              isBubbleActive ? Icons.bubble_chart : Icons.bubble_chart_outlined,
+                              color: isBubbleActive ? Colors.blueAccent : Colors.grey,
+                            ),
+                            const SizedBox(width: 12),
                             Text(
-                              'احصل على إلهام اليوم',
-                              style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                              isBubbleActive ? 'الفقاعة نشطة' : 'تفعيل الفقاعة العائمة',
+                              style: TextStyle(
+                                color: isBubbleActive ? Colors.blueAccent : Colors.white70,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Switch(
+                              value: isBubbleActive,
+                              onChanged: (_) => _toggleBubble(),
+                              activeColor: Colors.blueAccent,
                             ),
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ── 6 Cards Grid ──
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.9,
+                  ),
+                  delegate: SliverChildListDelegate([
+                    _buildCard(
+                      icon: Icons.translate,
+                      title: 'ترجمة نصية',
+                      subtitle: '100 لغة + مايك',
+                      color: Colors.blueAccent,
+                      onTap: () => Navigator.pushNamed(context, '/translate'),
                     ),
-                    const SizedBox(height: 12),
-                    // Floating Bubble Toggle
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isBubbleActive ? Colors.blue.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: isBubbleActive ? Colors.blue : Colors.grey.shade400),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    _buildCard(
+                      icon: Icons.forum,
+                      title: 'حوار مترجم',
+                      subtitle: 'محادثة ثنائية فورية',
+                      color: Colors.cyanAccent,
+                      onTap: () => Navigator.pushNamed(context, '/dialogue'),
+                    ),
+                    _buildCard(
+                      icon: Icons.document_scanner,
+                      title: 'مستندات وعدسة',
+                      subtitle: 'ترجمة صور وملفات',
+                      color: Colors.tealAccent,
+                      onTap: () => Navigator.pushNamed(context, '/document'),
+                    ),
+                    _buildCard(
+                      icon: Icons.auto_stories,
+                      title: 'قصص وإلهام',
+                      subtitle: 'مكتبة ذكية متكاملة',
+                      color: Colors.orangeAccent,
+                      onTap: () => Navigator.pushNamed(context, '/stories'),
+                    ),
+                    _buildCard(
+                      icon: Icons.sports_esports,
+                      title: 'ألعاب 3D',
+                      subtitle: 'شطرنج + روبيك',
+                      color: Colors.purpleAccent,
+                      onTap: () {
+                        // Navigate to games selection or first game
+                        Navigator.pushNamed(context, '/chess');
+                      },
+                    ),
+                    _buildCard(
+                      icon: Icons.settings,
+                      title: 'الإعدادات',
+                      subtitle: 'تخصيص وترقية برو',
+                      color: Colors.blueGrey,
+                      onTap: () {},
+                    ),
+                  ]),
+                ),
+              ),
+              
+              // Footer
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: Center(
+                    child: Opacity(
+                      opacity: 0.3,
+                      child: Column(
                         children: [
-                          Icon(
-                            isBubbleActive ? Icons.bubble_chart : Icons.bubble_chart_outlined,
-                            color: isBubbleActive ? Colors.blue : Colors.grey,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            isBubbleActive ? 'الفقاعة نشطة' : 'تفعيل الفقاعة العائمة',
-                            style: TextStyle(
-                              color: isBubbleActive ? Colors.blue : Colors.grey.shade700,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Switch(
-                            value: isBubbleActive,
-                            onChanged: (_) => _toggleBubble(),
-                            activeColor: Colors.blue,
-                          ),
+                          const WatermarkText(text: "Mirror Scorpion"),
+                          const SizedBox(height: 5),
+                          Text("v1.0.0 Build Successful", style: TextStyle(color: Colors.white, fontSize: 10)),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    WatermarkText(text: "Mirror Scription"),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-
-            // ── 6 Cards Grid ──
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: 0.85,
-                ),
-                delegate: SliverChildListDelegate([
-                  _buildCard(
-                    icon: Icons.translate,
-                    title: 'ترجمة نصوص',
-                    subtitle: 'ترجمة فورية بين 100 لغة',
-                    color: Theme.of(context).colorScheme.primary,
-                    onTap: () => Navigator.pushNamed(context, '/translate'),
-                  ),
-                  _buildCard(
-                    icon: Icons.chat_bubble_outline,
-                    title: 'حوار مترجم',
-                    subtitle: 'محادثة ثنائية مع ترجمة فورية',
-                    color: Theme.of(context).colorScheme.tertiary,
-                    onTap: () => Navigator.pushNamed(context, '/dialogue'),
-                  ),
-                  _buildCard(
-                    icon: Icons.document_scanner,
-                    title: 'مستندات وكاميرا',
-                    subtitle: 'OCR + ترجمة من الصور والمستندات',
-                    color: Colors.teal,
-                    onTap: () => Navigator.pushNamed(context, '/document'),
-                  ),
-                  _buildCard(
-                    icon: Icons.auto_stories,
-                    title: 'أحاديث وقصص',
-                    subtitle: 'مكتبة إسلامية مع ترجمة ذكية',
-                    color: Colors.deepOrange,
-                    onTap: () => Navigator.pushNamed(context, '/stories'),
-                  ),
-                  _buildCard(
-                    icon: Icons.sports_esports,
-                    title: 'ألعاب',
-                    subtitle: 'شطرنج ثلاثي الأبعاد + مكعب روبيك',
-                    color: Colors.purple,
-                    onTap: () {},
-                  ),
-                  _buildCard(
-                    icon: Icons.settings,
-                    title: 'الإعدادات',
-                    subtitle: 'تحكم كامل بالتطبيق',
-                    color: Colors.blueGrey,
-                    onTap: () {},
-                  ),
-                ]),
-              ),
-            ),
-          ],
+              )
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildScorpionLogo() {
+    return AnimatedBuilder(
+      animation: _pulseAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _pulseAnimation.value,
+          child: Container(
+            width: 140,
+            height: 140,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueAccent.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+              image: const DecorationImage(
+                image: AssetImage('assets/images/scorpion_icon.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -270,48 +286,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Material(
-      elevation: 2,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
-            ),
-            border: Border.all(color: color.withOpacity(0.15)),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
+        ],
+      ),
+      child: Material(
+        color: const Color(0xFF1B2838),
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: color.withOpacity(0.3), width: 1),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [color.withOpacity(0.1), Colors.transparent],
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 40, color: color),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
+                  textAlign: TextAlign.center,
                 ),
-                child: Icon(icon, size: 28, color: color),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 11, color: Colors.white54),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),
