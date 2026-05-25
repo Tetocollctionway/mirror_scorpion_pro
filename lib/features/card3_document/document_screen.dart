@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'document_lens.dart';
+import '../../services/ai_service.dart';
 
 class DocumentTranslationScreen extends StatefulWidget {
   const DocumentTranslationScreen({super.key});
@@ -72,16 +73,26 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
     setState(() => _isProcessing = true);
     try {
       final inputImage = InputImage.fromFile(_selectedImage!);
+      // Try to recognize text with both Latin and Arabic support if possible
       final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
       final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      
       String text = '';
       for (TextBlock block in recognizedText.blocks) {
-        for (TextLine line in block.lines) {
-          text += '${line.text}\n';
-        }
+        text += '${block.text}\n';
       }
-      setState(() => _extractedText = text.trim());
+      
+      setState(() {
+        _extractedText = text.trim();
+        _isProcessing = false;
+      });
       await textRecognizer.close();
+      
+      if (_extractedText.isEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('لم يتم العثور على نص في الصورة'))
+        );
+      }
     } catch (e) {
       debugPrint('OCR error: $e');
     }
@@ -255,19 +266,44 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
                       Positioned(
                         bottom: 20,
                         left: 20,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.blueAccent,
-                          child: const Icon(Icons.share, color: Colors.white),
-                          onPressed: () {
-                            // Logic to share document as image/pdf with watermark
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('تم تصدير المستند كنسخة طبق الأصل مع العلامة المائية ✓'),
-                                backgroundColor: Colors.green,
-                              )
-                            );
-                            // In a real app, we would use a library to capture the widget as image and share it
-                          },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FloatingActionButton(
+                              heroTag: 'ai_btn',
+                              backgroundColor: Colors.amber,
+                              child: const Icon(Icons.auto_awesome, color: Colors.black),
+                              onPressed: () async {
+                                final inspiration = await AIService.generateInspiration(
+                                  userMood: _translatedText,
+                                  context: 'Document Screen',
+                                );
+                                if (!mounted) return;
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('تحليل مانوس الذكي'),
+                                    content: Text(inspiration),
+                                    actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('شكراً'))],
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            FloatingActionButton(
+                              heroTag: 'share_btn',
+                              backgroundColor: Colors.blueAccent,
+                              child: const Icon(Icons.share, color: Colors.white),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('تم تصدير المستند كنسخة طبق الأصل مع العلامة المائية ✓'),
+                                    backgroundColor: Colors.green,
+                                  )
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],
