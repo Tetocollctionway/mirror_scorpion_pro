@@ -118,17 +118,15 @@ def fix_kotlin_r_references():
                         with open(filepath, 'r') as f:
                             content = f.read()
                         
-                        # Use a more robust replacement strategy for R
-                        if 'R.' in content and 'import dev.moaz.dash_bubble.R' not in content:
-                            # Replace R. references with full package name if import is tricky
-                            content = content.replace('R.drawable', 'dev.moaz.dash_bubble.R.drawable')
-                            content = content.replace('R.layout', 'dev.moaz.dash_bubble.R.layout')
-                            content = content.replace('R.id', 'dev.moaz.dash_bubble.R.id')
-                            content = content.replace('R.string', 'dev.moaz.dash_bubble.R.string')
-                            
+                        # Use regex for more reliable replacement of R.
+                        # Matches R. followed by something, but not preceded by a word character (like dev.moaz.dash_bubble.)
+                        original_content = content
+                        content = re.sub(r'(?<![a-zA-Z0-9.])R\.(drawable|layout|id|string)', r'dev.moaz.dash_bubble.R.\1', content)
+                        
+                        if content != original_content:
                             with open(filepath, 'w') as f:
                                 f.write(content)
-                            print(f"✅ تم إصلاح مراجع R في {file}")
+                            print(f"✅ تم إصلاح مراجع R في {file} باستخدام Regex")
 
 if __name__ == "__main__":
     main()
