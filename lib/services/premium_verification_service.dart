@@ -14,7 +14,6 @@ class PremiumVerificationService extends ChangeNotifier {
   bool _isPremium = false;
   bool _isVerified = false;
   DateTime? _verificationTime;
-  String? _deviceId;
   String? _licenseKey;
   
   bool get isPremium => _isPremium;
@@ -25,7 +24,7 @@ class PremiumVerificationService extends ChangeNotifier {
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
     _loadPremiumStatus();
-    _verifyLicense();
+    _reVerifyLicense();
   }
   
   /// Load premium status from storage

@@ -1,5 +1,19 @@
 import 'package:flutter/foundation.dart';
 
+class ModerationResult {
+  final bool isApproved;
+  final String message;
+  final List<String> violatedRules;
+  final double riskScore;
+
+  ModerationResult({
+    required this.isApproved,
+    required this.message,
+    required this.violatedRules,
+    required this.riskScore,
+  });
+}
+
 class ContentModerationService extends ChangeNotifier {
   // Forbidden words and patterns
   static const List<String> _forbiddenWords = [
@@ -42,21 +56,6 @@ class ContentModerationService extends ChangeNotifier {
     r'يستحق.*التعذيب',
     r'يستحق.*الإهانة',
   ];
-
-  // Moderation result
-  class ModerationResult {
-    final bool isApproved;
-    final String message;
-    final List<String> violatedRules;
-    final double riskScore; // 0.0 to 1.0
-
-    ModerationResult({
-      required this.isApproved,
-      required this.message,
-      required this.violatedRules,
-      required this.riskScore,
-    });
-  }
 
   /// Check content for violations
   Future<ModerationResult> checkContent(String content) async {

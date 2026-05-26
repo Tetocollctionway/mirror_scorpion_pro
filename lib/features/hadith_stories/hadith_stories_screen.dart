@@ -34,12 +34,8 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
   // --- Quote State ---
   IslamicQuote? _currentQuote;
   bool _quoteLoading = false;
-  String? _quoteError;
   bool _islamicQuoteMode = true;
   final List<IslamicQuote> _savedQuotes = [];
-
-  // --- Daily Wisdom ---
-  bool _showDailyWisdom = false;
 
   @override
   void initState() {
@@ -146,7 +142,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
   Future<void> _loadRandomQuote() async {
     setState(() {
       _quoteLoading = true;
-      _quoteError = null;
     });
     try {
       IslamicQuote quote;
@@ -164,7 +159,6 @@ class _HadithStoriesScreenState extends State<HadithStoriesScreen>
       setState(() {
         _currentQuote = quote;
         _quoteLoading = false;
-        _quoteError = null;
       });
     }
   }

@@ -3,6 +3,70 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'content_moderation_service.dart';
 import 'dart:convert';
 
+class UserStory {
+  final String id;
+  final String title;
+  final String content;
+  final String category;
+  final DateTime createdAt;
+  final bool isApproved;
+  final double safetyScore;
+  final List<String> violations;
+  final String? audioUrl;
+  final String? videoUrl;
+  final int views;
+  final int likes;
+  final String authorName;
+
+  UserStory({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.category,
+    required this.createdAt,
+    this.isApproved = false,
+    this.safetyScore = 0.0,
+    this.violations = const [],
+    this.audioUrl,
+    this.videoUrl,
+    this.views = 0,
+    this.likes = 0,
+    this.authorName = 'Anonymous',
+  });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'content': content,
+    'category': category,
+    'createdAt': createdAt.toIso8601String(),
+    'isApproved': isApproved,
+    'safetyScore': safetyScore,
+    'violations': violations,
+    'audioUrl': audioUrl,
+    'videoUrl': videoUrl,
+    'views': views,
+    'likes': likes,
+    'authorName': authorName,
+  };
+
+  factory UserStory.fromJson(Map<String, dynamic> json) => UserStory(
+    id: json['id'],
+    title: json['title'],
+    content: json['content'],
+    category: json['category'],
+    createdAt: DateTime.parse(json['createdAt']),
+    isApproved: json['isApproved'] ?? false,
+    safetyScore: (json['safetyScore'] as num?)?.toDouble() ?? 0.0,
+    violations: List<String>.from(json['violations'] ?? []),
+    audioUrl: json['audioUrl'],
+    videoUrl: json['videoUrl'],
+    views: json['views'] ?? 0,
+    likes: json['likes'] ?? 0,
+    authorName: json['authorName'] ?? 'Anonymous',
+  );
+}
+
 class CreativityService extends ChangeNotifier {
   late SharedPreferences _prefs;
   final ContentModerationService _moderationService = ContentModerationService();
@@ -20,71 +84,6 @@ class CreativityService extends ChangeNotifier {
   Future<void> _initializeService() async {
     _prefs = await SharedPreferences.getInstance();
     _loadStories();
-  }
-
-  /// User Story Model
-  class UserStory {
-    final String id;
-    final String title;
-    final String content;
-    final String category; // 'story', 'poem', 'wisdom', 'inspiration'
-    final DateTime createdAt;
-    final bool isApproved;
-    final double safetyScore;
-    final List<String> violations;
-    final String? audioUrl;
-    final String? videoUrl;
-    final int views;
-    final int likes;
-    final String authorName;
-
-    UserStory({
-      required this.id,
-      required this.title,
-      required this.content,
-      required this.category,
-      required this.createdAt,
-      this.isApproved = false,
-      this.safetyScore = 0.0,
-      this.violations = const [],
-      this.audioUrl,
-      this.videoUrl,
-      this.views = 0,
-      this.likes = 0,
-      this.authorName = 'Anonymous',
-    });
-
-    Map<String, dynamic> toJson() => {
-      'id': id,
-      'title': title,
-      'content': content,
-      'category': category,
-      'createdAt': createdAt.toIso8601String(),
-      'isApproved': isApproved,
-      'safetyScore': safetyScore,
-      'violations': violations,
-      'audioUrl': audioUrl,
-      'videoUrl': videoUrl,
-      'views': views,
-      'likes': likes,
-      'authorName': authorName,
-    };
-
-    factory UserStory.fromJson(Map<String, dynamic> json) => UserStory(
-      id: json['id'],
-      title: json['title'],
-      content: json['content'],
-      category: json['category'],
-      createdAt: DateTime.parse(json['createdAt']),
-      isApproved: json['isApproved'] ?? false,
-      safetyScore: json['safetyScore'] ?? 0.0,
-      violations: List<String>.from(json['violations'] ?? []),
-      audioUrl: json['audioUrl'],
-      videoUrl: json['videoUrl'],
-      views: json['views'] ?? 0,
-      likes: json['likes'] ?? 0,
-      authorName: json['authorName'] ?? 'Anonymous',
-    );
   }
 
   /// Create a new user story

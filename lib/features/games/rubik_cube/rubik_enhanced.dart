@@ -19,7 +19,7 @@ class RubiksCube {
   
   /// Rotate a face clockwise
   void rotateFaceClockwise(int face) {
-    final temp = List<List<String>>.from(cube[face]);
+    final temp = cube[face].map((row) => List<String>.from(row)).toList();
     
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
@@ -32,7 +32,7 @@ class RubiksCube {
   
   /// Rotate a face counter-clockwise
   void rotateFaceCounterClockwise(int face) {
-    final temp = List<List<String>>.from(cube[face]);
+    final temp = cube[face].map((row) => List<String>.from(row)).toList();
     
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
@@ -40,7 +40,7 @@ class RubiksCube {
       }
     }
     
-    _rotateAdjacentFaces(face);
+    _rotateAdjacentFacesCCW(face);
   }
   
   void _rotateAdjacentFaces(int face) {
@@ -128,6 +128,71 @@ class RubiksCube {
     for (int i = 0; i < 3; i++) cube[3][2][i] = temp[i];
   }
   
+  void _rotateAdjacentFacesCCW(int face) {
+    switch (face) {
+      case 0: _rotateFrontAdjacentCCW(); break;
+      case 1: _rotateBackAdjacentCCW(); break;
+      case 2: _rotateLeftAdjacentCCW(); break;
+      case 3: _rotateRightAdjacentCCW(); break;
+      case 4: _rotateTopAdjacentCCW(); break;
+      case 5: _rotateBottomAdjacentCCW(); break;
+    }
+  }
+
+  void _rotateFrontAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[4][2][i]);
+    for (int i = 0; i < 3; i++) cube[4][2][i] = cube[3][i][0];
+    for (int i = 0; i < 3; i++) cube[3][i][0] = cube[5][0][2 - i];
+    for (int i = 0; i < 3; i++) cube[5][0][2 - i] = cube[2][2 - i][2];
+    for (int i = 0; i < 3; i++) cube[2][2 - i][2] = temp[i];
+  }
+
+  void _rotateBackAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[4][0][2 - i]);
+    for (int i = 0; i < 3; i++) cube[4][0][2 - i] = cube[2][i][0];
+    for (int i = 0; i < 3; i++) cube[2][i][0] = cube[5][2][i];
+    for (int i = 0; i < 3; i++) cube[5][2][i] = cube[3][2 - i][2];
+    for (int i = 0; i < 3; i++) cube[3][2 - i][2] = temp[i];
+  }
+
+  void _rotateLeftAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[4][i][0]);
+    for (int i = 0; i < 3; i++) cube[4][i][0] = cube[0][i][0];
+    for (int i = 0; i < 3; i++) cube[0][i][0] = cube[5][i][0];
+    for (int i = 0; i < 3; i++) cube[5][i][0] = cube[1][2 - i][2];
+    for (int i = 0; i < 3; i++) cube[1][2 - i][2] = temp[i];
+  }
+
+  void _rotateRightAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[4][i][2]);
+    for (int i = 0; i < 3; i++) cube[4][i][2] = cube[1][2 - i][0];
+    for (int i = 0; i < 3; i++) cube[1][2 - i][0] = cube[5][i][2];
+    for (int i = 0; i < 3; i++) cube[5][i][2] = cube[0][i][2];
+    for (int i = 0; i < 3; i++) cube[0][i][2] = temp[i];
+  }
+
+  void _rotateTopAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[0][0][i]);
+    for (int i = 0; i < 3; i++) cube[0][0][i] = cube[2][0][i];
+    for (int i = 0; i < 3; i++) cube[2][0][i] = cube[1][0][i];
+    for (int i = 0; i < 3; i++) cube[1][0][i] = cube[3][0][i];
+    for (int i = 0; i < 3; i++) cube[3][0][i] = temp[i];
+  }
+
+  void _rotateBottomAdjacentCCW() {
+    final temp = <String>[];
+    for (int i = 0; i < 3; i++) temp.add(cube[0][2][i]);
+    for (int i = 0; i < 3; i++) cube[0][2][i] = cube[3][2][i];
+    for (int i = 0; i < 3; i++) cube[3][2][i] = cube[1][2][i];
+    for (int i = 0; i < 3; i++) cube[1][2][i] = cube[2][2][i];
+    for (int i = 0; i < 3; i++) cube[2][2][i] = temp[i];
+  }
+
   /// Scramble the cube
   void scramble() {
     final random = Random();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/app_theme.dart';
 import '../core/widgets/shared_widgets.dart';
 import '../services/floating_bubble_service.dart';
 import '../services/ai_service.dart';
@@ -119,7 +118,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          _buildScorpionLogo(),
+                          GestureDetector(
+                            onTap: _showAIInspiration,
+                            child: _buildScorpionLogo(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 30),
@@ -224,17 +226,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       title: 'ألعاب 3D',
                       subtitle: 'شطرنج + روبيك',
                       color: Colors.purpleAccent,
-                      onTap: () {
-                        // Navigate to games selection or first game
-                        Navigator.pushNamed(context, '/chess');
-                      },
+                      onTap: () => _showGamesSelection(context),
                     ),
                     _buildCard(
                       icon: Icons.settings,
                       title: 'الإعدادات',
                       subtitle: 'تخصيص وترقية برو',
                       color: Colors.blueGrey,
-                      onTap: () {},
+                      onTap: () => Navigator.pushNamed(context, '/settings'),
                     ),
                   ]),
                 ),
@@ -260,6 +259,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showGamesSelection(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1B2838),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('اختر اللعبة', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.grid_view, color: Colors.purpleAccent, size: 32),
+              title: const Text('مكعب روبيك 3D', style: TextStyle(color: Colors.white)),
+              subtitle: const Text('جميع طرق الحل', style: TextStyle(color: Colors.white54)),
+              onTap: () { Navigator.pop(context); Navigator.pushNamed(context, '/rubik'); },
+            ),
+            const Divider(color: Colors.white24),
+            ListTile(
+              leading: const Icon(Icons.castle, color: Colors.purpleAccent, size: 32),
+              title: const Text('شطرنج 3D', style: TextStyle(color: Colors.white)),
+              subtitle: const Text('لعبة شطرنج ثلاثية الأبعاد', style: TextStyle(color: Colors.white54)),
+              onTap: () { Navigator.pop(context); Navigator.pushNamed(context, '/chess'); },
+            ),
+          ],
         ),
       ),
     );

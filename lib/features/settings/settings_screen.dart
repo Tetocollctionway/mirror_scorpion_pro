@@ -15,7 +15,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late SharedPreferences _prefs;
-  bool _darkMode = true;
   bool _notificationsEnabled = true;
   bool _soundEnabled = true;
   bool _isPremium = false;
@@ -23,9 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _bubbleEnabled = false;
   double _bubbleOpacity = 0.8;
   int _bubbleSize = 120;
-  String _bubbleLanguage = 'en';
   bool _bubbleAutoTranslate = true;
-  bool _bubbleSound = true;
 
   final List<Map<String, String>> _voices = [
     {'id': 'voice_1_female', 'name': 'سلمى'},
@@ -44,7 +41,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadSettings() async {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
-      _darkMode = _prefs.getBool('darkMode') ?? true;
       _notificationsEnabled = _prefs.getBool('notificationsEnabled') ?? true;
       _soundEnabled = _prefs.getBool('soundEnabled') ?? true;
       _isPremium = _prefs.getBool('isPremium') ?? false;
@@ -52,9 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _bubbleEnabled = _prefs.getBool('bubble_enabled') ?? false;
       _bubbleOpacity = _prefs.getDouble('bubble_opacity') ?? 0.8;
       _bubbleSize = _prefs.getInt('bubble_size') ?? 120;
-      _bubbleLanguage = _prefs.getString('bubble_language') ?? 'en';
       _bubbleAutoTranslate = _prefs.getBool('bubble_auto_translate') ?? true;
-      _bubbleSound = _prefs.getBool('bubble_sound') ?? true;
     });
   }
 
@@ -97,7 +91,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'استخدم الوضع المظلم لحماية العينين',
                 Provider.of<ThemeProvider>(context).isDarkMode,
                 (value) {
-                  setState(() => _darkMode = value);
                   Provider.of<ThemeProvider>(context, listen: false).toggleTheme(value);
                 },
               ),

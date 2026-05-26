@@ -2,73 +2,112 @@ name: Mirror Scorpion Build
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+          
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Create and build
+          
+      - name: Prepare Project and Build
         run: |
           set -e
-          # Setup clean build environment
+          # Get dependencies
+          flutter pub get
+          
+          # Fix Namespace issue for dash_bubble and other potential libraries in pub-cache
+          echo "Fixing namespaces in pub-cache..."
+          find ~/.pub-cache -name "build.gradle" -exec sed -i '/android {/a \    namespace "com.example.fix"' {} +
+          
+          # Setup build directory
           rm -rf /tmp/clean_project
           flutter create --org com.tetocollctionway --project-name mirror_scorpion_translate /tmp/clean_project
           cd /tmp/clean_project
           
-          # Sync project files
+          # Copy source files
           rm -rf lib assets
           cp -r $GITHUB_WORKSPACE/lib .
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
           
-          # Configure Android
+          # Diagnostic steps: Check for build.gradle existence and content
+          echo "Checking for android/app/build.gradle..."
+          ls -l android/app/build.gradle || true
+          
+          # Enable AndroidX and Jetifier to fix R reference issues in old plugins
           echo "android.useAndroidX=true" >> android/gradle.properties
           echo "android.enableJetifier=true" >> android/gradle.properties
           
-          # Initial pub get
+          # Run pub get first to download dependencies
           flutter pub get
           
-          # Apply library patches
-          echo "Applying patches to dependencies..."
+          # Run the dash_bubble patching scripts
           python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble.py
           python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble_resources.py
           python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble_compilesdk.py
           
-          # Universal Namespace Fix for all cached libraries
+          # FIX: Patch dependencies that are missing namespace (e.g., dash_bubble)
           if [ -d "$HOME/.pub-cache/hosted/pub.dev" ]; then
+            # Find all build.gradle files in dependencies and add namespace if missing
             find $HOME/.pub-cache/hosted/pub.dev -name "build.gradle" -exec sed -i '/android {/a \    namespace "com.example.placeholder"' {} +
             
-            # Specific fix for dash_bubble
+            # Specifically fix dash_bubble namespace in build.gradle
             DASH_BUBBLE_GRADLE=$(find $HOME/.pub-cache/hosted/pub.dev -path "*/dash_bubble-*/android/build.gradle" | head -n 1)
             if [ ! -z "$DASH_BUBBLE_GRADLE" ]; then
               sed -i 's/namespace "com.example.placeholder"/namespace "dev.moaz.dash_bubble"/' "$DASH_BUBBLE_GRADLE"
             fi
+            
+            # Fix dash_bubble build.gradle.kts if it exists
+            DASH_BUBBLE_GRADLE_KTS=$(find $HOME/.pub-cache/hosted/pub.dev -path "*/dash_bubble-*/android/build.gradle.kts" | head -n 1)
+            if [ ! -z "$DASH_BUBBLE_GRADLE_KTS" ]; then
+              if ! grep -q "namespace" "$DASH_BUBBLE_GRADLE_KTS"; then
+                sed -i '/android {/a \    namespace = "dev.moaz.dash_bubble"' "$DASH_BUBBLE_GRADLE_KTS"
+              fi
+            fi
           fi
-          
-          # Patch app level gradle
+
           python3 $GITHUB_WORKSPACE/scripts/patch_gradle.py android/app/build.gradle.kts || python3 $GITHUB_WORKSPACE/scripts/patch_gradle.py android/app/build.gradle
           python3 $GITHUB_WORKSPACE/scripts/patch_manifest.py android/app/src/main/AndroidManifest.xml
           
-          # Set SDK Versions
+          # Patch app/build.gradle namespace
+          if [ -f "android/app/build.gradle" ]; then
+            if grep -q "namespace " android/app/build.gradle; then
+              sed -i 's/namespace .*/namespace "com.tetocollctionway.mirror_scorpion_translate"/g' android/app/build.gradle
+            else
+              sed -i '/android {/a \    namespace "com.tetocollctionway.mirror_scorpion_translate"' android/app/build.gradle
+            fi
+          fi
+
+          # Force SDK 36 in the newly created project as requested by plugins
           find android -name "build.gradle*" -exec sed -i 's/compileSdk .*/compileSdk = 36/g' {} +
           find android -name "build.gradle*" -exec sed -i 's/targetSdk .*/targetSdk = 35/g' {} +
           find android -name "build.gradle*" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion = 36/g' {} +
           find android -name "build.gradle*" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion = 35/g' {} +
           
-          # Build Release APK
+          # Fix for any accidental double equals or missing spaces
+          find android -name "build.gradle*" -exec sed -i 's/==/=/g' {} +
+          find android -name "build.gradle*" -exec sed -i 's/compileSdk=/compileSdk = /g' {} +
+          find android -name "build.gradle*" -exec sed -i 's/targetSdk=/targetSdk = /g' {} +
+          
+          # Build APK
           flutter build apk --release
           
-          # Prepare artifact
+          # Move output to workspace
           mkdir -p $GITHUB_WORKSPACE/output_apk
           cp build/app/outputs/flutter-apk/app-release.apk $GITHUB_WORKSPACE/output_apk/
-      - uses: actions/upload-artifact@v4
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: mirror-scorpion-release
           path: output_apk/app-release.apk

@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../services/ai_service.dart';
 import '../../services/tts_service.dart';
@@ -36,11 +34,21 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     _loadData();
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _inspirationController.dispose();
+    super.dispose();
+
+  
+
+  
+
   Future<void> _loadData() async {
     final db = Provider.of<DatabaseService>(context, listen: false);
     await db.loadAllData();
     setState(() {
-      _hadiths = db.hadiths;
+      _hadiths = List.from(db.hadiths)..shuffle();
       _stories = [
         ...db.quranStories.map((e) => {...e, 'category': 'قصص قرآنية'}),
         ...db.prophetStories.map((e) => {...e, 'category': 'قصص الأنبياء'}),
@@ -95,13 +103,11 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
   }
 
   Widget _buildHadithsTab() {
-    List<Map<String, dynamic>> shuffledHadiths = List.from(_hadiths)..shuffle();
-    
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: shuffledHadiths.length,
+      itemCount: _hadiths.length,
       itemBuilder: (context, index) {
-        final hadith = shuffledHadiths[index];
+        final hadith = _hadiths[index];
         return _buildContentCard(
           title: hadith['narrator'] ?? 'حديث قدسي',
           content: hadith['text'] ?? '',
@@ -150,7 +156,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
               final story = filtered[index];
               return _buildContentCard(
                 title: story['title'] ?? '',
-                content: story['text'] ?? '',
+                content: story['text_ar'] ?? story['text'] ?? '',
                 subtitle: story['category'] ?? '',
                 icon: Icons.history_edu,
                 color: Colors.blueAccent,

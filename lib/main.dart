@@ -9,7 +9,6 @@ import 'features/games/rubik_cube/rubik_cube_screen.dart';
 import 'features/games/chess/chess_screen.dart';
 import 'features/home_screen.dart';
 import 'features/settings/settings_screen.dart';
-import 'core/theme/app_theme.dart';
 import 'services/database_service.dart';
 import 'services/floating_bubble_service.dart';
 import 'services/tts_service.dart';

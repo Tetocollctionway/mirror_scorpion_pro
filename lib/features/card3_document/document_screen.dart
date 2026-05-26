@@ -29,7 +29,7 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
   late Animation<Offset> _slideAnimation;
 
   final Map<String, String> _languages = {
-    'ar': 'العربية', 'en': 'English', 'fr': 'Français', 'es': 'Espائول',
+    'ar': 'العربية', 'en': 'English', 'fr': 'Français', 'es': 'Español',
     'de': 'Deutsch', 'it': 'Italiano', 'pt': 'Português', 'ru': 'Русский',
     'ja': 'Japanese', 'zh': '中文', 'ko': '한국어', 'tr': 'Türkçe',
   };
@@ -227,12 +227,11 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
                   
                   const SizedBox(height: 20),
                   
-                  if (_extractedText.isNotEmpty && _translatedText.isEmpty)
-                    SizedBox(
+                  SizedBox(
                       width: double.infinity,
                       height: 60,
                       child: ElevatedButton(
-                        onPressed: _isProcessing ? null : _translateDocument,
+                        onPressed: (_isProcessing || (_extractedText.isEmpty && _urlController.text.isEmpty)) ? null : _translateDocument,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -242,6 +241,15 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
                     ),
                   
                   const SizedBox(height: 10),
+                  if (_extractedText.isNotEmpty && _translatedText.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'تم استخراج النص. اضغط ترجمة للمتابعة',
+                        style: TextStyle(color: Colors.greenAccent.withValues(alpha: 0.7), fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -263,6 +271,20 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
                           position: _slideAnimation,
                           child: _buildDocumentPaper(_translatedText, Colors.white, Colors.black87, hasWatermark: true),
                         ),
+                      Positioned(
+                        top: 40,
+                        right: 16,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                          onPressed: () {
+                            setState(() {
+                              _translatedText = '';
+                              _extractedText = '';
+                              _slideController.reset();
+                            });
+                          },
+                        ),
+                      ),
                       Positioned(
                         bottom: 20,
                         left: 20,
