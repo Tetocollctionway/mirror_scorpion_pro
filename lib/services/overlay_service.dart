@@ -52,7 +52,7 @@ class OverlayService extends ChangeNotifier {
   Future<String> getSpiritualSupport() async {
     final text = await translateFromClipboard();
     if (text.isNotEmpty) {
-      return aiService.getInspirationForText(text);
+      return AIService.generateInspiration(userMood: text, context: 'overlay');
     }
     return "استعن بالله، فأنت في حفظه.";
   }
@@ -61,7 +61,7 @@ class OverlayService extends ChangeNotifier {
   Future<String> translateFromClipboard() async {
     try {
       final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-      if (clipboardData?.text != null) return clipboardData.text!;
+      if (clipboardData?.text != null) return clipboardData!.text!;
     } catch (e) {
       debugPrint('Clipboard error: $e');
     }
