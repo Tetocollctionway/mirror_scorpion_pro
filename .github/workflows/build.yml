@@ -15,7 +15,7 @@ jobs:
         with:
           channel: 'stable'
       
-      - name: Prepare and build
+      - name: Build APK
         run: |
           set -e
           
@@ -34,74 +34,21 @@ jobs:
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
           
-          # 4. Patch gradle and manifest using scripts
-          if [ -f "$GITHUB_WORKSPACE/scripts/patch_gradle.py" ]; then
-            python3 $GITHUB_WORKSPACE/scripts/patch_gradle.py android/app/build.gradle.kts || true
-          fi
-          if [ -f "$GITHUB_WORKSPACE/scripts/patch_manifest.py" ]; then
-            python3 $GITHUB_WORKSPACE/scripts/patch_manifest.py android/app/src/main/AndroidManifest.xml || true
-          fi
-          
-          # 5. Global Android fixes (SDK & Namespace)
-          # Force SDK versions across all gradle files
+          # 4. Global Android fixes
           find android -name "build.gradle*" -exec sed -i 's/compileSdk .*/compileSdk = 36/g' {} +
           find android -name "build.gradle*" -exec sed -i 's/targetSdk .*/targetSdk = 35/g' {} +
-          # Handle Groovy syntax without '='
           find android -name "build.gradle" -exec sed -i 's/compileSdk =/compileSdk/g' {} +
           find android -name "build.gradle" -exec sed -i 's/targetSdk =/targetSdk/g' {} +
           find android -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 36/g' {} +
           find android -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 35/g' {} +
           
-          # 6. Fetch dependencies
+          # 5. Fetch dependencies
           flutter pub get
           
-          # 7. Patch external libraries (Namespace issue)
-          cat > patch_libs.py << 'EOF'
-import os
-import re
-
-def patch_gradle_files():
-    pub_cache = os.path.expanduser('~/.pub-cache')
-    for root, dirs, files in os.walk(pub_cache):
-        if 'build.gradle' in files:
-            path = os.path.join(root, 'build.gradle')
-            try:
-                with open(path, 'r') as f:
-                    content = f.read()
-                
-                # If namespace is missing, try to add it
-                if 'namespace' not in content and 'android {' in content:
-                    print(f"Patching namespace in {path}")
-                    manifest_path = os.path.join(root, 'src', 'main', 'AndroidManifest.xml')
-                    package_name = "com.example.placeholder"
-                    if os.path.exists(manifest_path):
-                        with open(manifest_path, 'r') as mf:
-                            m_content = mf.read()
-                            match = re.search(r'package="([^"]+)"', m_content)
-                            if match:
-                                package_name = match.group(1)
-                    
-                    # Use a more robust replacement for the opening android block
-                    content = content.replace('android {', f'android {{\n    namespace "{package_name}"')
-                
-                # Also fix potential compileSdk/targetSdk issues in libraries
-                content = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 36', content)
-                content = re.sub(r'targetSdkVersion\s+\d+', 'targetSdkVersion 35', content)
-                
-                with open(path, 'w') as f:
-                    f.write(content)
-            except Exception as e:
-                print(f"Error patching {path}: {e}")
-
-if __name__ == "__main__":
-    patch_gradle_files()
-EOF
-          python3 patch_libs.py
-          
-          # 8. Build APK
+          # 6. Build APK
           flutter build apk --release
           
-          # 9. Export artifact
+          # 7. Export artifact
           mkdir -p $GITHUB_WORKSPACE/output_apk
           cp build/app/outputs/flutter-apk/app-release.apk $GITHUB_WORKSPACE/output_apk/
           
