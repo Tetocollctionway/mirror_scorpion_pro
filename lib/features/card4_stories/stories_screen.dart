@@ -39,10 +39,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     _tabController.dispose();
     _inspirationController.dispose();
     super.dispose();
-
-  
-
-  
+  }
 
   Future<void> _loadData() async {
     final db = Provider.of<DatabaseService>(context, listen: false);
@@ -295,7 +292,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
             content,
             style: TextStyle(
               color: Colors.white.withOpacity(0.9), 
-              fontSize: isHadith ? 20 : 16, // Larger for weak vision as requested
+              fontSize: isHadith ? 20 : 16, 
               height: 1.6,
               fontWeight: isHadith ? FontWeight.w500 : FontWeight.normal,
             ),
