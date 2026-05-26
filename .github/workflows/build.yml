@@ -52,7 +52,9 @@ jobs:
           flutter pub get
           
           # Run the dash_bubble patching scripts
-          python3 $GITHUB_WORKSPACE/patch_project.py
+          python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble.py
+          python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble_resources.py
+          python3 $GITHUB_WORKSPACE/scripts/patch_dash_bubble_compilesdk.py
           
           # FIX: Patch dependencies that are missing namespace (e.g., dash_bubble)
           if [ -d "$HOME/.pub-cache/hosted/pub.dev" ]; then

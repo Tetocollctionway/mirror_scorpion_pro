@@ -1,6 +1,5 @@
 import os
 import subprocess
-import re
 
 def run_command(command):
     print(f"Executing: {command}")
@@ -45,9 +44,9 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             signingConfig = signingConfigs.getByName("debug")
-            isMinifyEnabled = true
+            minifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -70,6 +69,7 @@ flutter {
     if os.path.exists(root_gradle_path):
         print(f"🛠️ جاري حقن حل مشكلة الـ R في: {root_gradle_path}")
         
+        # كود الترس المطور اللي هيجبر أي مكتبة (زي dash_bubble) تاخد الـ namespace بتاعها أوتوماتيك وقت الكومبايل
         fix_subprojects = """
 allprojects {
     repositories {
@@ -106,25 +106,5 @@ subprojects {
             f.write(fix_subprojects)
         print("✅ تم حقن كود الـ Namespace الإجباري للمكتبات الفرعية بنجاح ساحق!")
 
-def fix_kotlin_r_references():
-    print("🛠️ جاري إصلاح مراجع R في ملفات Kotlin...")
-    pub_cache = os.path.expanduser("~/.pub-cache/hosted/pub.dev")
-    if os.path.exists(pub_cache):
-        for root, dirs, files in os.walk(pub_cache):
-            if "dash_bubble" in root:
-                for file in files:
-                    if file.endswith(".kt"):
-                        filepath = os.path.join(root, file)
-                        with open(filepath, 'r') as f:
-                            content = f.read()
-                        
-                        if 'import dev.moaz.dash_bubble.R' not in content:
-                            # إضافة استيراد R الصحيح للمكتبة
-                            content = content.replace('package dev.moaz.dash_bubble.src', 'package dev.moaz.dash_bubble.src\n\nimport dev.moaz.dash_bubble.R')
-                            with open(filepath, 'w') as f:
-                                f.write(content)
-                            print(f"✅ تم إضافة استيراد R لـ {file}")
-
 if __name__ == "__main__":
     main()
-    fix_kotlin_r_references()
