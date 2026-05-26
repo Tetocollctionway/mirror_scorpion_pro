@@ -40,9 +40,19 @@ jobs:
           cp -r $GITHUB_WORKSPACE/assets .
           cp $GITHUB_WORKSPACE/pubspec.yaml .
           
-          # Patch app/build.gradle in the newly created project
+          # Diagnostic steps: Check for build.gradle existence and content
+          echo "Checking for android/app/build.gradle..."
+          ls -l android/app/build.gradle || true
+          echo "Content of android/app/build.gradle:"
+          cat android/app/build.gradle || true
+
+          # Patch app/build.gradle
           # Ensure namespace is set in the app itself
-          sed -i 's/namespace .*/namespace "com.tetocollctionway.mirror_scorpion_translate"/g' android/app/build.gradle
+          if grep -q "namespace " android/app/build.gradle; then
+            sed -i 's/namespace .*/namespace "com.tetocollctionway.mirror_scorpion_translate"/g' android/app/build.gradle
+          else
+            sed -i '/android {/a \    namespace "com.tetocollctionway.mirror_scorpion_translate"' android/app/build.gradle
+          fi
           
           # Apply user patches if they exist
           if [ -f "$GITHUB_WORKSPACE/scripts/patch_gradle.py" ]; then
