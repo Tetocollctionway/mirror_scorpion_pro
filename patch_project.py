@@ -68,7 +68,6 @@ flutter {
     root_gradle_path = "android/build.gradle"
     if os.path.exists(root_gradle_path):
         print(f"🛠️ جاري حقن حل مشكلة الـ R في: {root_gradle_path}")
-        
         # كود الترس المطور اللي هيجبر أي مكتبة (زي dash_bubble) تاخد الـ namespace بتاعها أوتوماتيك وقت الكومبايل
         fix_subprojects = """
 allprojects {
@@ -105,6 +104,27 @@ subprojects {
         with open(root_gradle_path, "w", encoding="utf-8") as f:
             f.write(fix_subprojects)
         print("✅ تم حقن كود الـ Namespace الإجباري للمكتبات الفرعية بنجاح ساحق!")
+
+    # 4. إصلاح ملف AndroidManifest.xml للتأكد من وجود الأذونات اللازمة
+    manifest_path = "android/app/src/main/AndroidManifest.xml"
+    if os.path.exists(manifest_path):
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        
+        permissions = [
+            '<uses-permission android:name="android.permission.INTERNET"/>',
+            '<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>',
+            '<uses-permission android:name="android.permission.RECORD_AUDIO"/>'
+        ]
+        
+        for perm in permissions:
+            if perm not in content:
+                content = content.replace('<manifest', f'<manifest\n    {perm}')
+        
+        with open(manifest_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print("✅ تم تحديث أذونات الـ Manifest!")
+
 
 if __name__ == "__main__":
     main()
