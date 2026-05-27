@@ -1,4 +1,4 @@
-// import 'package:dash_bubble/dash_bubble.dart';
+import 'package:dash_bubble/dash_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,7 +59,6 @@ class FloatingBubbleService extends ChangeNotifier {
     if (_isStarted) return;
     
     try {
-      /*
       // Check and request overlay permission
       final hasOverlay = await DashBubble.instance.hasOverlayPermission();
       if (!hasOverlay) {
@@ -93,12 +92,7 @@ class FloatingBubbleService extends ChangeNotifier {
           _onBubbleTapped(context);
         },
       );
-      */
       
-      // Temporary fallback for disabled bubble
-      debugPrint('🫧 Floating bubble is temporarily disabled in this build');
-      bool started = false; 
-
       if (started) {
         _isStarted = true;
         _isEnabled = true;
@@ -115,7 +109,6 @@ class FloatingBubbleService extends ChangeNotifier {
   /// Stop the floating bubble
   Future<void> stopBubble() async {
     try {
-      /*
       final stopped = await DashBubble.instance.stopBubble();
       if (stopped) {
         _isStarted = false;
@@ -124,10 +117,6 @@ class FloatingBubbleService extends ChangeNotifier {
         notifyListeners();
         debugPrint('🫧 Floating bubble stopped');
       }
-      */
-      _isStarted = false;
-      _isEnabled = false;
-      notifyListeners();
     } catch (e) {
       debugPrint('❌ Error stopping bubble: $e');
     }
@@ -149,7 +138,7 @@ class FloatingBubbleService extends ChangeNotifier {
     await _saveSettings();
     if (_isStarted) {
       // Re-start to apply changes
-      // await DashBubble.instance.stopBubble();
+      await DashBubble.instance.stopBubble();
       _isStarted = false;
       // Note: In a real scenario, we might need a context here or handle it via a global key
     }
@@ -161,7 +150,7 @@ class FloatingBubbleService extends ChangeNotifier {
     _size = size.clamp(60, 200);
     await _saveSettings();
     if (_isStarted) {
-      // await DashBubble.instance.stopBubble();
+      await DashBubble.instance.stopBubble();
       _isStarted = false;
     }
     notifyListeners();

@@ -39,7 +39,10 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
     _tabController.dispose();
     _inspirationController.dispose();
     super.dispose();
-  }
+
+  
+
+  
 
   Future<void> _loadData() async {
     final db = Provider.of<DatabaseService>(context, listen: false);
