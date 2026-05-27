@@ -1,6 +1,5 @@
 import os
 import subprocess
-import re
 
 def run_command(command):
     print(f"Executing: {command}")
@@ -24,7 +23,7 @@ def main():
 }
 
 android {
-    namespace = "com.tetocollctionway.mirror_scorpion_translate"
+    namespace = "com.tetocollctionway.mirror"
     compileSdk = 36
 
     compileOptions {
@@ -37,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.tetocollctionway.mirror_scorpion_translate"
+        applicationId = "com.tetocollctionway.mirror"
         minSdk = 21
         targetSdk = 35
         versionCode = 1
@@ -45,17 +44,10 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             signingConfig = signingConfigs.getByName("debug")
-            
-            // Mirror Scorpion Security Enhancements
-            isMinifyEnabled = true
-            isShrinkResources = true
+            minifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            
-            ndk {
-                debugSymbolLevel = "NONE"
-            }
         }
     }
     
@@ -70,13 +62,14 @@ flutter {
 """
         with open(app_gradle_path, "w", encoding="utf-8") as f:
             f.write(new_app_gradle)
-        print("✅ تم تجديد ملف App Gradle بنجاح مع تحسينات الأمان!")
+        print("✅ تم تجديد ملف App Gradle بنجاح وعلامات (=) مضبوطة!")
 
     # 3. تعديل ملف android/build.gradle الرئيسي لحقن الـ Namespace في كل المكتبات الفرعية أوتوماتيك
     root_gradle_path = "android/build.gradle"
     if os.path.exists(root_gradle_path):
         print(f"🛠️ جاري حقن حل مشكلة الـ R في: {root_gradle_path}")
         
+        # كود الترس المطور اللي هيجبر أي مكتبة (زي dash_bubble) تاخد الـ namespace بتاعها أوتوماتيك وقت الكومبايل
         fix_subprojects = """
 allprojects {
     repositories {
@@ -113,28 +106,5 @@ subprojects {
             f.write(fix_subprojects)
         print("✅ تم حقن كود الـ Namespace الإجباري للمكتبات الفرعية بنجاح ساحق!")
 
-def fix_kotlin_r_references():
-    print("🛠️ جاري إصلاح مراجع R في ملفات Kotlin...")
-    pub_cache = os.path.expanduser("~/.pub-cache/hosted/pub.dev")
-    if os.path.exists(pub_cache):
-        for root, dirs, files in os.walk(pub_cache):
-            if "dash_bubble" in root:
-                for file in files:
-                    if file.endswith(".kt"):
-                        filepath = os.path.join(root, file)
-                        with open(filepath, 'r') as f:
-                            content = f.read()
-                        
-                        # Use regex for more reliable replacement of R.
-                        original_content = content
-                        content = re.sub(r'(?<![a-zA-Z0-9.])R\.(drawable|layout|id|string)', r'dev.moaz.dash_bubble.R.\1', content)
-                        
-                        if content != original_content:
-                            with open(filepath, 'w') as f:
-                                f.write(content)
-                            print(f"✅ تم إصلاح مراجع R في {file} باستخدام Regex")
-
 if __name__ == "__main__":
     main()
-    fix_kotlin_r_references()
-EOF
