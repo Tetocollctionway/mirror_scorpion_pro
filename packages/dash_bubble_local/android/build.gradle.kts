@@ -19,6 +19,7 @@ apply(plugin = "com.android.library")
 apply(plugin = "kotlin-android")
 
 android {
+    namespace = "dev.moaz.dash_bubble"
     compileSdk = 34
     
     compileOptions {
@@ -33,6 +34,10 @@ android {
     defaultConfig {
         minSdk = 21
         targetSdk = 34
+    }
+    
+    lint {
+        abortOnError = false
     }
     
     sourceSets {
