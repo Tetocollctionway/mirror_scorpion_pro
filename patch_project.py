@@ -176,7 +176,17 @@ void initializeRVariables() {
             with open(main_dart_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
-    # 7. إصلاح مكتبة dash_bubble
+    # 7. إصلاح مكتبة dash_bubble (Local & Pub Cache)
+    # Local plugin fix
+    local_plugin_gradle = "packages/dash_bubble_local/android/build.gradle.kts"
+    if os.path.exists(local_plugin_gradle):
+        print(f"🛠️ تحديث محلي: {local_plugin_gradle}")
+        with open(local_plugin_gradle, 'r') as f: content = f.read()
+        if 'namespace' not in content:
+            content = content.replace('android {', 'android {\n    namespace = "dev.moaz.dash_bubble"')
+            with open(local_plugin_gradle, 'w') as f: f.write(content)
+
+    # Pub cache fix
     pub_cache = os.path.expanduser("~/.pub-cache/hosted/pub.dev")
     if os.path.exists(pub_cache):
         for root, dirs, files in os.walk(pub_cache):

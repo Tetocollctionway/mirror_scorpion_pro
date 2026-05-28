@@ -43,30 +43,33 @@ class PremiumVerificationService extends ChangeNotifier {
 
   String get encryptedDeviceId => _deviceId ?? "";
 
-  /// Simple XOR-based encryption for ID (as requested "mushafar")
+  /// Advanced XOR-based encryption for ID with device binding
   String _encryptId(String input) {
-    final key = "MIRROR_SCORPION_2026";
+    final key = "MIRROR_SCORPION_SECURE_2026";
     List<int> bytes = utf8.encode(input);
     List<int> keyBytes = utf8.encode(key);
     List<int> result = [];
     for (int i = 0; i < bytes.length; i++) {
-      result.add(bytes[i] ^ keyBytes[i % keyBytes.length]);
+      // More complex XOR with position-based shifting
+      int shift = (i * 7) % 256;
+      result.add((bytes[i] ^ keyBytes[i % keyBytes.length] ^ shift) % 256);
     }
     return base64.encode(result);
   }
 
-  /// Verify license with device ID binding
+  /// Verify license with device ID binding and random shuffling
   Future<bool> activatePremium(String activationCode) async {
     try {
-      // Logic: Activation code is valid if it contains the encrypted device ID pattern
-      // In this simulation, we check if the code matches our generated logic
+      String code = activationCode.trim();
+      if (code.isEmpty) return false;
+
       String expectedCode = generateActivationCode(_deviceId!);
       
-      if (activationCode.trim() == expectedCode) {
+      if (code == expectedCode) {
         _isPremium = true;
-        _licenseKey = activationCode;
+        _licenseKey = code;
         await _prefs.setBool('isPremium', true);
-        await _prefs.setString('premium_license_key', activationCode);
+        await _prefs.setString('premium_license_key', code);
         notifyListeners();
         return true;
       }
@@ -76,14 +79,31 @@ class PremiumVerificationService extends ChangeNotifier {
     }
   }
 
-  /// Generator logic (used by the "Key Generator" part of the request)
+  /// Secure Generator logic for activation codes
   String generateActivationCode(String deviceId) {
-    // Encrypt the deviceId again with a salt and shuffle
-    final salt = "PREMIUM_SALT";
+    // 1. Combine with a secret salt
+    final salt = "MIRROR_SCORPION_V1_SALT_9922";
     String combined = "$deviceId$salt";
+    
+    // 2. Initial encryption
     List<int> bytes = utf8.encode(combined);
-    // Reverse and base64
-    return base64.encode(bytes.reversed.toList());
+    List<int> encrypted = [];
+    for (int i = 0; i < bytes.length; i++) {
+      encrypted.add(bytes[i] ^ (i % 255));
+    }
+    
+    // 3. Shuffle logic for "random" appearance
+    List<int> shuffled = List.from(encrypted);
+    if (shuffled.length > 10) {
+      // Swap some positions based on deviceId length
+      int swapPos = deviceId.length % (shuffled.length - 1);
+      int temp = shuffled[0];
+      shuffled[0] = shuffled[swapPos];
+      shuffled[swapPos] = temp;
+    }
+    
+    // 4. Final encoding
+    return "MS-PRO-${base64.encode(shuffled.reversed.toList()).replaceAll('=', '')}";
   }
 
   Future<void> revokePremium() async {

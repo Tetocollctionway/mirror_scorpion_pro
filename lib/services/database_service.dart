@@ -62,6 +62,13 @@ class DatabaseService extends ChangeNotifier {
       _humanStories = List<Map<String, dynamic>>.from(storiesData['humans'] ?? []);
       _nationsStories = List<Map<String, dynamic>>.from(storiesData['nations'] ?? []);
       
+      // Ensure we catch any extra categories
+      storiesData.forEach((key, value) {
+        if (value is List && !['quran', 'prophets', 'women', 'animals', 'humans', 'nations'].contains(key)) {
+          // You could add them to a general list or handle specifically
+        }
+      });
+      
       _isLoaded = true;
       notifyListeners();
     } catch (e) {

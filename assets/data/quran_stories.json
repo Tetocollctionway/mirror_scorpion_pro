@@ -62,5 +62,15 @@
     }
   ],
   "humans": [],
-  "nations": []
+  "nations": [
+    {
+      "id": "nation_01",
+      "category": "اقوام",
+      "title": "قصة أصحاب الفيل (كاملة)",
+      "text_ar": "وقعت هذه القصة في العام الذي ولد فيه النبي محمد صلى الله عليه وسلم. حاول أبرهة الحبشي هدم الكعبة بجيش عظيم يتقدمه فيل ضخم. عندما وصلوا إلى مكة، حبس الله الفيل عن دخول الحرم. ثم أرسل الله عليهم طيراً أبابيل ترميهم بحجارة من سجيل، فجعلهم كعصف مأكول. حمى الله بيته الحرام من كيد المعتدين.",
+      "text_en": "Abraha tried to destroy the Kaaba with an army of elephants. Allah sent flocks of birds that pelted them with stones of baked clay, destroying the army and protecting the Kaaba.",
+      "source": "سورة الفيل",
+      "lessons": ["قدرة الله على حماية بيته", "عاقبة الظلم والعدوان", "أهمية الكعبة المشرفة"]
+    }
+  ]
 }
