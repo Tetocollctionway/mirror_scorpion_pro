@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -143,7 +144,7 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               children: [
                 // Upper Editor (source - uses right button language)
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: _buildEditor(
                     controller: _upperController,
                     hint: 'الكلام الملتقط من المايك يظهر هنا...',
@@ -151,16 +152,16 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
                 // Language selectors + mic + swap
                 _buildControlsRow(),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
                 // Lower Editor (translated - uses left button language)
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: _buildEditor(
                     controller: _lowerController,
                     hint: 'الترجمة تظهر هنا...',
@@ -206,8 +207,8 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               controller: controller,
               maxLines: null,
               expands: true,
-              readOnly: isSource,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
+              readOnly: !isSource,
+              style: const TextStyle(color: Colors.white, fontSize: 22),
               textAlign: TextAlign.right,
               decoration: InputDecoration(
                 hintText: hint,
@@ -227,6 +228,34 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                         color: Colors.blueAccent, strokeWidth: 2),
                   ),
                 const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.copy, color: Colors.white54, size: 22),
+                  onPressed: () {
+                    if (_lowerController.text.isNotEmpty) {
+                      Clipboard.setData(ClipboardData(text: _lowerController.text));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('تم نسخ الترجمة')),
+                      );
+                    }
+                  },
+                  tooltip: 'نسخ',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share, color: Colors.greenAccent, size: 24),
+                  onPressed: () {
+                    if (_lowerController.text.isNotEmpty) {
+                      final signature = "\n\n── تمت الترجمة بواسطة ميرور سكربيون ──\n🦂 Mirror Scorpion | حيث تُصنع البدايات";
+                      Clipboard.setData(ClipboardData(text: _lowerController.text + signature));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('تم نسخ الترجمة مع توقيع التطبيق'),
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                      );
+                    }
+                  },
+                  tooltip: 'مشاركة مع التوقيع',
+                ),
                 IconButton(
                   icon: const Icon(Icons.volume_up,
                       color: Colors.blueAccent, size: 28),

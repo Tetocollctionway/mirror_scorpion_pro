@@ -28,6 +28,7 @@ class PremiumVerificationService extends ChangeNotifier {
   }
 
   String? get licenseKey => _licenseKey;
+  DateTime? get expiryDate => _expiryDate;
 
   /// Initialize the service
   Future<void> initialize() async {

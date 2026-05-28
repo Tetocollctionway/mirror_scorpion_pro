@@ -30,7 +30,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadData();
   }
 
@@ -159,9 +159,11 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
           indicatorColor: Colors.amber,
           labelColor: Colors.amber,
           unselectedLabelColor: Colors.white70,
+          isScrollable: true,
           tabs: const [
             Tab(text: 'أحاديث'),
             Tab(text: 'قصص'),
+            Tab(text: 'أسباب النزول'),
             Tab(text: 'إلهام AI'),
           ],
         ),
@@ -180,6 +182,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
                 children: [
                   _buildHadithsTab(),
                   _buildStoriesTab(),
+                  _buildAsbabNuzulTab(),
                   _buildInspirationTab(),
                 ],
               )
@@ -254,6 +257,86 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAsbabNuzulTab() {
+    final db = Provider.of<DatabaseService>(context, listen: false);
+    final nuzulList = db.asbabNuzul;
+    
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: nuzulList.length,
+      itemBuilder: (context, index) {
+        final item = nuzulList[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.teal.withOpacity(0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.menu_book, color: Colors.teal, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'سورة ${item['surah']} - ${item['ayah']}',
+                      style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 16),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber.withOpacity(0.2)),
+                ),
+                child: Text(
+                  item['text_ayah'] ?? '',
+                  style: const TextStyle(color: Colors.amber, fontSize: 18, height: 1.6, fontFamily: 'serif'),
+                  textDirection: TextDirection.rtl,
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'سبب النزول:',
+                style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+                textDirection: TextDirection.rtl,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                item['sabab'] ?? '',
+                style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.7),
+                textDirection: TextDirection.rtl,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                item['source'] ?? '',
+                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                textDirection: TextDirection.rtl,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
