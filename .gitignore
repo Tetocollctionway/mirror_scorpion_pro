@@ -18,6 +18,14 @@ android/app/build/
 android/build/
 local.properties
 
+# Secrets & Environment
+.env
+.env.*
+*.secrets
+*.keystore
+*.jks
+key.properties
+
 # Misc
 *.swp
 *.swo
