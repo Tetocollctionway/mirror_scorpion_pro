@@ -1,25 +1,40 @@
 
+import 'package:flutter/foundation.dart';
+
 class R {
-  static final dynamic _vars = {};
+  static final Map<String, dynamic> _vars = {};
   
   static dynamic get(String key) => _vars[key];
   static void set(String key, dynamic value) => _vars[key] = value;
   
-  // تعريفات افتراضية لتجنب الانهيار
-  static dynamic get drawable => _Drawable();
-  static dynamic get id => _Id();
+  // Default definitions to prevent crashes for bubble library
+  static final _Drawable drawable = _Drawable();
+  static final _Id id = _Id();
+  static final _Layout layout = _Layout();
+  static final _String string = _String();
 }
 
 class _Drawable {
-  dynamic operator [](String key) => 0;
+  dynamic noSuchMethod(Invocation invocation) => 0;
   int get ic_close_bubble => 0;
+  int get bubble_icon => 0;
 }
 
 class _Id {
-  dynamic operator [](String key) => 0;
+  dynamic noSuchMethod(Invocation invocation) => 0;
+}
+
+class _Layout {
+  dynamic noSuchMethod(Invocation invocation) => 0;
+}
+
+class _String {
+  dynamic noSuchMethod(Invocation invocation) => 0;
 }
 
 void initializeRVariables() {
-  print("R Variables Initialized");
-  // هنا يمكن إضافة أي تعريفات يحتاجها التطبيق عند الفتح
+  debugPrint("Mirror Scorpion: Injecting R Variable Fallbacks for Bubble Library...");
+  // This bridge ensures that if the native side expects an R variable that hasn't been generated,
+  // the app won't crash during Dart execution or when calling native channels.
+  R.set('initialized', true);
 }

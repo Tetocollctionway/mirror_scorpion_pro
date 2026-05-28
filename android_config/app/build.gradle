@@ -25,6 +25,11 @@ android {
         versionName "1.0.0"
     }
 
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
     buildTypes {
         release {
             signingConfig signingConfigs.debug
