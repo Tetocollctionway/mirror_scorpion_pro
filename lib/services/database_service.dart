@@ -22,6 +22,7 @@ class DatabaseService extends ChangeNotifier {
   List<Map<String, dynamic>> _animalStories = [];
   List<Map<String, dynamic>> _humanStories = [];
   List<Map<String, dynamic>> _nationsStories = [];
+  List<Map<String, dynamic>> _asbabNuzul = [];
   List<Map<String, String>> _translationHistory = [];
   
   bool _isLoaded = false;
@@ -34,6 +35,7 @@ class DatabaseService extends ChangeNotifier {
   List<Map<String, dynamic>> get animalStories => _animalStories;
   List<Map<String, dynamic>> get humanStories => _humanStories;
   List<Map<String, dynamic>> get nationsStories => _nationsStories;
+  List<Map<String, dynamic>> get asbabNuzul => _asbabNuzul;
   List<Map<String, String>> get translationHistory => _translationHistory;
   bool get isLoaded => _isLoaded;
 
@@ -43,9 +45,11 @@ class DatabaseService extends ChangeNotifier {
       // Load Hadith Qudsi as primary hadith source
       final hadithsJson = await rootBundle.loadString('assets/data/hadith_qudsi.json');
       final storiesJson = await rootBundle.loadString('assets/data/quran_stories.json');
+      final nuzulJson = await rootBundle.loadString('assets/data/asbab_nuzul.json');
       
       final hadithsData = jsonDecode(hadithsJson);
       final storiesData = jsonDecode(storiesJson);
+      _asbabNuzul = List<Map<String, dynamic>>.from(jsonDecode(nuzulJson));
 
       // Hadith Qudsi is a top-level array
       _hadiths = (hadithsData as List).map((e) => {

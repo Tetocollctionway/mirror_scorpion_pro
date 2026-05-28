@@ -347,16 +347,18 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
           if (hasWatermark)
             Center(
               child: Opacity(
-                opacity: 0.15,
+                opacity: 0.12,
                 child: Transform.rotate(
-                  angle: -130 * 3.14 / 180,
+                  angle: 130 * 3.14159 / 180,
                   child: const Text(
-                    'ترجم هذا المستند بواسطة ميرور سكربيون',
+                    'ترجم هذا المستند\nبواسطة\nميرور سكربيون',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 32, // Large as requested
-                      fontWeight: FontWeight.bold
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      fontStyle: FontStyle.italic,
+                      letterSpacing: 2,
                     ),
                   ),
                 ),
