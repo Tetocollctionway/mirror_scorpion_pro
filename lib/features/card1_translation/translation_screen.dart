@@ -125,12 +125,12 @@ class _TextTranslationScreenState extends State<TextTranslationScreen> {
 
   void _shareAudio() {
     if (_translatedController.text.isEmpty) return;
-    final signature = "\n\nتمت الترجمة بواسطة ميرور سكربيون";
+    final signature = "\n\n── تمت الترجمة بواسطة ميرور سكربيون ──\n🦂 Mirror Scorpion | حيث تُصنع البدايات";
     final content = _translatedController.text + signature;
     Clipboard.setData(ClipboardData(text: content));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('تم نسخ الترجمة مع التوقيع للمشاركة'),
+        content: Text('تم نسخ الترجمة مع توقيع التطبيق للمشاركة'),
         backgroundColor: Colors.blueAccent,
       ),
     );

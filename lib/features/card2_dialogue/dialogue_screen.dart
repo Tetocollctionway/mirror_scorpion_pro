@@ -143,7 +143,7 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               children: [
                 // Upper Editor (source - uses right button language)
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: _buildEditor(
                     controller: _upperController,
                     hint: 'الكلام الملتقط من المايك يظهر هنا...',
@@ -151,16 +151,16 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
                 // Language selectors + mic + swap
                 _buildControlsRow(),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
                 // Lower Editor (translated - uses left button language)
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: _buildEditor(
                     controller: _lowerController,
                     hint: 'الترجمة تظهر هنا...',
@@ -206,8 +206,8 @@ class _DialogueTranslationScreenState extends State<DialogueTranslationScreen> {
               controller: controller,
               maxLines: null,
               expands: true,
-              readOnly: isSource,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
+              readOnly: !isSource,
+              style: const TextStyle(color: Colors.white, fontSize: 22),
               textAlign: TextAlign.right,
               decoration: InputDecoration(
                 hintText: hint,

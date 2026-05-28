@@ -498,6 +498,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildPremiumActiveCard() {
+    final premiumService = Provider.of<PremiumVerificationService>(context);
+    final expiryDate = premiumService.expiryDate;
+    String expiryText = 'شكراً لدعمك للتطبيق!';
+    if (expiryDate != null) {
+      final remaining = expiryDate.difference(DateTime.now()).inDays;
+      expiryText = 'تاريخ الانتهاء: ${expiryDate.year}-${expiryDate.month.toString().padLeft(2, '0')}-${expiryDate.day.toString().padLeft(2, '0')} (متبقي $remaining يوم)';
+    }
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -519,8 +527,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'النسخة البرو مفعلة',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                 ),
+                const SizedBox(height: 4),
                 Text(
-                  'شكراً لدعمك للتطبيق!',
+                  expiryText,
                   style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
                 ),
               ],
