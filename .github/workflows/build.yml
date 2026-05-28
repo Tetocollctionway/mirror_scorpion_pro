@@ -28,10 +28,9 @@ jobs:
           # 2. Run the comprehensive patcher
           python3 patch_project.py
           
-          # 3. Apply additional fixes for SDK versions and double equals
+          # 3. Apply additional fixes for SDK versions
           find android -name "build.gradle*" -exec sed -i 's/compileSdk .*/compileSdk = 34/g' {} +
           find android -name "build.gradle*" -exec sed -i 's/targetSdk .*/targetSdk = 34/g' {} +
-          find android -name "build.gradle*" -exec sed -i 's/==/=/g' {} +
           
           # 4. Build APK with Obfuscation (Anti-Reverse Engineering)
           flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols

@@ -35,7 +35,7 @@ def main():
 }
 
 android {
-    namespace "com.tetocollctionway.mirror"
+    namespace "com.tetocollctionway.mirror_scorpion_pro"
     compileSdk 34
 
     compileOptions {
@@ -48,7 +48,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.tetocollctionway.mirror"
+        applicationId "com.tetocollctionway.mirror_scorpion_pro"
         minSdk 21
         targetSdk 34
         versionCode 1
