@@ -48,8 +48,8 @@ class PremiumVerificationService extends ChangeNotifier {
   Future<String> _getOrCreateDeviceId() async {
     String? id = _prefs.getString('device_id_encrypted');
     if (id == null) {
-      // In real app, use device_info_plus, here we simulate a stable unique ID
-      String rawId = "MS-${Random().nextInt(999999)}-${DateTime.now().millisecondsSinceEpoch}";
+      final secureRandom = Random.secure();
+      String rawId = "MS-${secureRandom.nextInt(999999)}-${DateTime.now().millisecondsSinceEpoch}";
       id = _encryptId(rawId);
       await _prefs.setString('device_id_encrypted', id);
     }
@@ -58,11 +58,17 @@ class PremiumVerificationService extends ChangeNotifier {
 
   String get encryptedDeviceId => _deviceId ?? "";
 
-  /// Advanced XOR-based encryption for ID with device binding
+  static const String _encryptionKey = String.fromEnvironment(
+    'MIRROR_ENCRYPTION_KEY',
+    defaultValue: 'CHANGE_ME_IN_PRODUCTION',
+  );
+
+  /// XOR-based encryption for ID with device binding
   String _encryptId(String input) {
-    final key = "MIRROR_SCORPION_SECURE_2026";
+    assert(_encryptionKey != 'CHANGE_ME_IN_PRODUCTION',
+        'Set --dart-define=MIRROR_ENCRYPTION_KEY for production builds');
     List<int> bytes = utf8.encode(input);
-    List<int> keyBytes = utf8.encode(key);
+    List<int> keyBytes = utf8.encode(_encryptionKey);
     List<int> result = [];
     for (int i = 0; i < bytes.length; i++) {
       int shift = (i * 7) % 256;
@@ -97,6 +103,11 @@ class PremiumVerificationService extends ChangeNotifier {
     }
   }
 
+  static const String _licenseSalt = String.fromEnvironment(
+    'MIRROR_LICENSE_SALT',
+    defaultValue: 'CHANGE_ME_SALT_IN_PRODUCTION',
+  );
+
   /// Decode and verify activation code
   DateTime? _decodeAndVerify(String code, String deviceId) {
     try {
@@ -121,12 +132,11 @@ class PremiumVerificationService extends ChangeNotifier {
       }
       
       String decodedStr = utf8.decode(decrypted);
-      final salt = "MIRROR_SCORPION_V1_SALT_9922";
       
-      if (!decodedStr.startsWith(deviceId) || !decodedStr.contains(salt)) return null;
+      if (!decodedStr.startsWith(deviceId) || !decodedStr.contains(_licenseSalt)) return null;
       
       // 4. Extract expiry
-      String expiryPart = decodedStr.split(salt).last;
+      String expiryPart = decodedStr.split(_licenseSalt).last;
       int days = int.tryParse(expiryPart) ?? 0;
       if (days == 0) return null; // Invalid duration
       
@@ -138,8 +148,7 @@ class PremiumVerificationService extends ChangeNotifier {
 
   /// Secure Generator logic for activation codes (For Developer App)
   String generateActivationCode(String deviceId, int durationDays) {
-    final salt = "MIRROR_SCORPION_V1_SALT_9922";
-    String combined = "$deviceId$salt$durationDays";
+    String combined = "$deviceId$_licenseSalt$durationDays";
     
     List<int> bytes = utf8.encode(combined);
     List<int> encrypted = [];

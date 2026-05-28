@@ -57,10 +57,104 @@ class MirrorScriptionApp extends StatelessWidget {
           '/chess': (context) => const ChessScreen(),
           '/rubik': (context) => const RubikCubeScreen(),
           '/settings': (context) => const SettingsScreen(),
-          '/admin_gen': (context) => const KeyGeneratorScreen(),
+          '/admin_gen': (context) => const _AdminGate(),
             },
           );
         },
+      ),
+    );
+  }
+}
+
+/// Gate that requires a password before granting access to the key generator.
+class _AdminGate extends StatefulWidget {
+  const _AdminGate();
+
+  @override
+  State<_AdminGate> createState() => _AdminGateState();
+}
+
+class _AdminGateState extends State<_AdminGate> {
+  static const String _adminPassword = String.fromEnvironment(
+    'MIRROR_ADMIN_PASSWORD',
+    defaultValue: '',
+  );
+
+  final TextEditingController _controller = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final input = _controller.text.trim();
+    if (_adminPassword.isEmpty) {
+      setState(() => _error = 'Admin access is disabled in this build');
+      return;
+    }
+    if (input == _adminPassword) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const KeyGeneratorScreen()),
+      );
+    } else {
+      setState(() => _error = 'كلمة المرور غير صحيحة');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D1B2A),
+      appBar: AppBar(
+        title: const Text('تسجيل دخول المطور',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.lock, color: Colors.amber, size: 64),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _controller,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'أدخل كلمة مرور المطور',
+                hintStyle: const TextStyle(color: Colors.white24),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.05),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                errorText: _error,
+              ),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('دخول',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

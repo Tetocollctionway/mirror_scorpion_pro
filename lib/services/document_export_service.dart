@@ -2,6 +2,16 @@
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 
+/// Escape HTML special characters to prevent XSS.
+String _escapeHtml(String input) {
+  return input
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+}
+
 class DocumentExportService {
   /// Export document as PDF (maintains original formatting)
   static Future<String> exportAsPDF({
@@ -101,7 +111,7 @@ $content
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$title</title>
+    <title>${_escapeHtml(title)}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -143,14 +153,14 @@ $content
 </head>
 <body>
     <div class="container">
-        <h1>$title</h1>
+        <h1>${_escapeHtml(title)}</h1>
         <div class="metadata">
-            <p>Source Language: $sourceLanguage</p>
-            <p>Target Language: $targetLanguage</p>
+            <p>Source Language: ${_escapeHtml(sourceLanguage)}</p>
+            <p>Target Language: ${_escapeHtml(targetLanguage)}</p>
             <p>Exported: ${DateTime.now()}</p>
         </div>
         <div class="content">
-            $content
+            ${_escapeHtml(content)}
         </div>
     </div>
 </body>

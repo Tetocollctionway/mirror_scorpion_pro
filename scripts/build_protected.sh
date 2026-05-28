@@ -13,15 +13,27 @@ flutter clean
 echo "📦 Fetching dependencies..."
 flutter pub get
 
-# 3. Build Android App Bundle with Obfuscation
+# 3. Read secrets from environment (must be set before running this script)
+DART_DEFINES=""
+if [ -n "$MIRROR_ENCRYPTION_KEY" ]; then
+  DART_DEFINES="$DART_DEFINES --dart-define=MIRROR_ENCRYPTION_KEY=$MIRROR_ENCRYPTION_KEY"
+fi
+if [ -n "$MIRROR_LICENSE_SALT" ]; then
+  DART_DEFINES="$DART_DEFINES --dart-define=MIRROR_LICENSE_SALT=$MIRROR_LICENSE_SALT"
+fi
+if [ -n "$MIRROR_ADMIN_PASSWORD" ]; then
+  DART_DEFINES="$DART_DEFINES --dart-define=MIRROR_ADMIN_PASSWORD=$MIRROR_ADMIN_PASSWORD"
+fi
+
+# 4. Build Android App Bundle with Obfuscation
 # --obfuscate: Hides function and variable names
 # --split-debug-info: Removes debug information from the binary
 echo "🔐 Building Obfuscated Android App Bundle..."
-flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols
+flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols $DART_DEFINES
 
-# 4. Build APK with Obfuscation
+# 5. Build APK with Obfuscation
 echo "📱 Building Obfuscated APK..."
-flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
+flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols $DART_DEFINES
 
 echo "✅ Protected Build Complete!"
 echo "📍 APK Location: build/app/outputs/flutter-apk/app-release.apk"
