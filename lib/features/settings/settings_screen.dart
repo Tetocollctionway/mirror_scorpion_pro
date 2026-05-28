@@ -68,6 +68,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final premiumService = Provider.of<PremiumVerificationService>(context);
+    _isPremium = premiumService.isPremium;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('الإعدادات', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -212,7 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // Premium Section
             if (!_isPremium)
-              _buildPremiumCard()
+              _buildPremiumActivationCard(premiumService)
             else
               _buildPremiumActiveCard(),
             const SizedBox(height: 20),
@@ -381,8 +384,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildPremiumCard() {
-    final premiumService = Provider.of<PremiumVerificationService>(context);
+  Widget _buildPremiumActivationCard(PremiumVerificationService premiumService) {
     final TextEditingController _codeController = TextEditingController();
 
     return Container(
@@ -410,23 +412,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Text('استمتع بجميع الميزات: ترجمة غير محدودة، توليد قصص فيديو، نسخ الصوت، وحفظ المستندات.', style: TextStyle(color: Colors.white70, fontSize: 13)),
           const SizedBox(height: 20),
           
-          // Device ID Section
-          const Text('معرف الجهاز الخاص بك (مُشفر):', style: TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.bold)),
+          // Row 1: Encrypted Device ID
+          const Text('1. معرف الجهاز (أرسله للمطور):', style: TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(10)),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
                     premiumService.encryptedDeviceId,
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontFamily: 'monospace'),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.copy, color: Colors.amber, size: 20),
+                  icon: const Icon(Icons.copy, color: Colors.amber, size: 18),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: premiumService.encryptedDeviceId));
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ معرف الجهاز')));
@@ -437,20 +439,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           
           const SizedBox(height: 20),
-          const Text('أدخل كود التفعيل:', style: TextStyle(color: Colors.white70, fontSize: 14)),
+          
+          // Row 2: Activation Code Input
+          const Text('2. كود التفعيل (ألصق الكود المستلم):', style: TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          TextField(
-            controller: _codeController,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'ألصق كود التفعيل هنا',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-              filled: true,
-              fillColor: Colors.black26,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _codeController,
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontFamily: 'monospace'),
+                    decoration: InputDecoration(
+                      hintText: 'ألصق كود التفعيل هنا...',
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 11),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.paste, color: Colors.blue, size: 18),
+                  onPressed: () async {
+                    ClipboardData? data = await Clipboard.getData('text/plain');
+                    if (data != null) _codeController.text = data.text ?? "";
+                  },
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+          
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -460,7 +480,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() => _isPremium = true);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('مبروك! تم تفعيل النسخة الاحترافية بنجاح')));
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('كود التفعيل غير صحيح')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('كود التفعيل غير صحيح أو منتهي الصلاحية')));
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -470,101 +490,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('تفعيل الآن', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPremiumActiveCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.amber.shade700.withOpacity(0.2), Colors.orange.withOpacity(0.1)],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.amber.shade600.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.star, color: Colors.amber.shade300, size: 24),
-              const SizedBox(width: 12),
-              const Text(
-                'ترقية إلى النسخة البرو',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('معرف الجهاز المشفر (Device ID):', style: TextStyle(color: Colors.amber, fontSize: 10)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        premiumService.encryptedDeviceId,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace'),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.copy, size: 14, color: Colors.white70),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: premiumService.encryptedDeviceId));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ المعرف')));
-                      },
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _codeController,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-            decoration: InputDecoration(
-              hintText: 'أدخل كود التفعيل هنا...',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.05),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                bool success = await premiumService.activatePremium(_codeController.text);
-                if (success) {
-                  setState(() => _isPremium = true);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التفعيل بنجاح!')));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('كود التفعيل غير صحيح')));
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber.shade600,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'تفعيل الآن',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
             ),
           ),
         ],

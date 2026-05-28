@@ -16,8 +16,17 @@ class PremiumVerificationService extends ChangeNotifier {
   bool _isPremium = false;
   String? _licenseKey;
   String? _deviceId;
+  DateTime? _expiryDate;
   
-  bool get isPremium => _isPremium;
+  bool get isPremium {
+    if (!_isPremium) return false;
+    if (_expiryDate != null && DateTime.now().isAfter(_expiryDate!)) {
+      _revokeExpiredPremium();
+      return false;
+    }
+    return true;
+  }
+
   String? get licenseKey => _licenseKey;
 
   /// Initialize the service
@@ -26,6 +35,12 @@ class PremiumVerificationService extends ChangeNotifier {
     _deviceId = await _getOrCreateDeviceId();
     _isPremium = _prefs.getBool('isPremium') ?? false;
     _licenseKey = _prefs.getString('premium_license_key');
+    
+    String? expiryStr = _prefs.getString('premium_expiry_date');
+    if (expiryStr != null) {
+      _expiryDate = DateTime.tryParse(expiryStr);
+    }
+    
     notifyListeners();
   }
 
@@ -50,26 +65,29 @@ class PremiumVerificationService extends ChangeNotifier {
     List<int> keyBytes = utf8.encode(key);
     List<int> result = [];
     for (int i = 0; i < bytes.length; i++) {
-      // More complex XOR with position-based shifting
       int shift = (i * 7) % 256;
       result.add((bytes[i] ^ keyBytes[i % keyBytes.length] ^ shift) % 256);
     }
     return base64.encode(result);
   }
 
-  /// Verify license with device ID binding and random shuffling
+  /// Verify license with device ID binding and expiry check
   Future<bool> activatePremium(String activationCode) async {
     try {
       String code = activationCode.trim();
       if (code.isEmpty) return false;
 
-      String expectedCode = generateActivationCode(_deviceId!);
-      
-      if (code == expectedCode) {
+      // Decrypt and verify
+      final decoded = _decodeAndVerify(code, _deviceId!);
+      if (decoded != null) {
         _isPremium = true;
         _licenseKey = code;
+        _expiryDate = decoded;
+        
         await _prefs.setBool('isPremium', true);
         await _prefs.setString('premium_license_key', code);
+        await _prefs.setString('premium_expiry_date', _expiryDate!.toIso8601String());
+        
         notifyListeners();
         return true;
       }
@@ -79,38 +97,78 @@ class PremiumVerificationService extends ChangeNotifier {
     }
   }
 
-  /// Secure Generator logic for activation codes
-  String generateActivationCode(String deviceId) {
-    // 1. Combine with a secret salt
+  /// Decode and verify activation code
+  DateTime? _decodeAndVerify(String code, String deviceId) {
+    try {
+      if (!code.startsWith("MS-PRO-")) return null;
+      String encodedPart = code.substring(7);
+      
+      // 1. Reverse and decode
+      List<int> bytes = base64.decode(encodedPart).reversed.toList();
+      
+      // 2. Un-shuffle
+      if (bytes.length > 10) {
+        int swapPos = deviceId.length % (bytes.length - 1);
+        int temp = bytes[0];
+        bytes[0] = bytes[swapPos];
+        bytes[swapPos] = temp;
+      }
+      
+      // 3. Decrypt
+      List<int> decrypted = [];
+      for (int i = 0; i < bytes.length; i++) {
+        decrypted.add(bytes[i] ^ (i % 255));
+      }
+      
+      String decodedStr = utf8.decode(decrypted);
+      final salt = "MIRROR_SCORPION_V1_SALT_9922";
+      
+      if (!decodedStr.startsWith(deviceId) || !decodedStr.contains(salt)) return null;
+      
+      // 4. Extract expiry
+      String expiryPart = decodedStr.split(salt).last;
+      int days = int.tryParse(expiryPart) ?? 0;
+      if (days == 0) return null; // Invalid duration
+      
+      return DateTime.now().add(Duration(days: days));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Secure Generator logic for activation codes (For Developer App)
+  String generateActivationCode(String deviceId, int durationDays) {
     final salt = "MIRROR_SCORPION_V1_SALT_9922";
-    String combined = "$deviceId$salt";
+    String combined = "$deviceId$salt$durationDays";
     
-    // 2. Initial encryption
     List<int> bytes = utf8.encode(combined);
     List<int> encrypted = [];
     for (int i = 0; i < bytes.length; i++) {
       encrypted.add(bytes[i] ^ (i % 255));
     }
     
-    // 3. Shuffle logic for "random" appearance
     List<int> shuffled = List.from(encrypted);
     if (shuffled.length > 10) {
-      // Swap some positions based on deviceId length
       int swapPos = deviceId.length % (shuffled.length - 1);
       int temp = shuffled[0];
       shuffled[0] = shuffled[swapPos];
       shuffled[swapPos] = temp;
     }
     
-    // 4. Final encoding
     return "MS-PRO-${base64.encode(shuffled.reversed.toList()).replaceAll('=', '')}";
   }
 
-  Future<void> revokePremium() async {
+  Future<void> _revokeExpiredPremium() async {
     _isPremium = false;
     _licenseKey = null;
+    _expiryDate = null;
     await _prefs.setBool('isPremium', false);
     await _prefs.remove('premium_license_key');
+    await _prefs.remove('premium_expiry_date');
     notifyListeners();
+  }
+
+  Future<void> revokePremium() async {
+    await _revokeExpiredPremium();
   }
 }
