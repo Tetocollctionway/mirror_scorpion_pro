@@ -111,7 +111,7 @@ class _StoriesScreenState extends State<StoriesScreen> with TickerProviderStateM
         return _buildContentCard(
           title: hadith['narrator'] ?? 'حديث قدسي',
           content: hadith['text'] ?? '',
-          subtitle: hadith['source'] ?? 'معاني الكلمات متوفرة بالأسفل',
+          subtitle: "${hadith['source'] ?? ''}\n${hadith['explanation'] ?? ''}",
           icon: Icons.auto_stories,
           color: Colors.amber,
           isHadith: true,

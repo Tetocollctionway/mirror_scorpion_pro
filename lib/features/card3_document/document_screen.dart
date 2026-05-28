@@ -292,35 +292,14 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> w
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             FloatingActionButton(
-                              heroTag: 'ai_btn',
-                              backgroundColor: Colors.amber,
-                              child: const Icon(Icons.auto_awesome, color: Colors.black),
-                              onPressed: () async {
-                                final inspiration = await AIService.generateInspiration(
-                                  userMood: _translatedText,
-                                  context: 'Document Screen',
-                                );
-                                if (!mounted) return;
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('تحليل مانوس الذكي'),
-                                    content: Text(inspiration),
-                                    actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('شكراً'))],
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            FloatingActionButton(
                               heroTag: 'share_btn',
                               backgroundColor: Colors.blueAccent,
                               child: const Icon(Icons.share, color: Colors.white),
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('تم تصدير المستند كنسخة طبق الأصل مع العلامة المائية ✓'),
-                                    backgroundColor: Colors.green,
+                                    content: Text('المستند المترجم لا يحفظ إلا في النسخة المدفوعة. تم التوقيع بواسطة ميرور سكربيون.'),
+                                    backgroundColor: Colors.blue,
                                   )
                                 );
                               },

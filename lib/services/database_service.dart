@@ -40,13 +40,21 @@ class DatabaseService extends ChangeNotifier {
   // --- Load All Data ---
   Future<void> loadAllData() async {
     try {
-      final hadithsJson = await rootBundle.loadString('assets/data/hadiths.json');
+      // Load Hadith Qudsi as primary hadith source
+      final hadithsJson = await rootBundle.loadString('assets/data/hadith_qudsi.json');
       final storiesJson = await rootBundle.loadString('assets/data/quran_stories.json');
       
       final hadithsData = jsonDecode(hadithsJson);
       final storiesData = jsonDecode(storiesJson);
 
-      _hadiths = List<Map<String, dynamic>>.from(hadithsData['hadiths'] ?? []);
+      // Hadith Qudsi is a top-level array
+      _hadiths = (hadithsData as List).map((e) => {
+        'text': e['text_ar'],
+        'source': e['source'],
+        'explanation': e['explanation_ar'],
+        'narrator': 'حديث قدسي'
+      }).toList();
+
       _quranStories = List<Map<String, dynamic>>.from(storiesData['quran'] ?? []);
       _prophetStories = List<Map<String, dynamic>>.from(storiesData['prophets'] ?? []);
       _womenStories = List<Map<String, dynamic>>.from(storiesData['women'] ?? []);

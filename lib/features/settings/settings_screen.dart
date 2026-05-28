@@ -3,8 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../../services/tts_service.dart';
 import '../../services/floating_bubble_service.dart';
+import '../../services/premium_verification_service.dart';
 import '../about/about_app_screen.dart';
 import '../../core/theme/theme_provider.dart';
+import 'package:flutter/services.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -380,6 +382,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildPremiumCard() {
+    final premiumService = Provider.of<PremiumVerificationService>(context);
+    final TextEditingController _codeController = TextEditingController();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -403,25 +408,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            'احصل على ميزات إضافية:\n• ترجمة مستندات غير محدودة\n• نسخ الصوت المتقدم (الصوت الخامس)\n• إزالة الإعلانات\n• ترجمة التطبيقات (الفقاعة العائمة)',
-            style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12, height: 1.6),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('معرف الجهاز المشفر (Device ID):', style: TextStyle(color: Colors.amber, fontSize: 10)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        premiumService.encryptedDeviceId,
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace'),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 14, color: Colors.white70),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: premiumService.encryptedDeviceId));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم نسخ المعرف')));
+                      },
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _codeController,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'أدخل كود التفعيل هنا...',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.05),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('سيتم توجيهك لصفحة الترقية قريباً')),
-                );
+              onPressed: () async {
+                bool success = await premiumService.activatePremium(_codeController.text);
+                if (success) {
+                  setState(() => _isPremium = true);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التفعيل بنجاح!')));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('كود التفعيل غير صحيح')));
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber.shade600,
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: const Text(
-                'ترقية الآن',
+                'تفعيل الآن',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),

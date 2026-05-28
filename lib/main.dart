@@ -12,6 +12,7 @@ import 'features/settings/settings_screen.dart';
 import 'services/database_service.dart';
 import 'services/floating_bubble_service.dart';
 import 'services/tts_service.dart';
+import 'services/premium_verification_service.dart';
 import 'core/theme/theme_provider.dart';
 
 void main() {
@@ -34,6 +35,7 @@ class MirrorScriptionApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DatabaseService()),
         ChangeNotifierProvider(create: (_) => FloatingBubbleService()..initialize()),
         ChangeNotifierProvider(create: (_) => TTSService()),
+        ChangeNotifierProvider(create: (_) => PremiumVerificationService()..initialize()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

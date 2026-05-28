@@ -51,6 +51,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/hadiths.json
+    - assets/data/hadith_qudsi.json
     - assets/data/quran_stories.json
     - assets/data/stories.json
     - assets/images/scorpion_icon.jpeg

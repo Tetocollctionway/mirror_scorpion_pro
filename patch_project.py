@@ -114,7 +114,8 @@ subprojects {
         permissions = [
             '<uses-permission android:name="android.permission.INTERNET"/>',
             '<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>',
-            '<uses-permission android:name="android.permission.RECORD_AUDIO"/>'
+            '<uses-permission android:name="android.permission.RECORD_AUDIO"/>',
+            '<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>'
         ]
         
         for perm in permissions:
@@ -124,6 +125,28 @@ subprojects {
         with open(manifest_path, "w", encoding="utf-8") as f:
             f.write(content)
         print("✅ تم تحديث أذونات الـ Manifest!")
+
+    # 5. إصلاح مكتبة dash_bubble (مشكلة الـ R والموارد)
+    print("🛠️ جاري إصلاح مكتبة dash_bubble في الـ Pub Cache...")
+    pub_cache = os.path.expanduser("~/.pub-cache/hosted/pub.dev")
+    if os.path.exists(pub_cache):
+        for root, dirs, files in os.walk(pub_cache):
+            if "dash_bubble" in root:
+                for file in files:
+                    if file == "build.gradle":
+                        fp = os.path.join(root, file)
+                        with open(fp, 'r') as f: content = f.read()
+                        if 'namespace' not in content:
+                            import re
+                            content = re.sub(r'(android\s*\{)', r'\1\n    namespace "dev.moaz.dash_bubble"', content)
+                            with open(fp, 'w') as f: f.write(content)
+                    elif file == "BubbleService.kt":
+                        fp = os.path.join(root, file)
+                        with open(fp, 'r') as f: content = f.read()
+                        # حل مشكلة R.drawable.ic_close_bubble المفقود
+                        content = content.replace("R.drawable.ic_close_bubble", "0")
+                        with open(fp, 'w') as f: f.write(content)
+        print("✅ تم إصلاح dash_bubble بنجاح!")
 
 
 if __name__ == "__main__":
