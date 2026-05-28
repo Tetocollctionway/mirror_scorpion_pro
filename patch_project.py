@@ -13,7 +13,7 @@ def run_command(command, ignore_error=False):
             raise e
 
 def main():
-    print("🚀 بدء خطوة الإصلاح الشاملة والفرمتة (نسخة Gradle DSL المصححة)...")
+    print("🚀 بدء خطوة الإصلاح الشاملة والفرمتة (نسخة Gradle DSL المصححة لـ AGP 8.0+)...")
 
     # 1. توليد مجلد أندرويد
     print("📦 جاري توليد مجلد أندرويد المفقود...")
@@ -23,6 +23,7 @@ def main():
     app_gradle_path = "android/app/build.gradle.kts"
     if os.path.exists(app_gradle_path):
         print(f"🛠️ تحديث: {app_gradle_path}")
+        # استخدام التنسيق الحديث لتجنب أخطاء التحذيرات والـ deprecation
         new_app_gradle = """plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -38,8 +39,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    // Modern Kotlin compiler options for AGP 8.0+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
     }
 
     defaultConfig {
@@ -184,6 +188,8 @@ void initializeRVariables() {
         with open(local_plugin_gradle, 'r') as f: content = f.read()
         if 'namespace' not in content:
             content = content.replace('android {', 'android {\n    namespace = "dev.moaz.dash_bubble"')
+            # Fix kotlinOptions here too
+            content = content.replace('kotlinOptions {', 'tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {\n        kotlinOptions {')
             with open(local_plugin_gradle, 'w') as f: f.write(content)
 
     # Pub cache fix
