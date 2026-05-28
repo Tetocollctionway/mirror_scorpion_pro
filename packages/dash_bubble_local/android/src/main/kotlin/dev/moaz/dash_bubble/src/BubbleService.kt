@@ -134,7 +134,6 @@ class BubbleService(
                 }
                 format = PixelFormat.TRANSLUCENT
                 flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                 width = bubbleSize.toInt()
                 height = bubbleSize.toInt()

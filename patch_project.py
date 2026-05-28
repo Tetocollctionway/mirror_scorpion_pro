@@ -31,7 +31,7 @@ def main():
 
 android {
     namespace = "com.tetocollctionway.mirror"
-    compileSdk = 35
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -45,7 +45,7 @@ android {
     defaultConfig {
         applicationId = "com.tetocollctionway.mirror"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
     }
