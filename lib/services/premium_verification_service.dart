@@ -172,4 +172,13 @@ class PremiumVerificationService extends ChangeNotifier {
   Future<void> revokePremium() async {
     await _revokeExpiredPremium();
   }
+
+  bool canAccessFeature(String featureId) {
+    // If the app is premium, all features are accessible
+    if (isPremium) return true;
+    
+    // In free version, some features might have limited access
+    // This status is used by FeatureAccessControl to manage gates
+    return false; 
+  }
 }
