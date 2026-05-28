@@ -29,7 +29,8 @@ dependencies:
   
   # Storage & Preferences
   shared_preferences: ^2.2.0
-  # dash_bubble: ^2.0.0 (Removed due to build issues)
+  dash_bubble_local:
+    path: packages/dash_bubble_local
   permission_handler: ^11.3.1
   
   # Utilities
